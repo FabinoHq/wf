@@ -14,6 +14,9 @@
 !wfp/wfp.vcxproj
 !wfp/wfp.vcxproj.filters
 !wfp/wfp.vcxproj.user
+!wfp/resource.h
+!wfp/resource.rc
+!wfp/icon.ico
 
 # Sources files
 !wfp/main.cpp
