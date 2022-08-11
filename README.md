@@ -9,6 +9,7 @@
            \\ .  /    \\   /     _//  .    /
             \\__/      \\_/    //_________/
 
+
 	`include.wf` : Include a program file
 
 	;Comment; : Write a comment between ; and ;
@@ -26,17 +27,17 @@
 	>label> : Jump to label if register value is greater than zero (r > 0)
 	<label< : Jump to label if register value is lesser than zero (r < 0)
 
-	\ : Swap current pointer address with back pointer address (p <=> q)
+	\ : Swap current pointer address and back pointer address (p <=> q)
 	} : Increment current pointer address (p = p+1)
 	{ : Decrement current pointer address (p = p-1)
-	] : Load the current pointer address from the register (p = r)
-	[ : Store the current pointer address into the register (r = p)
+	] : Set the current pointer address from the register (p = r)
+	[ : Load the current pointer address into the register (r = p)
 
-	~ : Swap the value of the register with the value of the back register (r <=> b)
+	~ : Swap the register and the back register (r <=> b)
 	# : Load current pointed value into the register (r = *p)
 	_ : Store current register value at current pointed address (*p = r)
-	$ : Load current program cursor into the register (r = c)
 	^ : Set current program cursor from the register (c = r)
+	$ : Load current program cursor into the register (r = c)
 
 	+ : Add register value and back register value (r = r + b)
 	- : Subtract register value and back register value (r = r - b)
@@ -49,6 +50,6 @@
 
 	, : read one input byte into the register
 	. : output one byte from the register
-	) : Load current I/O cursor position from the register
-	( : Store current I/O cursor position into the register
+	) : Set current I/O cursor position from the register
+	( : Load current I/O cursor position into the register
 	? : Set I/O mode based on the value stored in the register (terminal or file)
