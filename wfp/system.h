@@ -37,13 +37,38 @@
 //   For more information, please refer to <https://unlicense.org>            //
 ////////////////////////////////////////////////////////////////////////////////
 //    WFP : WF Parser                                                         //
-//     main.cpp : Main program entry point                                    //
+//     system.h : WFP System management wrapper                               //
 ////////////////////////////////////////////////////////////////////////////////
-#include <iostream>
+#ifndef WFP_SYSTEM_HEADER
+#define WFP_SYSTEM_HEADER
 
 
-int main(int argc, char* argv[])
-{
-    // Program successfully executed
-    return 0;
-}
+    ////////////////////////////////////////////////////////////////////////////
+    //  Operating system configuration                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__)
+        #define WFP_WINDOWS
+    #endif // Windows
+
+    #if defined(__APPLE__)
+        #define WFP_MACOS
+    #endif // MacOS
+
+    #if defined(__linux__)
+        #define WFP_LINUX
+    #endif // Linux
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  64bits or 32bits configuration                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    #if defined(__x86_64__) || defined(_WIN64) || defined(__LP64__) || \
+        defined(__ia64) || defined(_M_X64) || defined(_M_IA64) || \
+        defined(__aarch64__) || defined(__powerpc64__)
+        #define WFP_64BITS
+    #else
+        #define WFP_32BITS
+    #endif
+
+
+#endif // WFP_SYSTEM_HEADER

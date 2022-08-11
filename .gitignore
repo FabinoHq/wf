@@ -17,3 +17,4 @@
 
 # Sources files
 !wfp/main.cpp
+!wfp/system.h
