@@ -37,43 +37,57 @@
 //   For more information, please refer to <https://unlicense.org>            //
 ////////////////////////////////////////////////////////////////////////////////
 //    WFP : WF Parser                                                         //
-//     main.cpp : Main program entry point                                    //
+//     wfp.h : WFP Main Interpreter                                           //
 ////////////////////////////////////////////////////////////////////////////////
-#include "wfp.h"
-#include <iostream>
-#include <exception>
+#ifndef WFP_WFP_HEADER
+#define WFP_WFP_HEADER
+
+    #include "system.h"
 
 
-////////////////////////////////////////////////////////////////////////////////
-//  Standard program entry point                                              //
-//  return : Main program return code                                         //
-////////////////////////////////////////////////////////////////////////////////
-int main(int argc, char* argv[])
-{
-    try
+    ////////////////////////////////////////////////////////////////////////////
+    //  WFP main class definition                                             //
+    ////////////////////////////////////////////////////////////////////////////
+    class Wfp
     {
-        // Start WFP
-        Wfp wfp;
-        if (!wfp.launch())
-        {
-            // WFP error occured
-            std::cerr << "Unknown error occured\n";
-            return 1;
-        }
-    }
-    catch (const std::exception&)
-    {
-        // Standard exception occured
-        std::cerr << "Unknown error occured\n";
-        return 1;
-    }
-    catch (...)
-    {
-        // Unknown exception occured
-        std::cerr << "Unknown error occured\n";
-        return 1;
-    }
+        public:
+            ////////////////////////////////////////////////////////////////////
+            //  Wfp default constructor                                       //
+            ////////////////////////////////////////////////////////////////////
+            Wfp();
 
-    // Program successfully executed
-    return 0;
-}
+            ////////////////////////////////////////////////////////////////////
+            //  Wfp destructor                                                //
+            ////////////////////////////////////////////////////////////////////
+            ~Wfp();
+
+
+            ////////////////////////////////////////////////////////////////////
+            //  Launch WFP                                                    //
+            //  return : True if WFP successfully started, false otherwise    //
+            ////////////////////////////////////////////////////////////////////
+            bool launch();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Run WFP                                                       //
+            ////////////////////////////////////////////////////////////////////
+            void run();
+
+
+        private:
+            ////////////////////////////////////////////////////////////////////
+            //  Wfp private copy constructor : Not copyable                   //
+            ////////////////////////////////////////////////////////////////////
+            Wfp(const Wfp&) = delete;
+
+            ////////////////////////////////////////////////////////////////////
+            //  Wfp private copy operator : Not copyable                      //
+            ////////////////////////////////////////////////////////////////////
+            Wfp& operator=(const Wfp&) = delete;
+
+        private:
+            bool            m_running;          // WFP running state
+    };
+
+
+#endif // WFP_WFP_HEADER

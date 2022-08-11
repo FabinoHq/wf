@@ -37,43 +37,46 @@
 //   For more information, please refer to <https://unlicense.org>            //
 ////////////////////////////////////////////////////////////////////////////////
 //    WFP : WF Parser                                                         //
-//     main.cpp : Main program entry point                                    //
+//     wfp.cpp : WFP Main Interpreter                                         //
 ////////////////////////////////////////////////////////////////////////////////
 #include "wfp.h"
-#include <iostream>
-#include <exception>
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Standard program entry point                                              //
-//  return : Main program return code                                         //
+//  Wfp default constructor                                                   //
 ////////////////////////////////////////////////////////////////////////////////
-int main(int argc, char* argv[])
+Wfp::Wfp() :
+m_running(false)
 {
-    try
-    {
-        // Start WFP
-        Wfp wfp;
-        if (!wfp.launch())
-        {
-            // WFP error occured
-            std::cerr << "Unknown error occured\n";
-            return 1;
-        }
-    }
-    catch (const std::exception&)
-    {
-        // Standard exception occured
-        std::cerr << "Unknown error occured\n";
-        return 1;
-    }
-    catch (...)
-    {
-        // Unknown exception occured
-        std::cerr << "Unknown error occured\n";
-        return 1;
-    }
 
-    // Program successfully executed
-    return 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Wfp destructor                                                            //
+////////////////////////////////////////////////////////////////////////////////
+Wfp::~Wfp()
+{
+
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Launch WFP                                                                //
+//  return : True if WFP successfully started, false otherwise                //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfp::launch()
+{
+    // Run WFP
+    run();
+
+    // WFP successfully terminated
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Run WFP                                                                   //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::run()
+{
+
 }
