@@ -39,6 +39,7 @@
 //    WFP : WF Parser                                                         //
 //     main.cpp : Main program entry point                                    //
 ////////////////////////////////////////////////////////////////////////////////
+#include "system.h"
 #include "wfp.h"
 #include <iostream>
 #include <exception>
@@ -50,29 +51,39 @@
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
-    try
+    if (argc >= 2)
     {
-        // Start WFP
-        Wfp wfp;
-        if (!wfp.launch())
+        try
         {
-            // WFP error occured
+            // Start WFP
+            Wfp wfp;
+            if (!wfp.launch(argv[1]))
+            {
+                // WFP error occured
+                std::cerr << "Unknown error occured\n";
+            }
+        }
+        catch (const std::exception&)
+        {
+            // Standard exception occured
             std::cerr << "Unknown error occured\n";
-            return 1;
+        }
+        catch (...)
+        {
+            // Unknown exception occured
+            std::cerr << "Unknown error occured\n";
         }
     }
-    catch (const std::exception&)
+    else
     {
-        // Standard exception occured
-        std::cerr << "Unknown error occured\n";
-        return 1;
+        // Not enough program arguments
+        std::cerr << "Error : Please specify a .wf input file\n";
     }
-    catch (...)
-    {
-        // Unknown exception occured
-        std::cerr << "Unknown error occured\n";
-        return 1;
-    }
+
+    // Wait for a keyboard input
+    #ifdef WFP_WINDOWS
+        WFKeyboardInput();
+    #endif WFP_WINDOWS
 
     // Program successfully executed
     return 0;

@@ -71,10 +71,17 @@ Wfp::~Wfp()
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Launch WFP                                                                //
+//  param path : Path of the .wf program to run                               //
 //  return : True if WFP successfully started, false otherwise                //
 ////////////////////////////////////////////////////////////////////////////////
-bool Wfp::launch()
+bool Wfp::launch(char* path)
 {
+    // Check path pointer
+    if (!path)
+    {
+        return false;
+    }
+
     // Init program array
     try
     {
@@ -125,8 +132,32 @@ bool Wfp::launch()
     // Reset memory array
     memset(m_memory, 0, sizeof(int32_t)*WFMemorySize);
 
+    // Set pointer and back pointer
+    m_pointer = &m_memory[WFMemoryOffset];
+    m_backpointer = &m_memory[WFMemoryOffset];
+
     // Run WFP
     run();
+
+    // End of program
+    if (WFMemoryDump)
+    {
+        // Output memory dump
+        std::cout << "\n-----------------------------------------\n";
+        std::cout << "Memory : [-20 to +19]" << '\n';
+        for (int32_t i = WFMemoryOffset-20; i < WFMemoryOffset+20; ++i)
+        {
+            if (i == WFMemoryOffset) std::cout << '\n';
+            std::cout << m_memory[i] << ' ';
+        }
+        std::cout << '\n' << "Reg : " << m_register;
+        std::cout << " | Back Reg : " << m_backregister << '\n';
+        std::cout << "Ptr : " << (m_pointer-&m_memory[WFMemoryOffset]);
+        std::cout << " | Back Ptr : " <<
+            (m_backpointer-&m_memory[WFMemoryOffset]) << '\n';
+        std::cout << "Cursor : " << m_cursor << '\n';
+        std::cout << "-----------------------------------------\n";
+    }
 
     // WFP successfully terminated
     return true;
@@ -137,5 +168,13 @@ bool Wfp::launch()
 ////////////////////////////////////////////////////////////////////////////////
 void Wfp::run()
 {
+    // WF Parser
+    for (m_cursor = 0; m_cursor < WFProgramSize; ++m_cursor)
+    {
+        // End of program
+        if (m_program[m_cursor] == 0) break;
 
+        // Skip invalid program characters
+        if ((m_program[m_cursor] < 32) || (m_program[m_cursor] > 126)) continue;
+    }
 }

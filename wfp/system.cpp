@@ -37,80 +37,39 @@
 //   For more information, please refer to <https://unlicense.org>            //
 ////////////////////////////////////////////////////////////////////////////////
 //    WFP : WF Parser                                                         //
-//     wfp.h : WFP Main Interpreter                                           //
+//     system.cpp : WFP System management wrapper                             //
 ////////////////////////////////////////////////////////////////////////////////
-#ifndef WFP_WFP_HEADER
-#define WFP_WFP_HEADER
+#include "system.h"
 
-    #include "system.h"
 
-    #include <cstdint>
-    #include <cstring>
-    #include <exception>
-    #include <iostream>
+#ifdef WFP_WINDOWS
 
+    #include <stdlib.h>
+    #include <conio.h>
 
     ////////////////////////////////////////////////////////////////////////////
-    //  WFP default settings                                                  //
+    //  Windows low level keyboard input                                      //
     ////////////////////////////////////////////////////////////////////////////
-    const bool WFMemoryDump = true;
-    const int32_t WFProgramSize = 16777216;
-    const int32_t WFProgramOverhead = 1024;
-    const int32_t WFMemorySize = 16777216;
-    const int32_t WFMemoryOffset = WFMemorySize/2;
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    //  WFP main class definition                                             //
-    ////////////////////////////////////////////////////////////////////////////
-    class Wfp
+    char WFKeyboardInput()
     {
-        public:
-            ////////////////////////////////////////////////////////////////////
-            //  Wfp default constructor                                       //
-            ////////////////////////////////////////////////////////////////////
-            Wfp();
+        // Wait for a keyboard input
+        while (!_kbhit());
 
-            ////////////////////////////////////////////////////////////////////
-            //  Wfp destructor                                                //
-            ////////////////////////////////////////////////////////////////////
-            ~Wfp();
+        // Return the key code
+        return _getch();
+    }
+
+#endif // WFP_WINDOWS
 
 
-            ////////////////////////////////////////////////////////////////////
-            //  Launch WFP                                                    //
-            //  param path : Path of the .wf program to run                   //
-            //  return : True if WFP successfully started, false otherwise    //
-            ////////////////////////////////////////////////////////////////////
-            bool launch(char* path);
+#ifdef WFP_LINUX
 
-            ////////////////////////////////////////////////////////////////////
-            //  Run WFP                                                       //
-            ////////////////////////////////////////////////////////////////////
-            void run();
+    ////////////////////////////////////////////////////////////////////////////
+    //  Linux low level keyboard input                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    char WFKeyboardInput()
+    {
 
+    }
 
-        private:
-            ////////////////////////////////////////////////////////////////////
-            //  Wfp private copy constructor : Not copyable                   //
-            ////////////////////////////////////////////////////////////////////
-            Wfp(const Wfp&) = delete;
-
-            ////////////////////////////////////////////////////////////////////
-            //  Wfp private copy operator : Not copyable                      //
-            ////////////////////////////////////////////////////////////////////
-            Wfp& operator=(const Wfp&) = delete;
-
-
-        private:
-            char*           m_program;              // Program array
-            int32_t         m_cursor;               // Program cursor
-            int32_t*        m_memory;               // Memory array
-            int32_t*        m_pointer;              // Main pointer
-            int32_t*        m_backpointer;          // Back pointer
-            int32_t         m_register;             // Main register
-            int32_t         m_backregister;         // Back register
-    };
-
-
-#endif // WFP_WFP_HEADER
+#endif // WFP_LINUX
