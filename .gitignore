@@ -10,6 +10,7 @@
 !wfp/
 
 # Projects files
+!Makefile
 !wfp/wfp.sln
 !wfp/wfp.vcxproj
 !wfp/wfp.vcxproj.filters

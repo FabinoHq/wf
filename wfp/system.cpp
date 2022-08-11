@@ -64,12 +64,38 @@
 
 #ifdef WFP_LINUX
 
+    #include <unistd.h>
+    #include <termios.h>
+
     ////////////////////////////////////////////////////////////////////////////
     //  Linux low level keyboard input                                        //
     ////////////////////////////////////////////////////////////////////////////
     char WFKeyboardInput()
     {
+        // Get current termios
+        struct termios cur_termios = {0, 0, 0, 0, 0, {0}, 0, 0};
+        if (tcgetattr(0, &cur_termios) < 0) return 0;
 
+        // Turn off canonical and echo mode
+        cur_termios.c_lflag &= ~ICANON;
+        cur_termios.c_lflag &= ~ECHO;
+        cur_termios.c_cc[VMIN] = 1;
+        cur_termios.c_cc[VTIME] = 0;
+
+        // Set termios
+        if (tcsetattr(0, TCSANOW, &cur_termios) < 0) return 0;
+
+        // Wait for a keyboard input and read the keycode
+        char ch = 0;
+        if (read(0, &ch, 1) < 0) return 0;
+
+        // Restore termios
+        cur_termios.c_lflag |= ICANON;
+        cur_termios.c_lflag |= ECHO;
+        tcsetattr(0, TCSADRAIN, &cur_termios);
+
+        // Return keycode
+        return ch;
     }
 
 #endif // WFP_LINUX

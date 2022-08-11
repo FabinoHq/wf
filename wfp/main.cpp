@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
     // Wait for a keyboard input
     #ifdef WFP_WINDOWS
         WFKeyboardInput();
-    #endif WFP_WINDOWS
+    #endif // WFP_WINDOWS
 
     // Program successfully executed
     return 0;
