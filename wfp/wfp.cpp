@@ -46,7 +46,13 @@
 //  Wfp default constructor                                                   //
 ////////////////////////////////////////////////////////////////////////////////
 Wfp::Wfp() :
-m_running(false)
+m_program(0),
+m_cursor(0),
+m_memory(0),
+m_pointer(0),
+m_backpointer(0),
+m_register(0),
+m_backregister(0)
 {
 
 }
@@ -56,7 +62,10 @@ m_running(false)
 ////////////////////////////////////////////////////////////////////////////////
 Wfp::~Wfp()
 {
-
+    if (m_memory) { delete[] m_memory; }
+    m_memory = 0;
+    if (m_program) { delete[] m_program; }
+    m_program = 0;
 }
 
 
@@ -66,6 +75,56 @@ Wfp::~Wfp()
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfp::launch()
 {
+    // Init program array
+    try
+    {
+        m_program = new char[WFProgramSize+WFProgramOverhead];
+    }
+    catch (std::bad_alloc&)
+    {
+        m_program = 0;
+    }
+    catch (...)
+    {
+        m_program = 0;
+    }
+
+    // Check program array
+    if (!m_program)
+    {
+        // Invalid program array
+        std::cerr << "Error : Unable to initialize program array\n";
+        return false;
+    }
+
+    // Reset program array
+    memset(m_program, 0, sizeof(char)*(WFProgramSize+WFProgramOverhead));
+
+    // Init memory array
+    try
+    {
+        m_memory = new int32_t[WFMemorySize];
+    }
+    catch (std::bad_alloc&)
+    {
+        m_memory = 0;
+    }
+    catch (...)
+    {
+        m_memory = 0;
+    }
+
+    // Check memory array
+    if (!m_memory)
+    {
+        // Invalid memory array
+        std::cerr << "Error : Unable to initialize memory array\n";
+        return false;
+    }
+
+    // Reset memory array
+    memset(m_memory, 0, sizeof(int32_t)*WFMemorySize);
+
     // Run WFP
     run();
 

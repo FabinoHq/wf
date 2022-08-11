@@ -44,6 +44,20 @@
 
     #include "system.h"
 
+    #include <cstdint>
+    #include <cstring>
+    #include <exception>
+    #include <iostream>
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WFP default settings                                                  //
+    ////////////////////////////////////////////////////////////////////////////
+    const int32_t WFProgramSize = 16777216;
+    const int32_t WFProgramOverhead = 1024;
+    const int32_t WFMemorySize = 16777216;
+    const int32_t WFMemoryOffset = WFMemorySize/2;
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WFP main class definition                                             //
@@ -85,8 +99,15 @@
             ////////////////////////////////////////////////////////////////////
             Wfp& operator=(const Wfp&) = delete;
 
+
         private:
-            bool            m_running;          // WFP running state
+            char*           m_program;              // Program array
+            int32_t         m_cursor;               // Program cursor
+            int32_t*        m_memory;               // Memory array
+            int32_t*        m_pointer;              // Main pointer
+            int32_t*        m_backpointer;          // Back pointer
+            int32_t         m_register;             // Main register
+            int32_t         m_backregister;         // Back register
     };
 
 
