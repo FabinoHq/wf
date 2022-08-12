@@ -233,9 +233,14 @@ bool Wfp::preprocess(const std::string& path)
         // Preparse program
         switch (ch)
         {
+            case ';':
+                // Comment
+                if (!preprocessComment(wfprogram)) return false;
+                break;
+
             case '`':
                 // Include
-                if (!preprocessIncludes(wfprogram)) return false;
+                if (!preprocessInclude(wfprogram)) return false;
                 break;
 
             default:
@@ -266,11 +271,43 @@ void Wfp::run()
 
 
 ////////////////////////////////////////////////////////////////////////////////
+//  Preprocess comments                                                       //
+//  param wfprogram : WF program to preprocess comments from                  //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfp::preprocessComment(WfProgramFile& wfprogram)
+{
+    // Preprocess comment
+    int32_t line = wfprogram.line;
+    char ch = 0;
+    while (wfprogram.file)
+    {
+        // End of .wf program
+        if (!wfprogram.file.get(ch)) break;
+
+        // Increment program line counter
+        if ((ch == '\n') || (ch == '\r'))
+        {
+            ++wfprogram.line;
+            if (!wfprogram.file.get(ch)) break;
+        }
+
+        // End of comment
+        if (ch == ';') return true;
+    }
+
+    // Unable to preprocess comment
+    std::cerr << "Error : Missing closing comment character ';'\n" <<
+        "opening comment character ';' in " << wfprogram.path <<
+        " line " << line << '\n';
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 //  Preprocess includes                                                       //
 //  param wfprogram : WF program to preprocess include from                   //
 //  return : True if WF include is successfully preprocessed                  //
 ////////////////////////////////////////////////////////////////////////////////
-bool Wfp::preprocessIncludes(WfProgramFile& wfprogram)
+bool Wfp::preprocessInclude(WfProgramFile& wfprogram)
 {
     // Parse include path
     char ch = 0;

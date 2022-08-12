@@ -125,11 +125,18 @@
 
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess includes                                           //
+            //  Preprocess comment                                            //
+            //  param wfprogram : WF program to preprocess comment from       //
+            //  return : True if WF comment is successfully preprocessed      //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocessComment(WfProgramFile& wfprogram);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Preprocess include                                            //
             //  param wfprogram : WF program to preprocess include from       //
             //  return : True if WF include is successfully preprocessed      //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessIncludes(WfProgramFile& wfprogram);
+            bool preprocessInclude(WfProgramFile& wfprogram);
 
 
         private:
