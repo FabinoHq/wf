@@ -153,7 +153,14 @@
             bool preprocessLabel(WfProgramFile& wfprogram, char type);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess string                                             //
+            //  Preprocess character constant                                 //
+            //  param wfprogram : WF program to preprocess character from     //
+            //  return : True if character is successfully preprocessed       //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocessCharacter(WfProgramFile& wfprogram);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Preprocess string constant                                    //
             //  param wfprogram : WF program to preprocess string from        //
             //  return : True if string is successfully preprocessed          //
             ////////////////////////////////////////////////////////////////////

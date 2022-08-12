@@ -245,8 +245,14 @@ bool Wfp::preprocess(const std::string& path)
                 if (!preprocessLabel(wfprogram, ch)) return false;
                 break;
 
+            case '\'':
+                // Character constant
+                m_program[m_cursor++] = ch;
+                if (!preprocessCharacter(wfprogram)) return false;
+                break;
+
             case '"':
-                // String
+                // String constant
                 m_program[m_cursor++] = ch;
                 if (!preprocessString(wfprogram)) return false;
                 break;
@@ -450,14 +456,61 @@ bool Wfp::preprocessLabel(WfProgramFile& wfprogram, char type)
     }
 
     // Unable to preprocess label
-    std::cerr << "Error : Missing closing label character " << type <<
-        "\nopening label character " << type << " in " << wfprogram.path <<
+    std::cerr << "Error : Missing closing label " << type <<
+        "\nopening label " << type << " in " << wfprogram.path <<
         " line " << line << '\n';
     return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess string                                                         //
+//  Preprocess character constant                                             //
+//  param wfprogram : WF program to preprocess character from                 //
+//  return : True if character is successfully preprocessed                   //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfp::preprocessCharacter(WfProgramFile& wfprogram)
+{
+    // Preprocess character
+    int32_t line = wfprogram.line;
+    char ch = 0;
+    int32_t i = 0;
+    while (wfprogram.file && (i < 2))
+    {
+        // End of .wf program
+        if (!wfprogram.file.get(ch)) break;
+
+        // Preprocess line count
+        if (!preprocessLineCount(wfprogram, ch)) break;
+
+        // Skip invalid program characters
+        if ((ch < 32) || (ch > 126)) continue;
+
+        // Add current character to program
+        m_program[m_cursor++] = ch;
+        ++i;
+
+        // End of string
+        if (ch == '\'')
+        {
+            if (i <= 1)
+            {
+                // Empty character constant
+                std::cerr << "Error : Empty character constant ''" <<
+                    "\nin " << wfprogram.path << " line " << line << '\n';
+                return false;
+            }
+            return true;
+        }
+    }
+
+    // Unable to preprocess string
+    std::cerr << "Error : Missing closing character constant '" <<
+        "\nopening character constant ' in " << wfprogram.path <<
+        " line " << line << '\n';
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Preprocess string constant                                                //
 //  param wfprogram : WF program to preprocess string from                    //
 //  return : True if string is successfully preprocessed                      //
 ////////////////////////////////////////////////////////////////////////////////
@@ -466,6 +519,7 @@ bool Wfp::preprocessString(WfProgramFile& wfprogram)
     // Preprocess string
     int32_t line = wfprogram.line;
     char ch = 0;
+    int32_t i = 0;
     while (wfprogram.file)
     {
         // End of .wf program
@@ -477,13 +531,27 @@ bool Wfp::preprocessString(WfProgramFile& wfprogram)
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
 
+        // Add current character to program
+        m_program[m_cursor++] = ch;
+        ++i;
+
         // End of string
-        if (ch == '\"') return true;
+        if (ch == '\"')
+        {
+            if (i <= 1)
+            {
+                // Empty string constant
+                std::cerr << "Error : Empty string constant \"\"" <<
+                    "\nin " << wfprogram.path << " line " << line << '\n';
+                return false;
+            }
+            return true;
+        }
     }
 
     // Unable to preprocess string
-    std::cerr << "Error : Missing closing string character \"" <<
-        "\nopening string character \" in " << wfprogram.path <<
+    std::cerr << "Error : Missing closing string constant \"" <<
+        "\nopening string constant \" in " << wfprogram.path <<
         " line " << line << '\n';
     return false;
 }
