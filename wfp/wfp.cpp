@@ -406,6 +406,7 @@ bool Wfp::preprocessLabel(WfProgramFile& wfprogram, char type)
     // Preprocess label
     int32_t line = wfprogram.line;
     char ch = 0;
+    int32_t i = 0;
     std::string label = "";
 
     while (wfprogram.file)
@@ -419,13 +420,14 @@ bool Wfp::preprocessLabel(WfProgramFile& wfprogram, char type)
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
 
+        // Add character to program
+        m_program[m_cursor++] = ch;
+        ++i;
+
         if (ch != type)
         {
             // Add character to label
             label.push_back(ch);
-
-            // Add character tro program
-            m_program[m_cursor++] = ch;
         }
         else
         {
@@ -448,6 +450,14 @@ bool Wfp::preprocessLabel(WfProgramFile& wfprogram, char type)
                         " line " << line << '\n';
                     return false;
                 }
+            }
+
+            if (i <= 1)
+            {
+                // Empty character constant
+                std::cerr << "Error : Empty label " << type << type <<
+                    "\nin " << wfprogram.path << " line " << line << '\n';
+                return false;
             }
 
             // Label successfully preprocessed
@@ -473,6 +483,7 @@ bool Wfp::preprocessCharacter(WfProgramFile& wfprogram)
     int32_t line = wfprogram.line;
     char ch = 0;
     int32_t i = 0;
+
     while (wfprogram.file && (i < 2))
     {
         // End of .wf program
@@ -488,7 +499,7 @@ bool Wfp::preprocessCharacter(WfProgramFile& wfprogram)
         m_program[m_cursor++] = ch;
         ++i;
 
-        // End of string
+        // End of character constant
         if (ch == '\'')
         {
             if (i <= 1)
@@ -498,11 +509,13 @@ bool Wfp::preprocessCharacter(WfProgramFile& wfprogram)
                     "\nin " << wfprogram.path << " line " << line << '\n';
                 return false;
             }
+
+            // Character constant successfully preprocessed
             return true;
         }
     }
 
-    // Unable to preprocess string
+    // Unable to preprocess character constant
     std::cerr << "Error : Missing closing character constant '" <<
         "\nopening character constant ' in " << wfprogram.path <<
         " line " << line << '\n';
@@ -520,6 +533,7 @@ bool Wfp::preprocessString(WfProgramFile& wfprogram)
     int32_t line = wfprogram.line;
     char ch = 0;
     int32_t i = 0;
+
     while (wfprogram.file)
     {
         // End of .wf program
@@ -535,7 +549,7 @@ bool Wfp::preprocessString(WfProgramFile& wfprogram)
         m_program[m_cursor++] = ch;
         ++i;
 
-        // End of string
+        // End of string constant
         if (ch == '\"')
         {
             if (i <= 1)
@@ -549,7 +563,7 @@ bool Wfp::preprocessString(WfProgramFile& wfprogram)
         }
     }
 
-    // Unable to preprocess string
+    // Unable to preprocess string constant
     std::cerr << "Error : Missing closing string constant \"" <<
         "\nopening string constant \" in " << wfprogram.path <<
         " line " << line << '\n';
