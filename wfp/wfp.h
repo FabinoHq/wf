@@ -44,10 +44,14 @@
 
     #include "system.h"
 
+    #include <cctype>
     #include <cstdint>
     #include <cstring>
+    #include <unordered_map>
     #include <exception>
     #include <iostream>
+    #include <fstream>
+    #include <string>
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -82,7 +86,14 @@
             //  param path : Path of the .wf program to run                   //
             //  return : True if WFP successfully started, false otherwise    //
             ////////////////////////////////////////////////////////////////////
-            bool launch(char* path);
+            bool launch(const std::string& path);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Preprocess WF program                                         //
+            //  param path : Path of the .wf program to preprocess            //
+            //  return : True if the .wf program is successfully preprocessed //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocess(const std::string& path);
 
             ////////////////////////////////////////////////////////////////////
             //  Run WFP                                                       //
@@ -102,6 +113,12 @@
             Wfp& operator=(const Wfp&) = delete;
 
 
+            ////////////////////////////////////////////////////////////////////
+            //  Preprocess includes                                           //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocessIncludes(std::ifstream& wfprogram);
+
+
         private:
             char*           m_program;              // Program array
             int32_t         m_cursor;               // Program cursor
@@ -110,6 +127,9 @@
             int32_t*        m_backpointer;          // Back pointer
             int32_t         m_register;             // Main register
             int32_t         m_backregister;         // Back register
+
+            std::unordered_map<std::string, bool>       m_includes; // Includes
+            std::unordered_map<std::string, int32_t>    m_labels;   // Labels
     };
 
 

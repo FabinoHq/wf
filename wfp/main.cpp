@@ -57,11 +57,7 @@ int main(int argc, char* argv[])
         {
             // Start WFP
             Wfp wfp;
-            if (!wfp.launch(argv[1]))
-            {
-                // WFP error occured
-                std::cerr << "Unknown error occured\n";
-            }
+            wfp.launch(argv[1]);
         }
         catch (const std::exception&)
         {

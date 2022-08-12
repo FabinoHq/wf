@@ -74,13 +74,11 @@ Wfp::~Wfp()
 //  param path : Path of the .wf program to run                               //
 //  return : True if WFP successfully started, false otherwise                //
 ////////////////////////////////////////////////////////////////////////////////
-bool Wfp::launch(char* path)
+bool Wfp::launch(const std::string& path)
 {
-    // Check path pointer
-    if (!path)
-    {
-        return false;
-    }
+    // Reset program array
+    if (m_program) { delete[] m_program; }
+    m_program = 0;
 
     // Init program array
     try
@@ -107,6 +105,10 @@ bool Wfp::launch(char* path)
     // Reset program array
     memset(m_program, 0, sizeof(char)*(WFProgramSize+WFProgramOverhead));
 
+    // Reset memory array
+    if (m_memory) { delete[] m_memory; }
+    m_memory = 0;
+
     // Init memory array
     try
     {
@@ -132,9 +134,20 @@ bool Wfp::launch(char* path)
     // Reset memory array
     memset(m_memory, 0, sizeof(int32_t)*WFMemorySize);
 
-    // Set pointer and back pointer
+    // Preprocess .wf program
+    m_cursor = 0;
+    if (!preprocess(path))
+    {
+        // Unable to read .wf program
+        return false;
+    }
+
+    // Reset WFP states
+    m_cursor = 0;
     m_pointer = &m_memory[WFMemoryOffset];
     m_backpointer = &m_memory[WFMemoryOffset];
+    m_register = 0;
+    m_backregister = 0;
 
     // Run WFP
     run();
@@ -143,7 +156,7 @@ bool Wfp::launch(char* path)
     if (WFMemoryDump)
     {
         // Output memory dump
-        std::cout << "\n-----------------------------------------\n";
+        std::cout << "\n----------------------------------------\n";
         std::cout << "Memory : [-20 to +19]" << '\n';
         for (int32_t i = WFMemoryOffset-20; i < WFMemoryOffset+20; ++i)
         {
@@ -156,11 +169,59 @@ bool Wfp::launch(char* path)
         std::cout << " | Back Ptr : " <<
             (m_backpointer-&m_memory[WFMemoryOffset]) << '\n';
         std::cout << "Cursor : " << m_cursor << '\n';
-        std::cout << "-----------------------------------------\n";
+        std::cout << "----------------------------------------\n";
     }
 
     // WFP successfully terminated
     return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Preprocess WF program                                                     //
+//  param path : Path of the .wf program to preprocess                        //
+//  return : True if the .wf program is successfully preprocessed             //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfp::preprocess(const std::string& path)
+{
+    // Open .wf program
+    std::ifstream wfprogram;
+    wfprogram.open(path, std::ios::in | std::ios::binary);
+    if (!wfprogram.is_open())
+    {
+        // Unable to read .wf program
+        std::cerr << "Error : Unable to read .wf program : " << path << '\n';
+        return false;
+    }
+
+    // Preprocess .wf program
+    char ch = 0;
+    while (wfprogram)
+    {
+        // End of .wf program
+        if (!wfprogram.get(ch)) break;
+
+        // Skip invalid program characters
+        if ((ch < 32) || (ch > 126)) continue;
+
+        // Preparse program
+        switch (ch)
+        {
+            case '`':
+                // Include
+                if (!preprocessIncludes(wfprogram)) return false;
+                break;
+
+            default:
+                // Program instruction
+                if (!std::isspace(ch) && !std::isalnum(ch))
+                {
+                    m_program[m_cursor++] = ch;
+                }
+                break;
+        }
+    }
+
+    wfprogram.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -173,8 +234,24 @@ void Wfp::run()
     {
         // End of program
         if (m_program[m_cursor] == 0) break;
-
-        // Skip invalid program characters
-        if ((m_program[m_cursor] < 32) || (m_program[m_cursor] > 126)) continue;
     }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Preprocess includes                                                       //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfp::preprocessIncludes(std::ifstream& wfprogram)
+{
+    // Parse include path
+    char ch = 0;
+    std::string includepath = "";
+    while (wfprogram.get(ch))
+    {
+        if (ch == '`') break;
+        includepath.push_back(ch);
+    }
+
+    // Preprocess included file
+    return preprocess(includepath);
 }
