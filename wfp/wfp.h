@@ -125,6 +125,13 @@
 
 
             ////////////////////////////////////////////////////////////////////
+            //  Preprocess line count                                         //
+            //  param wfprogram : WF program to preprocess line count from    //
+            //  return : True if WF line count is successfully preprocessed   //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocessLineCount(WfProgramFile& wfprogram, char& ch);
+
+            ////////////////////////////////////////////////////////////////////
             //  Preprocess comment                                            //
             //  param wfprogram : WF program to preprocess comment from       //
             //  return : True if WF comment is successfully preprocessed      //

@@ -220,12 +220,8 @@ bool Wfp::preprocess(const std::string& path)
         // End of .wf program
         if (!wfprogram.file.get(ch)) break;
 
-        // Increment program line counter
-        if ((ch == '\n') || (ch == '\r'))
-        {
-            ++wfprogram.line;
-            if (!wfprogram.file.get(ch)) break;
-        }
+        // Preprocess line count
+        if (!preprocessLineCount(wfprogram, ch)) break;
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
@@ -271,6 +267,38 @@ void Wfp::run()
 
 
 ////////////////////////////////////////////////////////////////////////////////
+//  Preprocess line count                                                     //
+//  param wfprogram : WF program to preprocess line count from                //
+//  return : True if WF line count is successfully preprocessed               //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfp::preprocessLineCount(WfProgramFile& wfprogram, char& ch)
+{
+    // Increment program line counter
+    switch (ch)
+    {
+        case '\r':
+            // Carriage return
+            ++wfprogram.line;
+            if (!wfprogram.file.get(ch)) return false;
+            if (ch == '\r') ++wfprogram.line;
+            break;
+
+        case '\n':
+            // Line feed
+            ++wfprogram.line;
+            if (!wfprogram.file.get(ch)) return false;
+            if (ch == '\n') ++wfprogram.line;
+            break;
+
+        default:
+            break;
+    }
+
+    // Line count successfully preprocessed
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 //  Preprocess comments                                                       //
 //  param wfprogram : WF program to preprocess comments from                  //
 ////////////////////////////////////////////////////////////////////////////////
@@ -284,12 +312,8 @@ bool Wfp::preprocessComment(WfProgramFile& wfprogram)
         // End of .wf program
         if (!wfprogram.file.get(ch)) break;
 
-        // Increment program line counter
-        if ((ch == '\n') || (ch == '\r'))
-        {
-            ++wfprogram.line;
-            if (!wfprogram.file.get(ch)) break;
-        }
+        // Preprocess line count
+        if (!preprocessLineCount(wfprogram, ch)) break;
 
         // End of comment
         if (ch == ';') return true;
