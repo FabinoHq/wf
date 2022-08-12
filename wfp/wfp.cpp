@@ -241,7 +241,14 @@ bool Wfp::preprocess(const std::string& path)
 
             case ':': case '@': case '=': case '!': case '>': case '<':
                 // Label
+                m_program[m_cursor++] = ch;
                 if (!preprocessLabel(wfprogram, ch)) return false;
+                break;
+
+            case '"':
+                // String
+                m_program[m_cursor++] = ch;
+                if (!preprocessString(wfprogram)) return false;
                 break;
 
             default:
@@ -306,6 +313,7 @@ bool Wfp::preprocessLineCount(WfProgramFile& wfprogram, char& ch)
 ////////////////////////////////////////////////////////////////////////////////
 //  Preprocess comments                                                       //
 //  param wfprogram : WF program to preprocess comments from                  //
+//  return : True if comment is successfully preprocessed                     //
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfp::preprocessComment(WfProgramFile& wfprogram)
 {
@@ -328,8 +336,8 @@ bool Wfp::preprocessComment(WfProgramFile& wfprogram)
     }
 
     // Unable to preprocess comment
-    std::cerr << "Error : Missing closing comment character ';'" <<
-        "\nopening comment character ';' in " << wfprogram.path <<
+    std::cerr << "Error : Missing closing comment character ;" <<
+        "\nopening comment character ; in " << wfprogram.path <<
         " line " << line << '\n';
     return false;
 }
@@ -337,7 +345,7 @@ bool Wfp::preprocessComment(WfProgramFile& wfprogram)
 ////////////////////////////////////////////////////////////////////////////////
 //  Preprocess includes                                                       //
 //  param wfprogram : WF program to preprocess include from                   //
-//  return : True if WF include is successfully preprocessed                  //
+//  return : True if include is successfully preprocessed                     //
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfp::preprocessInclude(WfProgramFile& wfprogram)
 {
@@ -385,7 +393,7 @@ bool Wfp::preprocessInclude(WfProgramFile& wfprogram)
 ////////////////////////////////////////////////////////////////////////////////
 //  Preprocess label                                                          //
 //  param wfprogram : WF program to preprocess label from                     //
-//  return : True if WF label is successfully preprocessed                    //
+//  return : True if label is successfully preprocessed                       //
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfp::preprocessLabel(WfProgramFile& wfprogram, char type)
 {
@@ -409,6 +417,9 @@ bool Wfp::preprocessLabel(WfProgramFile& wfprogram, char type)
         {
             // Add character to label
             label.push_back(ch);
+
+            // Add character tro program
+            m_program[m_cursor++] = ch;
         }
         else
         {
@@ -439,8 +450,40 @@ bool Wfp::preprocessLabel(WfProgramFile& wfprogram, char type)
     }
 
     // Unable to preprocess label
-    std::cerr << "Error : Missing closing label character '" << type <<
-        "'\nopening label character '" << type << "' in " << wfprogram.path <<
+    std::cerr << "Error : Missing closing label character " << type <<
+        "\nopening label character " << type << " in " << wfprogram.path <<
+        " line " << line << '\n';
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Preprocess string                                                         //
+//  param wfprogram : WF program to preprocess string from                    //
+//  return : True if string is successfully preprocessed                      //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfp::preprocessString(WfProgramFile& wfprogram)
+{
+    // Preprocess string
+    int32_t line = wfprogram.line;
+    char ch = 0;
+    while (wfprogram.file)
+    {
+        // End of .wf program
+        if (!wfprogram.file.get(ch)) break;
+
+        // Preprocess line count
+        if (!preprocessLineCount(wfprogram, ch)) break;
+
+        // Skip invalid program characters
+        if ((ch < 32) || (ch > 126)) continue;
+
+        // End of string
+        if (ch == '\"') return true;
+    }
+
+    // Unable to preprocess string
+    std::cerr << "Error : Missing closing string character \"" <<
+        "\nopening string character \" in " << wfprogram.path <<
         " line " << line << '\n';
     return false;
 }

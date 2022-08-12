@@ -127,30 +127,37 @@
             ////////////////////////////////////////////////////////////////////
             //  Preprocess line count                                         //
             //  param wfprogram : WF program to preprocess line count from    //
-            //  return : True if WF line count is successfully preprocessed   //
+            //  return : True if line count is successfully preprocessed      //
             ////////////////////////////////////////////////////////////////////
             bool preprocessLineCount(WfProgramFile& wfprogram, char& ch);
 
             ////////////////////////////////////////////////////////////////////
             //  Preprocess comment                                            //
             //  param wfprogram : WF program to preprocess comment from       //
-            //  return : True if WF comment is successfully preprocessed      //
+            //  return : True if comment is successfully preprocessed         //
             ////////////////////////////////////////////////////////////////////
             bool preprocessComment(WfProgramFile& wfprogram);
 
             ////////////////////////////////////////////////////////////////////
             //  Preprocess include                                            //
             //  param wfprogram : WF program to preprocess include from       //
-            //  return : True if WF include is successfully preprocessed      //
+            //  return : True if include is successfully preprocessed         //
             ////////////////////////////////////////////////////////////////////
             bool preprocessInclude(WfProgramFile& wfprogram);
 
             ////////////////////////////////////////////////////////////////////
             //  Preprocess label                                              //
             //  param wfprogram : WF program to preprocess label from         //
-            //  return : True if WF label is successfully preprocessed        //
+            //  return : True if label is successfully preprocessed           //
             ////////////////////////////////////////////////////////////////////
             bool preprocessLabel(WfProgramFile& wfprogram, char type);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Preprocess string                                             //
+            //  param wfprogram : WF program to preprocess string from        //
+            //  return : True if string is successfully preprocessed          //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocessString(WfProgramFile& wfprogram);
 
 
         private:
