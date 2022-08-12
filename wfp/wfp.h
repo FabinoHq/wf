@@ -47,11 +47,12 @@
     #include <cctype>
     #include <cstdint>
     #include <cstring>
-    #include <unordered_map>
     #include <exception>
     #include <iostream>
     #include <fstream>
     #include <string>
+    #include <algorithm>
+    #include <unordered_map>
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -132,13 +133,6 @@
             bool preprocessLineCount(WfProgramFile& wfprogram, char& ch);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess comment                                            //
-            //  param wfprogram : WF program to preprocess comment from       //
-            //  return : True if comment is successfully preprocessed         //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocessComment(WfProgramFile& wfprogram);
-
-            ////////////////////////////////////////////////////////////////////
             //  Preprocess include                                            //
             //  param wfprogram : WF program to preprocess include from       //
             //  return : True if include is successfully preprocessed         //
@@ -146,11 +140,18 @@
             bool preprocessInclude(WfProgramFile& wfprogram);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess label                                              //
-            //  param wfprogram : WF program to preprocess label from         //
-            //  return : True if label is successfully preprocessed           //
+            //  Preprocess comment                                            //
+            //  param wfprogram : WF program to preprocess comment from       //
+            //  return : True if comment is successfully preprocessed         //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessLabel(WfProgramFile& wfprogram, char type);
+            bool preprocessComment(WfProgramFile& wfprogram);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Preprocess number constant                                    //
+            //  param wfprogram : WF program to preprocess number from        //
+            //  return : True if number is successfully preprocessed          //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocessNumber(WfProgramFile& wfprogram, char digit);
 
             ////////////////////////////////////////////////////////////////////
             //  Preprocess character constant                                 //
@@ -165,6 +166,13 @@
             //  return : True if string is successfully preprocessed          //
             ////////////////////////////////////////////////////////////////////
             bool preprocessString(WfProgramFile& wfprogram);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Preprocess label                                              //
+            //  param wfprogram : WF program to preprocess label from         //
+            //  return : True if label is successfully preprocessed           //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocessLabel(WfProgramFile& wfprogram, char type);
 
 
         private:
