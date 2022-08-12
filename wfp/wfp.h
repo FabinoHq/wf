@@ -145,6 +145,13 @@
             ////////////////////////////////////////////////////////////////////
             bool preprocessInclude(WfProgramFile& wfprogram);
 
+            ////////////////////////////////////////////////////////////////////
+            //  Preprocess label                                              //
+            //  param wfprogram : WF program to preprocess label from         //
+            //  return : True if WF label is successfully preprocessed        //
+            ////////////////////////////////////////////////////////////////////
+            bool preprocessLabel(WfProgramFile& wfprogram, char type);
+
 
         private:
             char*           m_program;              // Program array
