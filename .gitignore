@@ -25,3 +25,15 @@
 !wfp/system.cpp
 !wfp/wfp.h
 !wfp/wfp.cpp
+
+
+# WFC
+!wfc/
+
+# ASM
+!wfc/asmwindows/
+!wfc/asmwindows/compile.bat
+!wfc/asmwindows/main.asm
+!wfc/asmlinux/
+!wfc/asmlinux/compile.sh
+!wfc/asmlinux/main.asm
