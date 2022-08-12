@@ -183,22 +183,49 @@ bool Wfp::launch(const std::string& path)
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfp::preprocess(const std::string& path)
 {
+    // Init .wf program
+    WfProgramFile wfprogram;
+    wfprogram.line = 1;
+    wfprogram.path = "";
+
+    // Extract .wf program file name
+    size_t i = 0;
+    for (i = path.length()-1; i > 0; --i)
+    {
+        if ((path[i] == '/') || (path[i] == '\\'))
+        {
+            ++i;
+            break;
+        }
+    }
+    wfprogram.path = path.substr(i, path.length()-i);
+
+    // Add .wf program to included file
+    m_includes[wfprogram.path] = true;
+
     // Open .wf program
-    std::ifstream wfprogram;
-    wfprogram.open(path, std::ios::in | std::ios::binary);
-    if (!wfprogram.is_open())
+    wfprogram.file.open(path, std::ios::in | std::ios::binary);
+    if (!wfprogram.file.is_open())
     {
         // Unable to read .wf program
-        std::cerr << "Error : Unable to read .wf program : " << path << '\n';
+        std::cerr << "Error : Unable to read .wf program : " <<
+            wfprogram.path << '\n';
         return false;
     }
 
     // Preprocess .wf program
     char ch = 0;
-    while (wfprogram)
+    while (wfprogram.file)
     {
         // End of .wf program
-        if (!wfprogram.get(ch)) break;
+        if (!wfprogram.file.get(ch)) break;
+
+        // Increment program line counter
+        if ((ch == '\n') || (ch == '\r'))
+        {
+            ++wfprogram.line;
+            if (!wfprogram.file.get(ch)) break;
+        }
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
@@ -221,7 +248,7 @@ bool Wfp::preprocess(const std::string& path)
         }
     }
 
-    wfprogram.close();
+    wfprogram.file.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -240,18 +267,47 @@ void Wfp::run()
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Preprocess includes                                                       //
+//  param wfprogram : WF program to preprocess include from                   //
+//  return : True if WF include is successfully preprocessed                  //
 ////////////////////////////////////////////////////////////////////////////////
-bool Wfp::preprocessIncludes(std::ifstream& wfprogram)
+bool Wfp::preprocessIncludes(WfProgramFile& wfprogram)
 {
     // Parse include path
     char ch = 0;
     std::string includepath = "";
-    while (wfprogram.get(ch))
+    while (wfprogram.file.get(ch))
     {
         if (ch == '`') break;
         includepath.push_back(ch);
     }
 
-    // Preprocess included file
-    return preprocess(includepath);
+    // Extract .wf program file name
+    size_t i = 0;
+    for (i = includepath.length()-1; i > 0; --i)
+    {
+        if ((includepath[i] == '/') || (includepath[i] == '\\'))
+        {
+            ++i;
+            break;
+        }
+    }
+    std::string path = includepath.substr(i, includepath.length()-i);
+
+    // Check if .wf program is already included
+    std::unordered_map<std::string, bool>::const_iterator found =
+        m_includes.find(path);
+    if (found == m_includes.end())
+    {
+        // Preprocess included file
+        if (!preprocess(includepath))
+        {
+            std::cerr << "Error : Unable to preprocess included file : `" <<
+                includepath << "`\nincluded in " << wfprogram.path <<
+                " line " << wfprogram.line << '\n';
+            return false;
+        }
+    }
+
+    // Included file successfully preprocessed
+    return true;
 }

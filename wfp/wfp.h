@@ -65,6 +65,17 @@
 
 
     ////////////////////////////////////////////////////////////////////////////
+    //  WFP program file structure                                            //
+    ////////////////////////////////////////////////////////////////////////////
+    struct WfProgramFile
+    {
+        std::ifstream file;
+        std::string path;
+        int32_t line;
+    };
+
+
+    ////////////////////////////////////////////////////////////////////////////
     //  WFP main class definition                                             //
     ////////////////////////////////////////////////////////////////////////////
     class Wfp
@@ -115,8 +126,10 @@
 
             ////////////////////////////////////////////////////////////////////
             //  Preprocess includes                                           //
+            //  param wfprogram : WF program to preprocess include from       //
+            //  return : True if WF include is successfully preprocessed      //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessIncludes(std::ifstream& wfprogram);
+            bool preprocessIncludes(WfProgramFile& wfprogram);
 
 
         private:
