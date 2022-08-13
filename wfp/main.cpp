@@ -41,6 +41,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "system.h"
 #include "wfp.h"
+#include <filesystem>
 #include <iostream>
 #include <exception>
 
@@ -51,6 +52,34 @@
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
+    try
+    {
+        // Set working directory
+        std::string directory = argv[1];
+        size_t i = 0;
+        for (i = directory.length()-1; i > 0; --i)
+        {
+            if ((directory[i] == '/') || (directory[i] == '\\'))
+            {
+                ++i;
+                break;
+            }
+        }
+        directory = directory.substr(0, i);
+        if (!directory.empty())
+        {
+            std::filesystem::current_path(directory);
+        }
+    }
+    catch (std::filesystem::filesystem_error&)
+    {
+        // Unable to set working directory
+    }
+    catch (...)
+    {
+        // Unable to set working directory
+    }
+
     if (argc >= 2)
     {
         try
