@@ -453,12 +453,12 @@ void Wfp::parseInstruction()
 
         case ')':
             // Set I/O cursor position
-            WFSetTerminalCursor(m_register, m_backregister);
+            setIOCursorPosition();
             break;
 
         case '(':
             // Load I/O cursor position
-            WFGetTerminalCursor(m_register, m_backregister);
+            getIOCursorPosition();
             break;
 
         case '?':
@@ -549,6 +549,108 @@ void Wfp::writeOutput()
         default:
             // Standard output
             std::cout << ch;
+            break;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Set I/O cursor position                                                   //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::setIOCursorPosition()
+{
+    // Set I/O cursor position
+    switch (m_iomode)
+    {
+        case WF_IOMODE_FILE_INPUT:
+            // File input
+            if (m_iofile == WF_IOFILE_IO)
+            {
+                if (m_inputFile.is_open())
+                {
+                    m_inputFile.seekg(m_register);
+                }
+            }
+            else
+            {
+                if (m_rwFile.is_open())
+                {
+                    m_rwFile.seekp(m_register);
+                }
+            }
+            break;
+
+        case WF_IOMODE_FILE_OUTPUT:
+            // File output
+            if (m_iofile == WF_IOFILE_IO)
+            {
+                if (m_outputFile.is_open())
+                {
+                    m_outputFile.seekp(m_register);
+                }
+            }
+            else
+            {
+                if (m_rwFile.is_open())
+                {
+                    m_rwFile.seekp(m_register);
+                }
+            }
+            break;
+
+        default:
+            // Standard I/O
+            WFSetTerminalCursor(m_register, m_backregister);
+            break;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Get I/O cursor position                                                   //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::getIOCursorPosition()
+{
+    // Get I/O cursor position
+    switch (m_iomode)
+    {
+        case WF_IOMODE_FILE_INPUT:
+            // File input
+            if (m_iofile == WF_IOFILE_IO)
+            {
+                if (m_inputFile.is_open())
+                {
+                    m_register = static_cast<int32_t>(m_inputFile.tellg());
+                }
+            }
+            else
+            {
+                if (m_rwFile.is_open())
+                {
+                    m_register = static_cast<int32_t>(m_rwFile.tellp());
+                }
+            }
+            break;
+
+        case WF_IOMODE_FILE_OUTPUT:
+            // File output
+            if (m_iofile == WF_IOFILE_IO)
+            {
+                if (m_outputFile.is_open())
+                {
+                    m_register = static_cast<int32_t>(m_outputFile.tellp());
+                }
+            }
+            else
+            {
+                if (m_rwFile.is_open())
+                {
+                    m_register = static_cast<int32_t>(m_rwFile.tellp());
+                }
+            }
+            break;
+
+        default:
+            // Standard I/O
+            WFGetTerminalCursor(m_register, m_backregister);
             break;
     }
 }
