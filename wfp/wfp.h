@@ -57,6 +57,26 @@
 
 
     ////////////////////////////////////////////////////////////////////////////
+    //  WF I/O mode enumeration                                               //
+    ////////////////////////////////////////////////////////////////////////////
+    enum WFIOMode
+    {
+        WF_IOMODE_STANDARD = 0x00,
+        WF_IOMODE_FILE_INPUT = 0x01,
+        WF_IOMODE_FILE_OUTPUT = 0x02
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF I/O file state enumeration                                         //
+    ////////////////////////////////////////////////////////////////////////////
+    enum WFIOFile
+    {
+        WF_IOFILE_IO = 0x00,
+        WF_IOFILE_RW = 0x01
+    };
+
+
+    ////////////////////////////////////////////////////////////////////////////
     //  WFP main class definition                                             //
     ////////////////////////////////////////////////////////////////////////////
     class Wfp
@@ -124,6 +144,21 @@
             void parseInstruction();
 
             ////////////////////////////////////////////////////////////////////
+            //  Set I/O mode                                                  //
+            ////////////////////////////////////////////////////////////////////
+            void setIOMode();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Read input byte                                               //
+            ////////////////////////////////////////////////////////////////////
+            void readInput();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write output byte                                             //
+            ////////////////////////////////////////////////////////////////////
+            void writeOutput();
+
+            ////////////////////////////////////////////////////////////////////
             //  Check pointer address                                         //
             ////////////////////////////////////////////////////////////////////
             void checkPointerAddress();
@@ -138,6 +173,13 @@
             int32_t         m_backpointer;          // Back pointer
             int32_t         m_register;             // Main register
             int32_t         m_backregister;         // Back register
+
+            std::ifstream   m_inputFile;            // Input file
+            std::ofstream   m_outputFile;           // Output file
+            std::fstream    m_rwFile;               // R/W file
+
+            WFIOMode        m_iomode;               // I/O mode
+            WFIOFile        m_iofile;               // I/O file state
 
             std::unordered_map<std::string, bool>       m_includes; // Includes
             std::unordered_map<std::string, int32_t>    m_labels;   // Labels

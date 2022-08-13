@@ -53,6 +53,11 @@ m_pointer(0),
 m_backpointer(0),
 m_register(0),
 m_backregister(0),
+m_inputFile(),
+m_outputFile(),
+m_rwFile(),
+m_iomode(WF_IOMODE_STANDARD),
+m_iofile(WF_IOFILE_IO),
 m_includes(),
 m_labels(),
 m_wflexer(m_includes, m_labels)
@@ -151,6 +156,9 @@ bool Wfp::launch(const std::string& path)
     m_backpointer = 0;
     m_register = 0;
     m_backregister = 0;
+    if (m_inputFile.is_open()) m_inputFile.close();
+    if (m_outputFile.is_open()) m_outputFile.close();
+    if (m_rwFile.is_open()) m_rwFile.close();
 
     // Run WFP
     run();
@@ -281,6 +289,8 @@ void Wfp::parseString()
         checkPointerAddress();
         m_memory[(m_pointer++)+WFMemoryOffset] = m_program[m_cursor++];
     }
+    checkPointerAddress();
+    m_memory[(m_pointer++)+WFMemoryOffset] = 0;
     m_pointer = pointer;
 }
 
@@ -432,12 +442,12 @@ void Wfp::parseInstruction()
 
         case ',':
             // Read input byte
-            m_register = WFKeyboardInput();
+            readInput();
             break;
 
         case '.':
             // Write output byte
-            std::cout << static_cast<char>(m_register);
+            writeOutput();
             break;
 
         case ')':
@@ -450,12 +460,196 @@ void Wfp::parseInstruction()
 
         case '?':
             // Set I/O mode
+            setIOMode();
             break;
 
         default:
             // Invalid instruction
             break;
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Read input byte                                                           //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::readInput()
+{
+    char ch = 0;
+    switch (m_iomode)
+    {
+        case WF_IOMODE_FILE_INPUT:
+            // File input
+            m_register = -1;
+            if (m_iofile == WF_IOFILE_IO)
+            {
+                if (m_inputFile.is_open())
+                {
+                    if (m_inputFile.read(&ch, 1))
+                    {
+                        m_register = ch;
+                    }
+                }
+            }
+            else
+            {
+                if (m_rwFile.is_open())
+                {
+                    if (m_rwFile.read(&ch, 1))
+                    {
+                        m_register = ch;
+                    }
+                }
+            }
+            break;
+
+        case WF_IOMODE_FILE_OUTPUT:
+            // File output
+            break;
+
+        default:
+            // Standard input
+            m_register = WFKeyboardInput();
+            break;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write output byte                                                         //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::writeOutput()
+{
+    char ch = static_cast<char>(m_register);
+    switch (m_iomode)
+    {
+        case WF_IOMODE_FILE_INPUT:
+            // File input
+            break;
+
+        case WF_IOMODE_FILE_OUTPUT:
+            // File output
+            if (m_iofile == WF_IOFILE_IO)
+            {
+                if (m_outputFile.is_open())
+                {
+                    m_outputFile.write(&ch, 1);
+                }
+            }
+            else
+            {
+                if (m_rwFile.is_open())
+                {
+                    m_rwFile.write(&ch, 1);
+                }
+            }
+            break;
+
+        default:
+            // Standard output
+            std::cout << ch;
+            break;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Set I/O mode                                                              //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::setIOMode()
+{
+    // Set I/O mode
+    int32_t pointer = m_pointer;
+    std::string path = "";
+    switch (m_register)
+    {
+        case 'r':
+            // Open input file mode
+            m_register = 0;
+            m_iomode = WF_IOMODE_FILE_INPUT;
+            m_iofile = WF_IOFILE_IO;
+
+            // Close previous input files
+            if (m_inputFile.is_open()) m_inputFile.close();
+            if (m_rwFile.is_open()) m_rwFile.close();
+
+            // Read file path
+            checkPointerAddress();
+            while ((m_memory[m_pointer+WFMemoryOffset]))
+            {
+                path.push_back(m_memory[(m_pointer++)+WFMemoryOffset]);
+                checkPointerAddress();
+            }
+
+            // Open input file
+            m_inputFile.open(path, std::ios::in | std::ios::binary);
+            if (m_inputFile.is_open()) m_register = 1;
+            break;
+
+        case 'w':
+            // Open output file mode
+            m_register = 0;
+            m_iomode = WF_IOMODE_FILE_OUTPUT;
+            m_iofile = WF_IOFILE_IO;
+
+            // Close previous output files
+            if (m_outputFile.is_open()) m_outputFile.close();
+            if (m_rwFile.is_open()) m_rwFile.close();
+
+            // Read file path
+            checkPointerAddress();
+            while ((m_memory[m_pointer+WFMemoryOffset]))
+            {
+                path.push_back(m_memory[(m_pointer++)+WFMemoryOffset]);
+                checkPointerAddress();
+            }
+
+            // Open output file
+            m_outputFile.open(
+                path, std::ios::in | std::ios::trunc | std::ios::binary
+            );
+            if (m_outputFile.is_open()) m_register = 1;
+            break;
+
+        case 'b':
+            // Open R/W file mode
+            m_register = 0;
+            m_iomode = WF_IOMODE_FILE_INPUT;
+            m_iofile = WF_IOFILE_RW;
+
+            // Close previous files
+            if (m_inputFile.is_open()) m_inputFile.close();
+            if (m_outputFile.is_open()) m_outputFile.close();
+            if (m_rwFile.is_open()) m_rwFile.close();
+
+            // Read file path
+            checkPointerAddress();
+            while ((m_memory[m_pointer+WFMemoryOffset]))
+            {
+                path.push_back(m_memory[(m_pointer++)+WFMemoryOffset]);
+                checkPointerAddress();
+            }
+
+            // Open R/W file
+            m_rwFile.open(
+                path, std::ios::in | std::ios::out | std::ios::binary
+            );
+            if (m_rwFile.is_open()) m_register = 1;
+            break;
+
+        case 'i':
+            // Read input file mode
+            m_iomode = WF_IOMODE_FILE_INPUT;
+            break;
+
+        case 'o':
+            // Write output file mode
+            m_iomode = WF_IOMODE_FILE_OUTPUT;
+            break;
+
+        default:
+            // Standard I/O
+            m_iomode = WF_IOMODE_STANDARD;
+            break;
+    }
+    m_pointer = pointer;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
