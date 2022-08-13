@@ -147,8 +147,8 @@ bool Wfp::launch(const std::string& path)
 
     // Reset WFP states
     m_cursor = 0;
-    m_pointer = &m_memory[WFMemoryOffset];
-    m_backpointer = &m_memory[WFMemoryOffset];
+    m_pointer = 0;
+    m_backpointer = 0;
     m_register = 0;
     m_backregister = 0;
 
@@ -168,9 +168,8 @@ bool Wfp::launch(const std::string& path)
         }
         std::cout << '\n' << "Reg : " << m_register;
         std::cout << " | Back Reg : " << m_backregister << '\n';
-        std::cout << "Ptr : " << (m_pointer-&m_memory[WFMemoryOffset]);
-        std::cout << " | Back Ptr : " <<
-            (m_backpointer-&m_memory[WFMemoryOffset]) << '\n';
+        std::cout << "Ptr : " << m_pointer;
+        std::cout << " | Back Ptr : " << m_backpointer << '\n';
         std::cout << "Cursor : " << m_cursor << '\n';
         std::cout << "----------------------------------------\n";
     }
@@ -215,7 +214,8 @@ void Wfp::run()
                 break;
 
             default:
-                // Invalid instruction
+                // Program instruction
+                parseInstruction();
                 break;
         }
     }
@@ -254,6 +254,7 @@ void Wfp::parseNumber()
     {
         number.push_back(m_program[m_cursor++]);
     }
+    --m_cursor;
     num64 = std::stoll(number, 0, base);
     m_register = static_cast<int32_t>(num64);
 }
@@ -273,11 +274,11 @@ void Wfp::parseCharacter()
 void Wfp::parseString()
 {
     // Parse string
-    int32_t* pointer = m_pointer;
+    int32_t pointer = m_pointer;
     ++m_cursor;
     while (m_program[m_cursor] != '"')
     {
-        *(m_pointer++) = m_program[m_cursor++];
+        m_memory[(m_pointer++)+WFMemoryOffset] = m_program[m_cursor++];
     }
     m_pointer = pointer;
 }
@@ -296,8 +297,160 @@ void Wfp::parseLabel()
     }
 
     // Jump to label
-    if (type != ':')
+    switch (type)
     {
-        m_cursor = m_labels[label];
+        case '@':
+            m_cursor = m_labels[label]-1;
+            break;
+
+        case '=':
+            if (m_register == 0) m_cursor = m_labels[label]-1;
+            break;
+
+        case '!':
+            if (m_register != 0) m_cursor = m_labels[label]-1;
+            break;
+
+        case '>':
+            if (m_register > 0) m_cursor = m_labels[label]-1;
+            break;
+
+        case '<':
+            if (m_register < 0) m_cursor = m_labels[label]-1;
+            break;
+
+        default:
+            break;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Parse instruction                                                         //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::parseInstruction()
+{
+    int32_t tmp = 0;
+    switch (m_program[m_cursor])
+    {
+        case '\\':
+            // Swap pointers
+            tmp = m_pointer;
+            m_pointer = m_backpointer;
+            m_backpointer = tmp;
+            break;
+
+        case '}':
+            // Increment pointer
+            ++m_pointer;
+            break;
+
+        case '{':
+            // Decrement pointer
+            --m_pointer;
+            break;
+
+        case ']':
+            // Set current pointer address
+            m_pointer = m_register;
+            break;
+
+        case '[':
+            // Load current pointer address
+            m_register = m_pointer;
+            break;
+
+
+        case '~':
+            // Swap register
+            tmp = m_register;
+            m_register = m_backregister;
+            m_backregister = tmp;
+            break;
+
+        case '#':
+            // Load current pointed value
+            m_register = m_memory[m_pointer+WFMemoryOffset];
+            break;
+
+        case '_':
+            // Store current register value
+            m_memory[m_pointer+WFMemoryOffset] = m_register;
+            break;
+
+        case '^':
+            // Set current program cursor
+            m_cursor = m_register;
+            break;
+
+        case '$':
+            // Load current program cursor
+            m_register = m_cursor;
+            break;
+
+
+        case '+':
+            // Add
+            m_register = (m_register + m_backregister);
+            break;
+
+        case '-':
+            // Subtract
+            m_register = (m_register - m_backregister);
+            break;
+
+        case '*':
+            // Multiply
+            m_register = (m_register * m_backregister);
+            break;
+
+        case '/':
+            // Divide
+            if (m_backregister != 0)
+            {
+                m_register = (m_register / m_backregister);
+            }
+            break;
+
+        case '%':
+            // Modulo
+            m_register = (m_register % m_backregister);
+            break;
+
+        case '&':
+            // Bitwise AND
+            m_register = (m_register & m_backregister);
+            break;
+
+        case '|':
+            // Bitwise OR
+            m_register = (m_register | m_backregister);
+            break;
+
+
+        case ',':
+            // Read input byte
+            m_register = WFKeyboardInput();
+            break;
+
+        case '.':
+            // Write output byte
+            std::cout << static_cast<char>(m_register);
+            break;
+
+        case ')':
+            // Set I/O cursor position
+            break;
+
+        case '(':
+            // Load I/O cursor position
+            break;
+
+        case '?':
+            // Set I/O mode
+            break;
+
+        default:
+            // Invalid instruction
+            break;
     }
 }

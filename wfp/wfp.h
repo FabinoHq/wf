@@ -118,13 +118,19 @@
             ////////////////////////////////////////////////////////////////////
             void parseLabel();
 
+            ////////////////////////////////////////////////////////////////////
+            //  Parse instruction                                             //
+            ////////////////////////////////////////////////////////////////////
+            void parseInstruction();
+
 
         private:
             char*           m_program;              // Program array
             int32_t         m_cursor;               // Program cursor
+
             int32_t*        m_memory;               // Memory array
-            int32_t*        m_pointer;              // Main pointer
-            int32_t*        m_backpointer;          // Back pointer
+            int32_t         m_pointer;              // Main pointer
+            int32_t         m_backpointer;          // Back pointer
             int32_t         m_register;             // Main register
             int32_t         m_backregister;         // Back register
 

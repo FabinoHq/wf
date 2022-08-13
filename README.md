@@ -52,4 +52,4 @@
 	. : output one byte from the register
 	) : Set current I/O cursor position from the register
 	( : Load current I/O cursor position into the register
-	? : Set I/O mode based on the value stored in the register (terminal or file)
+	? : Set I/O mode based on the value in the register (terminal or file)
