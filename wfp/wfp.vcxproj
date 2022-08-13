@@ -135,11 +135,13 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="system.cpp" />
+    <ClCompile Include="wflexer.cpp" />
     <ClCompile Include="wfp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
     <ClInclude Include="system.h" />
+    <ClInclude Include="wflexer.h" />
     <ClInclude Include="wfp.h" />
   </ItemGroup>
   <ItemGroup>

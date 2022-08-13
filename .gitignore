@@ -23,6 +23,8 @@
 !wfp/main.cpp
 !wfp/system.h
 !wfp/system.cpp
+!wfp/wflexer.h
+!wfp/wflexer.cpp
 !wfp/wfp.h
 !wfp/wfp.cpp
 

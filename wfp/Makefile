@@ -47,10 +47,12 @@ all: wfp
 
 wfp: main.o \
 	system.o \
+	wflexer.o \
 	wfp.o
 
 	$(CC) -o wfp \
 	system.o \
+	wflexer.o \
 	wfp.o \
 	main.o $(LDFLAGS)
 
@@ -60,6 +62,9 @@ main.o: main.cpp
 
 system.o: system.cpp
 	$(CC) -o system.o -c system.cpp $(CFLAGS)
+
+wflexer.o: wflexer.cpp
+	$(CC) -o wflexer.o -c wflexer.cpp $(CFLAGS)
 
 wfp.o: wfp.cpp
 	$(CC) -o wfp.o -c wfp.cpp $(CFLAGS)

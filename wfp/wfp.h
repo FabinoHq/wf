@@ -43,6 +43,7 @@
 #define WFP_WFP_HEADER
 
     #include "system.h"
+    #include "wflexer.h"
 
     #include <cctype>
     #include <cstdint>
@@ -63,17 +64,6 @@
     const int32_t WFProgramOverhead = 1024;
     const int32_t WFMemorySize = 16777216;
     const int32_t WFMemoryOffset = WFMemorySize/2;
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    //  WFP program file structure                                            //
-    ////////////////////////////////////////////////////////////////////////////
-    struct WfProgramFile
-    {
-        std::ifstream file;
-        std::string path;
-        int32_t line;
-    };
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -101,13 +91,6 @@
             bool launch(const std::string& path);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess WF program                                         //
-            //  param path : Path of the .wf program to preprocess            //
-            //  return : True if the .wf program is successfully preprocessed //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocess(const std::string& path);
-
-            ////////////////////////////////////////////////////////////////////
             //  Run WFP                                                       //
             ////////////////////////////////////////////////////////////////////
             void run();
@@ -125,56 +108,6 @@
             Wfp& operator=(const Wfp&) = delete;
 
 
-            ////////////////////////////////////////////////////////////////////
-            //  Preprocess line count                                         //
-            //  param wfprogram : WF program to preprocess line count from    //
-            //  return : True if line count is successfully preprocessed      //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocessLineCount(WfProgramFile& wfprogram, char& ch);
-
-            ////////////////////////////////////////////////////////////////////
-            //  Preprocess include                                            //
-            //  param wfprogram : WF program to preprocess include from       //
-            //  return : True if include is successfully preprocessed         //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocessInclude(WfProgramFile& wfprogram);
-
-            ////////////////////////////////////////////////////////////////////
-            //  Preprocess comment                                            //
-            //  param wfprogram : WF program to preprocess comment from       //
-            //  return : True if comment is successfully preprocessed         //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocessComment(WfProgramFile& wfprogram);
-
-            ////////////////////////////////////////////////////////////////////
-            //  Preprocess number constant                                    //
-            //  param wfprogram : WF program to preprocess number from        //
-            //  return : True if number is successfully preprocessed          //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocessNumber(WfProgramFile& wfprogram, char digit);
-
-            ////////////////////////////////////////////////////////////////////
-            //  Preprocess character constant                                 //
-            //  param wfprogram : WF program to preprocess character from     //
-            //  return : True if character is successfully preprocessed       //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocessCharacter(WfProgramFile& wfprogram);
-
-            ////////////////////////////////////////////////////////////////////
-            //  Preprocess string constant                                    //
-            //  param wfprogram : WF program to preprocess string from        //
-            //  return : True if string is successfully preprocessed          //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocessString(WfProgramFile& wfprogram);
-
-            ////////////////////////////////////////////////////////////////////
-            //  Preprocess label                                              //
-            //  param wfprogram : WF program to preprocess label from         //
-            //  return : True if label is successfully preprocessed           //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocessLabel(WfProgramFile& wfprogram, char type);
-
-
         private:
             char*           m_program;              // Program array
             int32_t         m_cursor;               // Program cursor
@@ -186,6 +119,8 @@
 
             std::unordered_map<std::string, bool>       m_includes; // Includes
             std::unordered_map<std::string, int32_t>    m_labels;   // Labels
+
+            WfLexer         m_wflexer;              // WF Lexer
     };
 
 

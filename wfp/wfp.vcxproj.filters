@@ -16,6 +16,9 @@
     <ClCompile Include="system.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="wflexer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system.h">
@@ -25,6 +28,9 @@
       <Filter>Fichiers sources</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="wflexer.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
   </ItemGroup>
