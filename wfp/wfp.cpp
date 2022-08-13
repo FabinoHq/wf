@@ -423,11 +423,22 @@ void Wfp::parseInstruction()
             {
                 m_register = (m_register / m_backregister);
             }
+            else
+            {
+                m_register = 0;
+            }
             break;
 
         case '%':
             // Modulo
-            m_register = (m_register % m_backregister);
+            if (m_backregister != 0)
+            {
+                m_register = (m_register % m_backregister);
+            }
+            else
+            {
+                m_register = 0;
+            }
             break;
 
         case '&':
