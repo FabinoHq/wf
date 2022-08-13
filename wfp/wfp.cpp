@@ -195,8 +195,13 @@ void Wfp::run()
         {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
-                // Number
+                // Number constant
                 parseNumber();
+                break;
+
+            case '\'':
+                // Character constant
+                parseCharacter();
                 break;
 
             default:
@@ -241,4 +246,12 @@ void Wfp::parseNumber()
     }
     num64 = std::stoll(number, 0, base);
     m_register = static_cast<int32_t>(num64);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Parse character constant                                                  //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::parseCharacter()
+{
+    m_register = m_program[(++m_cursor)++];
 }
