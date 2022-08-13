@@ -278,6 +278,7 @@ void Wfp::parseString()
     ++m_cursor;
     while (m_program[m_cursor] != '"')
     {
+        checkPointerAddress();
         m_memory[(m_pointer++)+WFMemoryOffset] = m_program[m_cursor++];
     }
     m_pointer = pointer;
@@ -369,11 +370,13 @@ void Wfp::parseInstruction()
 
         case '#':
             // Load current pointed value
+            checkPointerAddress();
             m_register = m_memory[m_pointer+WFMemoryOffset];
             break;
 
         case '_':
             // Store current register value
+            checkPointerAddress();
             m_memory[m_pointer+WFMemoryOffset] = m_register;
             break;
 
@@ -452,5 +455,20 @@ void Wfp::parseInstruction()
         default:
             // Invalid instruction
             break;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Check pointer address                                                     //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::checkPointerAddress()
+{
+    // Check pointer address
+    if ((m_pointer < -WFMemoryOffset) ||
+        (m_pointer >= WFMemoryOffset))
+    {
+        // Pointer out of range
+        std::cerr << "Runtime Error : Pointer out of range\n";
+        m_cursor = WFProgramSize;
     }
 }
