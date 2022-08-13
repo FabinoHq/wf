@@ -98,6 +98,12 @@
             Wfp& operator=(const Wfp&) = delete;
 
 
+            ////////////////////////////////////////////////////////////////////
+            //  Parse number constant                                         //
+            ////////////////////////////////////////////////////////////////////
+            void parseNumber();
+
+
         private:
             char*           m_program;              // Program array
             int32_t         m_cursor;               // Program cursor

@@ -314,8 +314,8 @@ bool WfLexer::analyzeNumber(WfProgramFile& wfprogram, char digit)
     // Analyze string
     int32_t line = wfprogram.line;
     char ch = 0;
-    int64_t num64 = 0;
     std::string number = "";
+    int64_t num64 = 0;
     int32_t base = 10;
     size_t maxsize = 10;
 
@@ -338,7 +338,7 @@ bool WfLexer::analyzeNumber(WfProgramFile& wfprogram, char digit)
             if (std::isspace(ch)) continue;
 
             if (std::isdigit(ch) ||
-                (ch == 'X') || (ch == 'x') || (ch == 'B') || (ch == 'b'))
+                (ch == 'B') || (ch == 'b') || (ch == 'X') || (ch == 'x'))
             {
                 // Add current character to program
                 if (!writeProgram(ch)) return false;

@@ -190,5 +190,55 @@ void Wfp::run()
     {
         // End of program
         if (m_program[m_cursor] == 0) break;
+
+        switch (m_program[m_cursor])
+        {
+            case '0': case '1': case '2': case '3': case '4':
+            case '5': case '6': case '7': case '8': case '9':
+                // Number
+                parseNumber();
+                break;
+
+            default:
+                // Invalid instruction
+                break;
+        }
     }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Parse number constant                                                     //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::parseNumber()
+{
+    std::string number = "";
+    int64_t num64 = 0;
+    int32_t base = 10;
+
+    // Check leading 0
+    if ((m_program[m_cursor+1] == 'B') || (m_program[m_cursor+1] == 'b'))
+    {
+        // Binary number constant
+        m_cursor += 2;
+        base = 2;
+    }
+    if ((m_program[m_cursor+1] == 'X') || (m_program[m_cursor+1] == 'x'))
+    {
+        // Hexadecimal number constant
+        m_cursor += 2;
+        base = 16;
+    }
+    else
+    {
+        // Decimal number constant
+        base = 10;
+    }
+
+    // Parse number
+    while (std::isxdigit(m_program[m_cursor]))
+    {
+        number.push_back(m_program[m_cursor++]);
+    }
+    num64 = std::stoll(number, 0, base);
+    m_register = static_cast<int32_t>(num64);
 }
