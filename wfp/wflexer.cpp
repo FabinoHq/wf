@@ -75,16 +75,26 @@ bool WfLexer::lexer(char* program, const std::string& path)
     if (!program) return false;
     m_program = program;
 
-    // Preprocess WF program
-    return preprocess(path);
+    // Reset program cursor
+    m_cursor = 0;
+
+    // Analyze WF program
+    if (!analyze(path))
+    {
+        return false;
+    }
+
+    // WF program successfully analyzed
+    return true;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess WF program                                                     //
-//  param path : Path of the .wf program to preprocess                        //
-//  return : True if the .wf program is successfully preprocessed             //
+//  Analyze WF program                                                        //
+//  param path : Path of the .wf program to analyze                           //
+//  return : True if the .wf program is successfully analyzed                 //
 ////////////////////////////////////////////////////////////////////////////////
-bool WfLexer::preprocess(const std::string& path)
+bool WfLexer::analyze(const std::string& path)
 {
     // Init .wf program
     WfProgramFile wfprogram;
@@ -116,15 +126,15 @@ bool WfLexer::preprocess(const std::string& path)
         return false;
     }
 
-    // Preprocess .wf program
+    // Analyze .wf program
     char ch = 0;
     while (wfprogram.file)
     {
         // End of .wf program
         if (!wfprogram.file.get(ch)) break;
 
-        // Preprocess line count
-        if (!preprocessLineCount(wfprogram, ch)) break;
+        // Analyze line count
+        if (!analyzeLineCount(wfprogram, ch)) break;
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
@@ -134,61 +144,60 @@ bool WfLexer::preprocess(const std::string& path)
         {
             case '`':
                 // Include
-                if (!preprocessInclude(wfprogram)) return false;
+                if (!analyzeInclude(wfprogram)) return false;
                 break;
 
             case ';':
                 // Comment
-                if (!preprocessComment(wfprogram)) return false;
+                if (!analyzeComment(wfprogram)) return false;
                 break;
 
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                 // Number
-                m_program[m_cursor++] = ch;
-                if (!preprocessNumber(wfprogram, ch)) return false;
+                if (!writeProgram(ch)) return false;
+                if (!analyzeNumber(wfprogram, ch)) return false;
                 break;
 
             case '\'':
                 // Character constant
-                m_program[m_cursor++] = ch;
-                if (!preprocessCharacter(wfprogram)) return false;
+                if (!writeProgram(ch)) return false;
+                if (!analyzeCharacter(wfprogram)) return false;
                 break;
 
             case '"':
                 // String constant
-                m_program[m_cursor++] = ch;
-                if (!preprocessString(wfprogram)) return false;
+                if (!writeProgram(ch)) return false;
+                if (!analyzeString(wfprogram)) return false;
                 break;
 
             case ':': case '@': case '=': case '!': case '>': case '<':
                 // Label
-                m_program[m_cursor++] = ch;
-                if (!preprocessLabel(wfprogram, ch)) return false;
+                if (!writeProgram(ch)) return false;
+                if (!analyzeLabel(wfprogram, ch)) return false;
                 break;
 
             default:
                 // Program instruction
                 if (!std::isspace(ch) && !std::isalnum(ch))
                 {
-                    m_program[m_cursor++] = ch;
+                    if (!writeProgram(ch)) return false;
                 }
                 break;
         }
     }
 
-    // WF program successfully preprocessed
+    // WF program successfully analyzed
     wfprogram.file.close();
     return true;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess line count                                                     //
-//  param wfprogram : WF program to preprocess line count from                //
-//  return : True if WF line count is successfully preprocessed               //
+//  Analyze line count                                                        //
+//  param wfprogram : WF program to analyze line count from                   //
+//  return : True if WF line count is successfully analyzed                   //
 ////////////////////////////////////////////////////////////////////////////////
-bool WfLexer::preprocessLineCount(WfProgramFile& wfprogram, char& ch)
+bool WfLexer::analyzeLineCount(WfProgramFile& wfprogram, char& ch)
 {
     // Increment program line counter
     switch (ch)
@@ -211,16 +220,16 @@ bool WfLexer::preprocessLineCount(WfProgramFile& wfprogram, char& ch)
             break;
     }
 
-    // Line count successfully preprocessed
+    // Line count successfully analyzed
     return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess includes                                                       //
-//  param wfprogram : WF program to preprocess include from                   //
-//  return : True if include is successfully preprocessed                     //
+//  Analyze includes                                                          //
+//  param wfprogram : WF program to analyze include from                      //
+//  return : True if include is successfully analyzed                         //
 ////////////////////////////////////////////////////////////////////////////////
-bool WfLexer::preprocessInclude(WfProgramFile& wfprogram)
+bool WfLexer::analyzeInclude(WfProgramFile& wfprogram)
 {
     // Parse include path
     char ch = 0;
@@ -248,29 +257,29 @@ bool WfLexer::preprocessInclude(WfProgramFile& wfprogram)
         m_includes.find(path);
     if (found == m_includes.end())
     {
-        // Preprocess included file
-        if (!preprocess(includepath))
+        // Analyze included file
+        if (!analyze(includepath))
         {
-            // Unable to preprocess included file
-            std::cerr << "Error : Unable to preprocess included file : `" <<
+            // Unable to analyze included file
+            std::cerr << "Error : Unable to analyze included file : `" <<
                 includepath << "`\nincluded in " << wfprogram.path <<
                 " line " << wfprogram.line << '\n';
             return false;
         }
     }
 
-    // Included file successfully preprocessed
+    // Included file successfully analyzed
     return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess comments                                                       //
-//  param wfprogram : WF program to preprocess comments from                  //
-//  return : True if comment is successfully preprocessed                     //
+//  Analyze comments                                                          //
+//  param wfprogram : WF program to analyze comments from                     //
+//  return : True if comment is successfully analyzed                         //
 ////////////////////////////////////////////////////////////////////////////////
-bool WfLexer::preprocessComment(WfProgramFile& wfprogram)
+bool WfLexer::analyzeComment(WfProgramFile& wfprogram)
 {
-    // Preprocess comment
+    // Analyze comment
     int32_t line = wfprogram.line;
     char ch = 0;
     while (wfprogram.file)
@@ -278,8 +287,8 @@ bool WfLexer::preprocessComment(WfProgramFile& wfprogram)
         // End of .wf program
         if (!wfprogram.file.get(ch)) break;
 
-        // Preprocess line count
-        if (!preprocessLineCount(wfprogram, ch)) break;
+        // Analyze line count
+        if (!analyzeLineCount(wfprogram, ch)) break;
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
@@ -288,7 +297,7 @@ bool WfLexer::preprocessComment(WfProgramFile& wfprogram)
         if (ch == ';') return true;
     }
 
-    // Unable to preprocess comment
+    // Unable to analyze comment
     std::cerr << "Error : Missing closing comment character ;" <<
         "\nopening comment character ; in " << wfprogram.path <<
         " line " << line << '\n';
@@ -296,13 +305,13 @@ bool WfLexer::preprocessComment(WfProgramFile& wfprogram)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess number constant                                                //
-//  param wfprogram : WF program to preprocess number from                    //
-//  return : True if number is successfully preprocessed                      //
+//  Analyze number constant                                                   //
+//  param wfprogram : WF program to analyze number from                       //
+//  return : True if number is successfully analyzed                          //
 ////////////////////////////////////////////////////////////////////////////////
-bool WfLexer::preprocessNumber(WfProgramFile& wfprogram, char digit)
+bool WfLexer::analyzeNumber(WfProgramFile& wfprogram, char digit)
 {
-    // Preprocess string
+    // Analyze string
     int32_t line = wfprogram.line;
     char ch = 0;
     int64_t num64 = 0;
@@ -319,8 +328,8 @@ bool WfLexer::preprocessNumber(WfProgramFile& wfprogram, char digit)
             // End of .wf program
             if (!wfprogram.file.get(ch)) break;
 
-            // Preprocess line count
-            if (!preprocessLineCount(wfprogram, ch)) break;
+            // Analyze line count
+            if (!analyzeLineCount(wfprogram, ch)) break;
 
             // Skip invalid program characters
             if ((ch < 32) || (ch > 126)) continue;
@@ -329,7 +338,7 @@ bool WfLexer::preprocessNumber(WfProgramFile& wfprogram, char digit)
                 (ch == 'X') || (ch == 'x') || (ch == 'B') || (ch == 'b'))
             {
                 // Add current character to program
-                m_program[m_cursor++] = ch;
+                if (!writeProgram(ch)) return false;
 
                 // Check base
                 switch (ch)
@@ -371,8 +380,8 @@ bool WfLexer::preprocessNumber(WfProgramFile& wfprogram, char digit)
         // End of .wf program
         if (!wfprogram.file.get(ch)) break;
 
-        // Preprocess line count
-        if (!preprocessLineCount(wfprogram, ch)) break;
+        // Analyze line count
+        if (!analyzeLineCount(wfprogram, ch)) break;
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
@@ -380,7 +389,7 @@ bool WfLexer::preprocessNumber(WfProgramFile& wfprogram, char digit)
         if (std::isxdigit(ch))
         {
             // Add current character to program
-            m_program[m_cursor++] = ch;
+            if (!writeProgram(ch)) return false;
             number.push_back(ch);
         }
         else
@@ -417,13 +426,13 @@ bool WfLexer::preprocessNumber(WfProgramFile& wfprogram, char digit)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess character constant                                             //
-//  param wfprogram : WF program to preprocess character from                 //
-//  return : True if character is successfully preprocessed                   //
+//  Analyze character constant                                                //
+//  param wfprogram : WF program to analyze character from                    //
+//  return : True if character is successfully analyzed                       //
 ////////////////////////////////////////////////////////////////////////////////
-bool WfLexer::preprocessCharacter(WfProgramFile& wfprogram)
+bool WfLexer::analyzeCharacter(WfProgramFile& wfprogram)
 {
-    // Preprocess character
+    // Analyze character
     int32_t line = wfprogram.line;
     char ch = 0;
     int32_t i = 0;
@@ -433,14 +442,14 @@ bool WfLexer::preprocessCharacter(WfProgramFile& wfprogram)
         // End of .wf program
         if (!wfprogram.file.get(ch)) break;
 
-        // Preprocess line count
-        if (!preprocessLineCount(wfprogram, ch)) break;
+        // Analyze line count
+        if (!analyzeLineCount(wfprogram, ch)) break;
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
 
         // Add current character to program
-        m_program[m_cursor++] = ch;
+        if (!writeProgram(ch)) return false;
         ++i;
 
         // End of character constant
@@ -455,12 +464,12 @@ bool WfLexer::preprocessCharacter(WfProgramFile& wfprogram)
                 return false;
             }
 
-            // Character constant successfully preprocessed
+            // Character constant successfully analyzed
             return true;
         }
     }
 
-    // Unable to preprocess character constant
+    // Unable to analyze character constant
     std::cerr << "Error : Missing closing character constant '" <<
         "\nopening character constant ' in " << wfprogram.path <<
         " line " << line << '\n';
@@ -468,13 +477,13 @@ bool WfLexer::preprocessCharacter(WfProgramFile& wfprogram)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess string constant                                                //
-//  param wfprogram : WF program to preprocess string from                    //
-//  return : True if string is successfully preprocessed                      //
+//  Analyze string constant                                                   //
+//  param wfprogram : WF program to analyze string from                       //
+//  return : True if string is successfully analyzed                          //
 ////////////////////////////////////////////////////////////////////////////////
-bool WfLexer::preprocessString(WfProgramFile& wfprogram)
+bool WfLexer::analyzeString(WfProgramFile& wfprogram)
 {
-    // Preprocess string
+    // Analyze string
     int32_t line = wfprogram.line;
     char ch = 0;
     int32_t i = 0;
@@ -484,14 +493,14 @@ bool WfLexer::preprocessString(WfProgramFile& wfprogram)
         // End of .wf program
         if (!wfprogram.file.get(ch)) break;
 
-        // Preprocess line count
-        if (!preprocessLineCount(wfprogram, ch)) break;
+        // Analyze line count
+        if (!analyzeLineCount(wfprogram, ch)) break;
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
 
         // Add current character to program
-        m_program[m_cursor++] = ch;
+        if (!writeProgram(ch)) return false;
         ++i;
 
         // End of string constant
@@ -506,12 +515,12 @@ bool WfLexer::preprocessString(WfProgramFile& wfprogram)
                 return false;
             }
 
-            // String constant successfully preprocessed
+            // String constant successfully analyzed
             return true;
         }
     }
 
-    // Unable to preprocess string constant
+    // Unable to analyze string constant
     std::cerr << "Error : Missing closing string constant \"" <<
         "\nopening string constant \" in " << wfprogram.path <<
         " line " << line << '\n';
@@ -519,13 +528,13 @@ bool WfLexer::preprocessString(WfProgramFile& wfprogram)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//  Preprocess label                                                          //
-//  param wfprogram : WF program to preprocess label from                     //
-//  return : True if label is successfully preprocessed                       //
+//  Analyze label                                                             //
+//  param wfprogram : WF program to analyze label from                        //
+//  return : True if label is successfully analyzed                           //
 ////////////////////////////////////////////////////////////////////////////////
-bool WfLexer::preprocessLabel(WfProgramFile& wfprogram, char type)
+bool WfLexer::analyzeLabel(WfProgramFile& wfprogram, char type)
 {
-    // Preprocess label
+    // Analyze label
     int32_t line = wfprogram.line;
     char ch = 0;
     int32_t i = 0;
@@ -536,14 +545,14 @@ bool WfLexer::preprocessLabel(WfProgramFile& wfprogram, char type)
         // End of .wf program
         if (!wfprogram.file.get(ch)) break;
 
-        // Preprocess line count
-        if (!preprocessLineCount(wfprogram, ch)) break;
+        // Analyze line count
+        if (!analyzeLineCount(wfprogram, ch)) break;
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
 
         // Add character to program
-        m_program[m_cursor++] = ch;
+        if (!writeProgram(ch)) return false;
         ++i;
 
         if (ch != type)
@@ -583,14 +592,33 @@ bool WfLexer::preprocessLabel(WfProgramFile& wfprogram, char type)
                 return false;
             }
 
-            // Label successfully preprocessed
+            // Label successfully analyzed
             return true;
         }
     }
 
-    // Unable to preprocess label
+    // Unable to analyze label
     std::cerr << "Error : Missing closing label " << type <<
         "\nopening label " << type << " in " << wfprogram.path <<
         " line " << line << '\n';
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write character into program                                              //
+//  param ch : Character to add to the program                                //
+//  return : True if the character is successfully written                    //
+////////////////////////////////////////////////////////////////////////////////
+bool WfLexer::writeProgram(char ch)
+{
+    // Write character into program memory
+    if (m_cursor < WFProgramSize)
+    {
+        m_program[m_cursor++] = ch;
+        return true;
+    }
+
+    // Unable to write character into program
+    std::cerr << "Error : Program maximum allowed size exceeded\n";
     return false;
 }

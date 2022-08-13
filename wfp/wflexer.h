@@ -56,6 +56,16 @@
 
 
     ////////////////////////////////////////////////////////////////////////////
+    //  WF program default settings                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const bool WFMemoryDump = true;
+    const int32_t WFProgramSize = 16777216;
+    const int32_t WFProgramOverhead = 1024;
+    const int32_t WFMemorySize = 16777216;
+    const int32_t WFMemoryOffset = WFMemorySize/2;
+
+
+    ////////////////////////////////////////////////////////////////////////////
     //  WF program file structure                                             //
     ////////////////////////////////////////////////////////////////////////////
     struct WfProgramFile
@@ -91,13 +101,6 @@
             ////////////////////////////////////////////////////////////////////
             bool lexer(char* program, const std::string& path);
 
-            ////////////////////////////////////////////////////////////////////
-            //  Preprocess WF program                                         //
-            //  param path : Path of the .wf program to preprocess            //
-            //  return : True if the .wf program is successfully preprocessed //
-            ////////////////////////////////////////////////////////////////////
-            bool preprocess(const std::string& path);
-
 
         private:
             ////////////////////////////////////////////////////////////////////
@@ -112,53 +115,67 @@
 
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess line count                                         //
-            //  param wfprogram : WF program to preprocess line count from    //
-            //  return : True if line count is successfully preprocessed      //
+            //  Analyze WF program                                            //
+            //  param path : Path of the .wf program to analyze               //
+            //  return : True if the .wf program is successfully analyzed     //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessLineCount(WfProgramFile& wfprogram, char& ch);
+            bool analyze(const std::string& path);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess include                                            //
-            //  param wfprogram : WF program to preprocess include from       //
-            //  return : True if include is successfully preprocessed         //
+            //  Analyze line count                                            //
+            //  param wfprogram : WF program to analyze line count from       //
+            //  return : True if line count is successfully analyzed          //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessInclude(WfProgramFile& wfprogram);
+            bool analyzeLineCount(WfProgramFile& wfprogram, char& ch);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess comment                                            //
-            //  param wfprogram : WF program to preprocess comment from       //
-            //  return : True if comment is successfully preprocessed         //
+            //  Analyze include                                               //
+            //  param wfprogram : WF program to analyze include from          //
+            //  return : True if include is successfully analyzed             //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessComment(WfProgramFile& wfprogram);
+            bool analyzeInclude(WfProgramFile& wfprogram);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess number constant                                    //
-            //  param wfprogram : WF program to preprocess number from        //
-            //  return : True if number is successfully preprocessed          //
+            //  Analyze comment                                               //
+            //  param wfprogram : WF program to analyze comment from          //
+            //  return : True if comment is successfully analyzed             //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessNumber(WfProgramFile& wfprogram, char digit);
+            bool analyzeComment(WfProgramFile& wfprogram);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess character constant                                 //
-            //  param wfprogram : WF program to preprocess character from     //
-            //  return : True if character is successfully preprocessed       //
+            //  Analyze number constant                                       //
+            //  param wfprogram : WF program to analyze number from           //
+            //  return : True if number is successfully analyzed              //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessCharacter(WfProgramFile& wfprogram);
+            bool analyzeNumber(WfProgramFile& wfprogram, char digit);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess string constant                                    //
-            //  param wfprogram : WF program to preprocess string from        //
-            //  return : True if string is successfully preprocessed          //
+            //  Analyze character constant                                    //
+            //  param wfprogram : WF program to analyze character from        //
+            //  return : True if character is successfully analyzed           //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessString(WfProgramFile& wfprogram);
+            bool analyzeCharacter(WfProgramFile& wfprogram);
 
             ////////////////////////////////////////////////////////////////////
-            //  Preprocess label                                              //
-            //  param wfprogram : WF program to preprocess label from         //
-            //  return : True if label is successfully preprocessed           //
+            //  Analyze string constant                                       //
+            //  param wfprogram : WF program to analyze string from           //
+            //  return : True if string is successfully analyzed              //
             ////////////////////////////////////////////////////////////////////
-            bool preprocessLabel(WfProgramFile& wfprogram, char type);
+            bool analyzeString(WfProgramFile& wfprogram);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Analyze label                                                 //
+            //  param wfprogram : WF program to analyze label from            //
+            //  return : True if label is successfully analyzed               //
+            ////////////////////////////////////////////////////////////////////
+            bool analyzeLabel(WfProgramFile& wfprogram, char type);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write character into program                                  //
+            //  param ch : Character to add to the program                    //
+            //  return : True if the character is successfully written        //
+            ////////////////////////////////////////////////////////////////////
+            bool writeProgram(char ch);
 
 
         private:
