@@ -1,0 +1,54 @@
+;//////////////////////////////////////////////////////////////////////////////;
+;/        _______                               ______________________        /;
+;/        \\ .   \                     ________/ . . . . . . . . . . /        /;
+;/         \\ .   \     ____       ___/   . . .     ________________/         /;
+;/          \\ .   \   //   \   __/  . .  _________/ .  .  .  .  /            /;
+;/           \\ .   \_//     \_//     ___/    //      __________/             /;
+;/            \\ .   \/   _   \/    _/       // .    /___                     /;
+;/             \\ .      /\\       /        // .    ____/                     /;
+;/              \\ .    /  \\     /       _// .   /                           /;
+;/               \\ .  /    \\   /     _//  .    /                            /;
+;/                \\__/      \\_/    //_________/                             /;
+;/                                                                            /;
+;//////////////////////////////////////////////////////////////////////////////;
+;/  snippets.wf : WF tricky and usefull snippets                              /;
+;//////////////////////////////////////////////////////////////////////////////;
+@snippets.wf@   ; Protects this file from being executed if included ;
+
+
+~~              ; NOOP ;
+\\              ; NOOP ;
+{}              ; NOOP ;
+}{              ; NOOP ;
+
+0~0]\]?         ; Reset r, b, p, q to 0 and i/o to standard mode ;
+
+123~0-          ; Write -123 into register (r = -123), using b ;
+
+~]~             ; Copy back register into pointer (p = b) ;
+~[~             ; Copy pointer into back register (b = p) ;
+
+\]\             ; Copy register into back pointer (q = r) ;
+\[\             ; Copy back pointer into register (r = q) ;
+
+\~]~\           ; Copy back register into back pointer (q = b) ;
+\~[~\           ; Copy back pointer into back register (b = q) ;
+
+\]~[\           ; Copy register into back register (b = r) using q ;
+~0+             ; Copy register into back register (b = r) ;
+0+              ; Copy back register into register (r = b) ;
+
+[\]             ; Store pointer address in back pointer (q = p), using r ;
+
+~#~_~           ; Swap current pointed value with register (r <=> *p) using b ;
+
+~0-~1-~0-       ; Bitwise NOT (r = ~r) using b ;
+~1+~0-          ; Bitwise NOT (r = ~r) using b ;
+
+\]\&~]1+~0-\~[~]\[|~\[\&    ; Bitwise XOR (r = r ^ b), using p and q ;
+
+
+$^              ; Infinite loop, using r ;
+
+
+:snippets.wf:   ; Protects this file from being executed if included ;

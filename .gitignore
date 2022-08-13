@@ -6,6 +6,12 @@
 !README.md
 !LICENSE
 
+# WF
+!main.wf
+!stdlib.wf
+!snippets.wf
+!helloworld.wf
+
 # WFP
 !wfp/
 !wfp/wfp.exe

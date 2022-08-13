@@ -1,0 +1,57 @@
+;//////////////////////////////////////////////////////////////////////////////;
+;/        _______                               ______________________        /;
+;/        \\ .   \                     ________/ . . . . . . . . . . /        /;
+;/         \\ .   \     ____       ___/   . . .     ________________/         /;
+;/          \\ .   \   //   \   __/  . .  _________/ .  .  .  .  /            /;
+;/           \\ .   \_//     \_//     ___/    //      __________/             /;
+;/            \\ .   \/   _   \/    _/       // .    /___                     /;
+;/             \\ .      /\\       /        // .    ____/                     /;
+;/              \\ .    /  \\     /       _// .   /                           /;
+;/               \\ .  /    \\   /     _//  .    /                            /;
+;/                \\__/      \\_/    //_________/                             /;
+;/                                                                            /;
+;//////////////////////////////////////////////////////////////////////////////;
+;/  main.wf : WF standard library example                                     /;
+;//////////////////////////////////////////////////////////////////////////////;
+
+; Jump to label main ;
+@main@
+
+; Include standard library ;
+`stdlib.wf`
+
+; main : Main entry point ;
+:main:
+    0~0]\]?                 ; Reset r, b, p, q to 0 and i/o to standard mode ;
+
+    ; Store string in memory ;
+    5]"Hello World!"        ; Store string "Hello World!" at address 5 ;
+    0]                      ; Reset r and p to 0 ;
+
+    ; Output string using std.output_string ;
+    {{ 5_ }}                ; Set string address as parameter -2 ;
+    $@std.output_string@    ; Call std.output_string ;
+    10.                     ; Output new line ;
+
+    ; Compute string length using std.string_length ;
+    {{{ 4_ }}}              ; Set string length address as parameter -3 ;
+    {{ 5_ }}                ; Set string address as parameter -2 ;
+    $@std.string_length@    ; Call std.string_length ;
+
+    ; Output string length using std.output_number ;
+    {{ 4_ }}                ; Set number address as parameter -2 ;
+    $@std.output_number@    ; Call std.output_number ;
+    10.                     ; Output new line ;
+
+    ; Convert number to string using std.number_to_string ;
+    4]0x7B_                  ; Write number 123 (0x7B) at address 4 ;
+
+    {{{ 5_ }}}                  ; Set string start address as parameter -3 ;
+    {{ 4_ }}                    ; Set number address as parameter -2 ;
+    $@std.number_to_string@     ; Call std.string_length ;
+
+    ; Output string using std.output_string ;
+    {{ 5_ }}                ; Set string address as parameter -2 ;
+    $@std.output_string@    ; Call std.output_string ;
+    10.                     ; Output new line ;
+
