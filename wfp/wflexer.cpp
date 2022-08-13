@@ -79,10 +79,10 @@ bool WfLexer::lexer(char* program, const std::string& path)
     m_cursor = 0;
 
     // Analyze WF program
-    if (!analyze(path))
-    {
-        return false;
-    }
+    if (!analyze(path)) return false;
+
+    // Check label jumps
+    if (!checkLabelJumps()) return false;
 
     // WF program successfully analyzed
     return true;
@@ -172,7 +172,7 @@ bool WfLexer::analyze(const std::string& path)
                 break;
 
             case ':': case '@': case '=': case '!': case '>': case '<':
-                // Label
+                // Label and jump to label
                 if (!writeProgram(ch)) return false;
                 if (!analyzeLabel(wfprogram, ch)) return false;
                 break;
@@ -627,4 +627,65 @@ bool WfLexer::writeProgram(char ch)
     // Unable to write character into program
     std::cerr << "Error : Maximum allowed program size exceeded\n";
     return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Check label jumps                                                         //
+//  return : True if label jumps are successfully checked                     //
+////////////////////////////////////////////////////////////////////////////////
+bool WfLexer::checkLabelJumps()
+{
+    std::string label = "";
+    char type = 0;
+    for (int32_t i = 0; i < WFProgramSize; ++i)
+    {
+        // End of program
+        if (!m_program[i]) break;
+
+        switch (m_program[i])
+        {
+            case '"':
+                // String constant
+                while ((m_program[++i] != '"'))
+                {
+                    // End of program
+                    if (!m_program[i]) break;
+                }
+                break;
+
+            case '@': case '=': case '!': case '>': case '<':
+            {
+                // Jump to label
+                label = "";
+                type = m_program[i];
+                while ((m_program[++i] != type))
+                {
+                    // End of program
+                    if (!m_program[i]) break;
+
+                    // Add label character
+                    label.push_back(m_program[i]);
+                }
+
+                // Check if label is existing
+                std::unordered_map<std::string, int32_t>::const_iterator found =
+                    m_labels.find(label);
+                if (found == m_labels.end())
+                {
+                    // Label is not defined
+                    std::cerr << "Error : Invalid jump to label : " <<
+                        type << label << type << '\n' <<
+                        "Label :" << label << ": is not defined\n";
+                    return false;
+                }
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    // Labels successfully checked
+    return true;
 }

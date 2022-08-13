@@ -167,6 +167,12 @@
             ////////////////////////////////////////////////////////////////////
             bool writeProgram(char ch);
 
+            ////////////////////////////////////////////////////////////////////
+            //  Check label jumps                                             //
+            //  return : True if label jumps are successfully checked         //
+            ////////////////////////////////////////////////////////////////////
+            bool checkLabelJumps();
+
 
         private:
             char*           m_program;              // Program array
