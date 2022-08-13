@@ -334,6 +334,9 @@ bool WfLexer::analyzeNumber(WfProgramFile& wfprogram, char digit)
             // Skip invalid program characters
             if ((ch < 32) || (ch > 126)) continue;
 
+            // Skip white spaces
+            if (std::isspace(ch)) continue;
+
             if (std::isdigit(ch) ||
                 (ch == 'X') || (ch == 'x') || (ch == 'B') || (ch == 'b'))
             {
@@ -385,6 +388,9 @@ bool WfLexer::analyzeNumber(WfProgramFile& wfprogram, char digit)
 
         // Skip invalid program characters
         if ((ch < 32) || (ch > 126)) continue;
+
+        // Skip white spaces
+        if (std::isspace(ch)) continue;
 
         if (std::isxdigit(ch))
         {
@@ -619,6 +625,6 @@ bool WfLexer::writeProgram(char ch)
     }
 
     // Unable to write character into program
-    std::cerr << "Error : Program maximum allowed size exceeded\n";
+    std::cerr << "Error : Maximum allowed program size exceeded\n";
     return false;
 }
