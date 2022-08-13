@@ -209,6 +209,11 @@ void Wfp::run()
                 parseString();
                 break;
 
+            case ':': case '@': case '=': case '!': case '>': case '<':
+                // Label and jump to label
+                parseLabel();
+                break;
+
             default:
                 // Invalid instruction
                 break;
@@ -275,4 +280,24 @@ void Wfp::parseString()
         *(m_pointer++) = m_program[m_cursor++];
     }
     m_pointer = pointer;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Parse label                                                               //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::parseLabel()
+{
+    // Parse label
+    std::string label = "";
+    char type = m_program[m_cursor++];
+    while (m_program[m_cursor] != type)
+    {
+        label.push_back(m_program[m_cursor++]);
+    }
+
+    // Jump to label
+    if (type != ':')
+    {
+        m_cursor = m_labels[label];
+    }
 }
