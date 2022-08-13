@@ -245,7 +245,7 @@ void Wfp::parseNumber()
         m_cursor += 2;
         base = 2;
     }
-    if ((m_program[m_cursor+1] == 'X') || (m_program[m_cursor+1] == 'x'))
+    else if ((m_program[m_cursor+1] == 'X') || (m_program[m_cursor+1] == 'x'))
     {
         // Hexadecimal number constant
         m_cursor += 2;
@@ -650,7 +650,7 @@ void Wfp::getIOCursorPosition()
 
         default:
             // Standard I/O
-            WFGetTerminalCursor(m_register, m_backregister);
+            //WFGetTerminalCursor(m_register, m_backregister);
             break;
     }
 }
