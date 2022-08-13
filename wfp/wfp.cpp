@@ -393,6 +393,7 @@ void Wfp::parseInstruction()
         case '^':
             // Set current program cursor
             m_cursor = m_register;
+            checkProgramCursor();
             break;
 
         case '$':
@@ -660,11 +661,26 @@ void Wfp::setIOMode()
 void Wfp::checkPointerAddress()
 {
     // Check pointer address
-    if ((m_pointer < -WFMemoryOffset) ||
-        (m_pointer >= WFMemoryOffset))
+    if ((m_pointer < -WFMemoryOffset) || (m_pointer >= WFMemoryOffset))
     {
         // Pointer out of range
-        std::cerr << "Runtime Error : Pointer out of range\n";
+        std::cerr << "Runtime Error : Pointer out of range : " <<
+            m_pointer << "\n";
+        m_cursor = WFProgramSize;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Check program cursor                                                      //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::checkProgramCursor()
+{
+    // Check program cursor
+    if ((m_cursor < 0) || (m_cursor >= WFProgramSize))
+    {
+        // Program cursor out of range
+        std::cerr << "Runtime Error : Program cursor out of range : " <<
+            m_cursor << "\n";
         m_cursor = WFProgramSize;
     }
 }
