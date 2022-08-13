@@ -45,13 +45,13 @@
     #include "system.h"
     #include "wflexer.h"
 
-    #include <cctype>
     #include <cstdint>
     #include <cstring>
     #include <exception>
     #include <iostream>
     #include <fstream>
     #include <string>
+    #include <cctype>
     #include <algorithm>
     #include <unordered_map>
 

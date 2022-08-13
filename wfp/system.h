@@ -42,6 +42,18 @@
 #ifndef WFP_SYSTEM_HEADER
 #define WFP_SYSTEM_HEADER
 
+    #include <cstdint>
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF program default settings                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const bool WFMemoryDump = true;
+    const int32_t WFProgramSize = 16777216;
+    const int32_t WFProgramOverhead = 1024;
+    const int32_t WFMemorySize = 16777216;
+    const int32_t WFMemoryOffset = WFMemorySize/2;
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  Operating system configuration                                        //

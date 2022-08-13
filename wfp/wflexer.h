@@ -44,25 +44,15 @@
 
     #include "system.h"
 
-    #include <cctype>
     #include <cstdint>
     #include <cstring>
     #include <exception>
     #include <iostream>
     #include <fstream>
     #include <string>
+    #include <cctype>
     #include <algorithm>
     #include <unordered_map>
-
-
-    ////////////////////////////////////////////////////////////////////////////
-    //  WF program default settings                                           //
-    ////////////////////////////////////////////////////////////////////////////
-    const bool WFMemoryDump = true;
-    const int32_t WFProgramSize = 16777216;
-    const int32_t WFProgramOverhead = 1024;
-    const int32_t WFMemorySize = 16777216;
-    const int32_t WFMemoryOffset = WFMemorySize/2;
 
 
     ////////////////////////////////////////////////////////////////////////////
