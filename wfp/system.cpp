@@ -42,8 +42,12 @@
 #include "system.h"
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  Windows system functions                                                  //
+////////////////////////////////////////////////////////////////////////////////
 #ifdef WFP_WINDOWS
 
+    #include <windows.h>
     #include <stdlib.h>
     #include <conio.h>
 
@@ -59,9 +63,49 @@
         return _getch();
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  Windows get terminal cursor position                                  //
+    ////////////////////////////////////////////////////////////////////////////
+    void WFGetTerminalCursor(int32_t& x, int32_t& y)
+    {
+        // Flush standard output
+        static const HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+        std::cout.flush();
+
+        // Reset coords
+        x = 0;
+        y = 0;
+        COORD coords = { 0, 0 };
+
+        // Get cursor position
+        CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+        if (GetConsoleScreenBufferInfo(stdHandle, &consoleInfo))
+        {
+            x = static_cast<int32_t>(consoleInfo.dwCursorPosition.X);
+            y = static_cast<int32_t>(consoleInfo.dwCursorPosition.Y);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  Windows set terminal cursor position                                  //
+    ////////////////////////////////////////////////////////////////////////////
+    void WFSetTerminalCursor(int32_t x, int32_t y)
+    {
+        // Flush standard output
+        static const HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+        std::cout.flush();
+
+        // Set cursor position
+        COORD coords = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+        SetConsoleCursorPosition(stdHandle, coords);
+    }
+
 #endif // WFP_WINDOWS
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  Linux system functions                                                    //
+////////////////////////////////////////////////////////////////////////////////
 #ifdef WFP_LINUX
 
     #include <unistd.h>
@@ -96,6 +140,22 @@
 
         // Return keycode
         return ch;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  Linux get terminal cursor position                                    //
+    ////////////////////////////////////////////////////////////////////////////
+    void WFGetTerminalCursor(int32_t& x, int32_t& y)
+    {
+
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  Linux set terminal cursor position                                    //
+    ////////////////////////////////////////////////////////////////////////////
+    void WFSetTerminalCursor(int32_t x, int32_t y)
+    {
+
     }
 
 #endif // WFP_LINUX

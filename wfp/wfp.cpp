@@ -452,10 +452,12 @@ void Wfp::parseInstruction()
 
         case ')':
             // Set I/O cursor position
+            WFSetTerminalCursor(m_register, m_backregister);
             break;
 
         case '(':
             // Load I/O cursor position
+            WFGetTerminalCursor(m_register, m_backregister);
             break;
 
         case '?':
