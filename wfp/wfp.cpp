@@ -204,6 +204,11 @@ void Wfp::run()
                 parseCharacter();
                 break;
 
+            case '"':
+                // String constant
+                parseString();
+                break;
+
             default:
                 // Invalid instruction
                 break;
@@ -253,5 +258,21 @@ void Wfp::parseNumber()
 ////////////////////////////////////////////////////////////////////////////////
 void Wfp::parseCharacter()
 {
+    // Parse character
     m_register = m_program[(++m_cursor)++];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Parse string constant                                                     //
+////////////////////////////////////////////////////////////////////////////////
+void Wfp::parseString()
+{
+    // Parse string
+    int32_t* pointer = m_pointer;
+    ++m_cursor;
+    while (m_program[m_cursor] != '"')
+    {
+        *(m_pointer++) = m_program[m_cursor++];
+    }
+    m_pointer = pointer;
 }
