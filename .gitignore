@@ -8,6 +8,8 @@
 
 # WFP
 !wfp/
+!wfp/wfp.exe
+!wfp/wfp
 
 # Projects files
 !Makefile

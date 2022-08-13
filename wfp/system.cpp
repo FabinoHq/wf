@@ -91,6 +91,10 @@
     ////////////////////////////////////////////////////////////////////////////
     void WFSetTerminalCursor(int32_t x, int32_t y)
     {
+        // Clamp x and y
+        if (x <= 0) x = 0;
+        if (y <= 0) y = 0;
+
         // Flush standard output
         static const HANDLE stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
         std::cout.flush();
@@ -147,7 +151,9 @@
     ////////////////////////////////////////////////////////////////////////////
     void WFGetTerminalCursor(int32_t& x, int32_t& y)
     {
-
+        // Reset coords
+        x = 0;
+        y = 0;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -155,7 +161,19 @@
     ////////////////////////////////////////////////////////////////////////////
     void WFSetTerminalCursor(int32_t x, int32_t y)
     {
+        // Clamp x and y
+        ++y;
+        if (x <= 0) x = 0;
+        if (y <= 0) y = 0;
 
+        // Flush standard output
+        std::cout.flush();
+
+        // Set cursor position
+        std::cout << "\033[" << y << ";" << x << "f";
+
+        // Flush standard output
+        std::cout.flush();
     }
 
 #endif // WFP_LINUX
