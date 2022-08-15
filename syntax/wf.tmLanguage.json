@@ -1,0 +1,205 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "WF",
+	"patterns": [
+		{
+			"include": "#type_binary"
+		},
+		{
+			"include": "#type_hexadecimal"
+		},
+		{
+			"include": "#type_decimal"
+		},
+		{
+			"include": "#type_empty"
+		},
+		{
+			"include": "#variable_binary"
+		},
+		{
+			"include": "#variable_hexadecimal"
+		},
+		{
+			"include": "#variable_decimal"
+		},
+		{
+			"include": "#variable_empty"
+		},
+		{
+			"include": "#constants_binary"
+		},
+		{
+			"include": "#constants_hexadecimal"
+		},
+		{
+			"include": "#constants_decimal"
+		},
+		{
+			"include": "#jumpreturn"
+		},
+		{
+			"include": "#includes"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#characters"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#label"
+		},
+		{
+			"include": "#jump"
+		},
+		{
+			"include": "#jumpez"
+		},
+		{
+			"include": "#jumpnz"
+		},
+		{
+			"include": "#jumpgz"
+		},
+		{
+			"include": "#jumplz"
+		},
+		{
+			"include": "#jumpcall"
+		}
+	],
+	"repository": {
+		"type_binary": {
+			"patterns": [{
+				"name": "storage.type.wf",
+				"match": "((0(b|B)[0-1]{1,})])"
+			}]
+		},
+		"type_hexadecimal": {
+			"patterns": [{
+				"name": "storage.type.wf",
+				"match": "((0(x|X)([0-9]|[A-F]|[a-f]){1,})])"
+			}]
+		},
+		"type_decimal": {
+			"patterns": [{
+				"name": "storage.type.wf",
+				"match": "(([0-9]{1,})])"
+			}]
+		},
+		"type_empty": {
+			"patterns": [{
+				"name": "storage.type.wf",
+				"match": "(])"
+			}]
+		},
+		"variable_binary": {
+			"patterns": [{
+				"name": "variable.parameter.wf",
+				"match": "((0(b|B)[0-1]{1,})_)"
+			}]
+		},
+		"variable_hexadecimal": {
+			"patterns": [{
+				"name": "variable.parameter.wf",
+				"match": "((0(x|X)([0-9]|[A-F]|[a-f]){1,})_)"
+			}]
+		},
+		"variable_decimal": {
+			"patterns": [{
+				"name": "variable.parameter.wf",
+				"match": "(([0-9]{1,})_)"
+			}]
+		},
+		"variable_empty": {
+			"patterns": [{
+				"name": "variable.parameter.wf",
+				"match": "(_)"
+			}]
+		},
+		"constants_binary": {
+			"patterns": [{
+				"name": "constant.numeric.integer.binary.wf",
+				"match": "(0(b|B)[0-1]{1,})"
+			}]
+		},
+		"constants_hexadecimal": {
+			"patterns": [{
+				"name": "constant.numeric.integer.hexadecimal.wf",
+				"match": "(0(x|X)([0-9]|[A-F]|[a-f]){1,})"
+			}]
+		},
+		"constants_decimal": {
+			"patterns": [{
+				"name": "constant.numeric.integer.decimal.wf",
+				"match": "([0-9]{1,})"
+			}]
+		},
+		"jumpreturn": {
+			"patterns": [{
+				"name": "keyword.control.wf",
+				"match": "\\^"
+			}]
+		},
+		"includes": {
+			"name": "string.quoted.other.wf",
+			"begin": "`",
+			"end": "`"
+		},
+		"characters": {
+			"name": "string.quoted.simple.wf",
+			"begin": "'",
+			"end": "'"
+		},
+		"strings": {
+			"name": "string.quoted.double.wf",
+			"begin": "\"",
+			"end": "\""
+		},
+		"comments": {
+			"name": "comment.block.wf",
+			"begin": ";",
+			"end": ";"
+		},
+		"label": {
+			"name": "entity.name.function.wf",
+			"begin": ":",
+			"end": ":"
+		},
+		"jump": {
+			"name": "keyword.control.wf",
+			"begin": "@",
+			"end": "@"
+		},
+		"jumpez": {
+			"name": "keyword.control.conditional.wf",
+			"begin": "=",
+			"end": "="
+		},
+		"jumpnz": {
+			"name": "keyword.control.conditional.wf",
+			"begin": "!",
+			"end": "!"
+		},
+		"jumpgz": {
+			"name": "keyword.control.conditional.wf",
+			"begin": ">",
+			"end": ">"
+		},
+		"jumplz": {
+			"name": "keyword.control.conditional.wf",
+			"begin": "<",
+			"end": "<"
+		},
+		"jumpcall": {
+			"name": "keyword.control.wf",
+			"begin": "\\$",
+			"end": "\\$"
+		}
+	},
+	"scopeName": "source.wf"
+}

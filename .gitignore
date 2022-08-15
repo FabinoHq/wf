@@ -12,6 +12,13 @@
 !snippets.wf
 !helloworld.wf
 
+# Syntax files
+!syntax/
+!syntax/wf.sublime-syntax
+!syntax/package.json
+!syntax/wf.tmLanguage.json
+
+
 # WFP
 !wfp/
 !wfp/wfp.exe

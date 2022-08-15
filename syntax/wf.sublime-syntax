@@ -1,0 +1,138 @@
+%YAML 1.2
+---
+name: WF
+file_extensions: [wf, WF]
+scope: source.wf
+
+contexts:
+  main:
+    - match: ((0(b|B)[0-1]{1,})\])
+      scope: storage.type.wf
+
+    - match: ((0(x|X)([0-9]|[A-F]|[a-f]){1,})\])
+      scope: storage.type.wf
+
+    - match: (([0-9]{1,})\])
+      scope: storage.type.wf
+
+    - match: (\])
+      scope: storage.type.wf
+
+    - match: (\[)
+      scope: markup.italic.wf
+
+    - match: ((0(b|B)[0-1]{1,})\_)
+      scope: variable.parameter.wf
+
+    - match: ((0(x|X)([0-9]|[A-F]|[a-f]){1,})\_)
+      scope: variable.parameter.wf
+
+    - match: (([0-9]{1,})\_)
+      scope: variable.parameter.wf
+
+    - match: (\_)
+      scope: variable.parameter.wf
+
+    - match: (0(b|B)[0-1]{1,})
+      scope: constant.numeric.integer.binary.wf
+
+    - match: (0(x|X)([0-9]|[A-F]|[a-f]){1,})
+      scope: constant.numeric.integer.hexadecimal.wf
+
+    - match: ([0-9]{1,})
+      scope: constant.numeric.integer.decimal.wf
+
+    - match: (\{|\})
+      scope: markup.bold.wf
+
+    - match: (\^)
+      scope: keyword.control.wf
+
+    - match: (`)
+      push: include
+
+    - match: (')
+      push: character
+
+    - match: (")
+      push: string
+
+    - match: (;)
+      push: comment
+
+    - match: (:)
+      push: label
+
+    - match: (@)
+      push: jump
+
+    - match: (=)
+      push: jumpez
+
+    - match: (!)
+      push: jumpnz
+
+    - match: (>)
+      push: jumpgz
+
+    - match: (<)
+      push: jumplz
+
+    - match: (\$)
+      push: jumpcall
+
+  include:
+    - meta_scope: string.quoted.other.wf
+    - match: (`)
+      pop: true
+
+  character:
+    - meta_scope: string.quoted.simple.wf
+    - match: (')
+      pop: true
+
+  string:
+    - meta_scope: string.quoted.double.wf
+    - match: (")
+      pop: true
+
+  comment:
+    - meta_scope: comment.block.wf
+    - match: (;)
+      pop: true
+
+  label:
+    - meta_scope: entity.name.function.wf
+    - match: (:)
+      pop: true
+
+  jump:
+    - meta_scope: keyword.control.wf
+    - match: (@)
+      pop: true
+
+  jumpez:
+    - meta_scope: keyword.control.conditional.wf
+    - match: (=)
+      pop: true
+
+  jumpnz:
+    - meta_scope: keyword.control.conditional.wf
+    - match: (!)
+      pop: true
+
+  jumpgz:
+    - meta_scope: keyword.control.conditional.wf
+    - match: (>)
+      pop: true
+
+  jumplz:
+    - meta_scope: keyword.control.conditional.wf
+    - match: (<)
+      pop: true
+
+  jumpcall:
+    - meta_scope: keyword.control.wf
+    - match: (\$)
+      pop: true
+
