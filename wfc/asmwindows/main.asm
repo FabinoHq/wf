@@ -31,30 +31,22 @@ WFMain:
     call ??_U@YAPEAX_K@Z    ; new[] (size in ecx, return address in rax)
     push rax                ; Push address into stack
 
+    ; Read character into al
     call WFKeyboardInput
 
-    ; Move character into cl
-    mov cl, al
-
-    ; Output character from cl
-    sub rsp, 40     ; Push stack
-    call putchar
-    add rsp, 40     ; Pop stack
+    ; Output character from al
+    call WFStandardOutput
 
     ; Output new line
-    mov cl, 10
-    sub rsp, 40     ; Push stack
-    call putchar
-    add rsp, 40     ; Pop stack
+    mov al, 10
+    call WFStandardOutput
 
     ; Output string
     mov rbx, OFFSET message     ; Move address of message into rbx
     outputstring:
-        mov cl, [rbx]           ; Move character into cl
+        mov al, [rbx]           ; Move character into al
 
-        sub rsp, 40             ; Push stack
-        call putchar            ; Output current character
-        add rsp, 40             ; Pop stack
+        call WFStandardOutput
 
         inc rbx                 ; Increment rbx
         mov al, [rbx]           ; Move next character into al
@@ -70,11 +62,8 @@ WFMain:
     add rsp, 40     ; Pop stack
     ret 0           ; Return 0
 
-main endp
-
 ; WFKeyboardInput : low level keyboard input
 WFKeyboardInput:
-
     push rbx        ; Push rbx
     push rcx        ; Push rcx
     push rdx        ; Push rdx
@@ -93,6 +82,7 @@ WFKeyboardInput:
     sub rsp, 40         ; Push stack
     call _getch         ; Call _getch
     add rsp, 40         ; Pop stack
+    and rax, 0FFh       ; Mask low byte
 
     pop r12         ; Pop r12
     pop rdx         ; Pop rdx
@@ -101,5 +91,28 @@ WFKeyboardInput:
 
     ret         ; Return to caller
 
+; WFStandardOutput : low level standard output
+WFStandardOutput:
+    push rax        ; Push rax
+    push rbx        ; Push rbx
+    push rcx        ; Push rcx
+    push rdx        ; Push rdx
+    push r12        ; Push r12
+
+    xor rcx, rcx    ; Clear rcx
+    mov cl, al      ; Move register value into cl
+    sub rsp, 40     ; Push stack
+    call putchar    ; Output character from cl
+    add rsp, 40     ; Pop stack
+
+    pop r12         ; Pop r12
+    pop rdx         ; Pop rdx
+    pop rcx         ; Pop rcx
+    pop rbx         ; Pop rbx
+    pop rax         ; Pop rax
+
+    ret         ; Return to caller
+
+main endp
 _TEXT ENDS
 end
