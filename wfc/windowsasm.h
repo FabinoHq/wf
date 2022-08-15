@@ -255,13 +255,13 @@
     //  WF Assembly increment pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMIncrementPointer[] =
-        "    inc ecx    ; Increment p\n";
+        "    add ecx, 4    ; Increment p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly decrement pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMDecrementPointer[] =
-        "    dec ecx    ; Decrement p\n";
+        "    sub ecx, 4    ; Decrement p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly set pointer address                                       //

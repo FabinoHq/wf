@@ -500,7 +500,7 @@ bool Wfc::writeString(const std::string& string)
         m_output << "    mov al, '" << string[i] <<
             "' ; Write character into al\n";
         m_output << "    mov [r8], rax  ; Write character into memory\n";
-        m_output << "    inc r8  ; Increment pointer\n";
+        m_output << "    add r8, 4  ; Increment pointer\n";
     }
     m_output << "    pop rax     ; Pop rax\n";
     return (!m_output.bad());
