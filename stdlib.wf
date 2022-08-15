@@ -17,12 +17,11 @@
 
 
 ; std.string_length function : ;
-; Parameter -2 is the string start address ;
-; Parameter -3 is the string length number output address ;
+; Parameter -1 is the string start address ;
+; Parameter -2 is the string length number output address ;
 :std.string_length:
-    {_}                     ; Store caller address at current p-1 ;
     [\]                     ; Store current p address in q ;
-    {{#]                    ; Set p address to address stored at parameter -2 ;
+    {#]                     ; Set p address to address stored at parameter -1 ;
 
     0~                      ; Store string length = 0 in back register ;
     :std.string_length.o:       ; String length loop ;
@@ -31,7 +30,7 @@
         !std.string_length.o!   ; Loop if current character is not null ;
 
     \                       ; Restore p address from q ;
-    {{{#}}}\]               ; Set p address to address stored at parameter -3 ;
+    {{#}}\]                 ; Set p address to address stored at parameter -2 ;
     ~_                      ; Write string length ;
 
     \                       ; Restore p address from q ;
@@ -39,11 +38,10 @@
 
 
 ; std.output_string function : Output string in the current output buffer ;
-; Parameter -2 is the string start address ;
+; Parameter -1 is the string start address ;
 :std.output_string:
-    {_}                     ; Store caller address at current p-1 ;
     [\]                     ; Store current p address in q ;
-    {{#]                    ; Set p address to address stored at parameter -2 ;
+    {#]                     ; Set p address to address stored at parameter -1 ;
 
     #                       ; Store current character in register ;
     :std.output_string.l:       ; Output string loop ;
@@ -55,13 +53,12 @@
 
 
 ; std.output_number function : Output number in the current output buffer ;
-; Parameter -2 is the number address ;
+; Parameter -1 is the number address ;
 :std.output_number:
-    {_}                     ; Store caller address at current p-1 ;
     [\]                     ; Store current p address in q ;
-    {{#]                    ; Set p address to address stored at parameter -2 ;
+    {#]                     ; Set p address to address stored at parameter -1 ;
 
-    #\{{{_                  ; Copy number to p-3 ;
+    #\{{_                   ; Copy number to p-2 ;
 
     ~1+                     ; Add 1 to number ;
     >std.output_number.p>   ; Skip if number is positive ;
@@ -70,32 +67,31 @@
     :std.output_number.p:   ; Positive number ;
     #\]\                    ; Store positive number in q ;
 
-    {1_}                    ; Decapower (power of ten) at p-4 ;
+    {1_}                    ; Decapower (power of ten) at p-3 ;
     :std.output_number.d:   ; Compute decapower ;
         10~{#*_}                ; Multiply decapower by 10 and store result ;
         10~#/_                  ; Divide number by 10 and store result ;
         >std.output_number.d>   ; Loop while number > 0 ;
     10~{#/_}                ; Divide decapower by 10 and store result ;
 
-    \[\_                    ; Restore positive number from q and write to p-3 ;
+    \[\_                    ; Restore positive number from q and write to p-2 ;
     :std.output_number.o:   ; Output number digit by digit ;
         {#~}#/~10~%~48+.        ; Output digit : 48+((number/decapower)%10) ;
         10~{#/_}                ; Divide decapower by 10 ;
         >std.output_number.o>   ; Loop while decapower > 0 ;
 
-    }}}                     ; Restore p address ;
+    }}                      ; Restore p address ;
     ^                       ; Jump back to caller ;
 
 
 ; std.number_to_string function : Convert number to string in memory ;
-; Parameter -2 is the number to be converted ;
-; Parameter -3 is the string start address ;
+; Parameter -1 is the number to be converted ;
+; Parameter -2 is the string start address ;
 :std.number_to_string:
-    {_}                     ; Store caller address at current p-1 ;
     [\]                     ; Store current p address in q ;
-    {{#]                    ; Set p address to address stored at parameter -2 ;
+    {#]                     ; Set p address to address stored at parameter -1 ;
 
-    #\{{{{_                  ; Copy number to p-4 ;
+    #\{{{_                  ; Copy number to p-3 ;
 
     ~1+                     ; Add 1 to number ;
     >std.number_to_string.p>    ; Skip if number is positive ;
@@ -104,14 +100,14 @@
     :std.number_to_string.p:    ; Positive number ;
     #\]\                    ; Store positive number in q ;
 
-    {1_}                        ; Decapower (power of ten) at p-5 ;
+    {1_}                        ; Decapower (power of ten) at p-4 ;
     :std.number_to_string.d:    ; Compute decapower ;
         10~{#*_}                ; Multiply decapower by 10 and store result ;
         10~#/_                      ; Divide number by 10 and store result ;
         >std.number_to_string.d>    ; Loop while number > 0 ;
     10~{#/_}                    ; Divide decapower by 10 and store result ;
 
-    \[\_                    ; Restore positive number from q and write to p-4 ;
+    \[\_                    ; Restore positive number from q and write to p-3 ;
     :std.number_to_string.o:    ; Compute number string digit by digit ;
         {#~}#/~10~%~48+         ; Compute digit : 48+((number/decapower)%10) ;
         ~}#\]~_\1~#+_{              ; Output digit to current string address ;
@@ -120,7 +116,7 @@
 
     }#\]0_\                 ; Add '\0' (nul) at the end of the string ;
 
-    }}}                     ; Restore p address ;
+    }}                      ; Restore p address ;
     ^                       ; Jump back to caller ;
 
 
