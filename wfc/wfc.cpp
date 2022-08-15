@@ -149,6 +149,9 @@ bool Wfc::launch(const std::string& path)
         return false;
     }
 
+    // Set stream format to hexadecimal
+    m_output << std::hex;
+
     // Run WFC
     if (!run()) return false;
 
@@ -246,6 +249,7 @@ void Wfc::parseNumber()
     }
     --m_cursor;
     num64 = std::stoll(number, 0, base);
+    writeNumber(num64);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -418,7 +422,7 @@ void Wfc::parseInstruction()
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfc::writeHeader()
 {
-    m_output.write(WFASMHeader, std::strlen(WFASMHeader));
+    m_output << WFASMHeader;
     return (!m_output.bad());
 }
 
@@ -428,6 +432,16 @@ bool Wfc::writeHeader()
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfc::writeFooter()
 {
-    m_output.write(WFASMFooter, std::strlen(WFASMFooter));
+    m_output << WFASMFooter;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF number                                                           //
+//  return : True if WF number is successfully written                        //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeNumber(int64_t number)
+{
+    m_output << WFASMNumberHead << number << WFASMNumberFoot;
     return (!m_output.bad());
 }

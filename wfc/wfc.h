@@ -170,6 +170,12 @@
             ////////////////////////////////////////////////////////////////////
             bool writeFooter();
 
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF number                                               //
+            //  return : True if WF number is successfully written            //
+            ////////////////////////////////////////////////////////////////////
+            bool writeNumber(int64_t number);
+
 
         private:
             char*               m_program;          // Program array

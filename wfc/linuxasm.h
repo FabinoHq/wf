@@ -85,4 +85,13 @@
     const char[] WFASMFooter = "";
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly number constant                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMNumberHead[] =
+        "    ";
+    const char WFASMNumberFoot[] =
+        "   ; Move number constant into register\n";
+
+
 #endif // WFC_LINUXASM_HEADER

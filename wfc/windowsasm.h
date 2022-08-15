@@ -115,13 +115,13 @@
         "    push rax                ; Push address into stack\n"
         "\n"
         "    ; Set memory pointer\n"
-        "    mov r12, rax       ; Move p into r12\n"
-        "    add r12, 33554432  ; Add memory offset ((16777216*4)/2 bytes)\n"
+        "    mov r12, rax        ; Move address into r12\n"
+        "    add r12, 33554432   ; Add memory offset ((16777216*4)/2 bytes)\n"
         "\n"
-        "    xor rax, rax    ; Clear rax  :  Register \n"
-        "    xor rbx, rbx    ; Clear rbx  :  Back register\n"
-        "    xor rcx, rcx    ; Clear rcx  :  Pointer \n"
-        "    xor rdx, rdx    ; Clear rdx  :  Back pointer\n"
+        "    xor eax, eax    ; Clear eax  :  Register \n"
+        "    xor ebx, ebx    ; Clear ebx  :  Back register\n"
+        "    xor ecx, ecx    ; Clear ecx  :  Pointer \n"
+        "    xor edx, edx    ; Clear edx  :  Back pointer\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -141,6 +141,15 @@
         "main endp\n"
         "_TEXT ENDS\n"
         "end\n";
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly number constant                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMNumberHead[] =
+        "    mov eax, 0";
+    const char WFASMNumberFoot[] =
+        "h   ; Move number constant into register\n";
 
 
 #endif // WFC_WINDOWSASM_HEADER
