@@ -416,6 +416,7 @@ void Wfc::parseInstruction()
 
         case ',':
             // Read input byte
+            writeInput();
             break;
 
         case '.':
@@ -729,6 +730,16 @@ bool Wfc::writeModuloRegisters()
     return (!m_output.bad());
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF input                                                            //
+//  return : True if WF input is successfully written                         //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeInput()
+{
+    m_output << WFASMStandardInput;
+    return (!m_output.bad());
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Write WF output                                                           //

@@ -16,6 +16,10 @@ PUBLIC main
 .code
 _TEXT SEGMENT
 main proc
+
+; WFMain : Main entry point
+WFMain:
+
     ; Program start
     xor rax, rax    ; Clear rax
     xor rbx, rbx    ; Clear rbx
@@ -27,18 +31,7 @@ main proc
     call ??_U@YAPEAX_K@Z    ; new[] (size in ecx, return address in rax)
     push rax                ; Push address into stack
 
-    ; Wait for keyboard input
-    inputchar:
-        sub rsp, 40         ; Push stack
-        call _kbhit         ; Call _kbhit
-        add rsp, 40         ; Pop stack
-        test eax, eax       ; Set ZF to 1 if eax is equal to 0
-        je inputchar        ; Loop if _kbhit returned 0
-
-    ; Get character in al
-    sub rsp, 40         ; Push stack
-    call _getch         ; Call _getch
-    add rsp, 40         ; Pop stack
+    call WFKeyboardInput
 
     ; Move character into cl
     mov cl, al
@@ -78,5 +71,35 @@ main proc
     ret 0           ; Return 0
 
 main endp
+
+; WFKeyboardInput : low level keyboard input
+WFKeyboardInput:
+
+    push rbx        ; Push rbx
+    push rcx        ; Push rcx
+    push rdx        ; Push rdx
+    push r12        ; Push r12
+
+    ; Wait for keyboard input
+    inputchar:
+        sub rsp, 40         ; Push stack
+        call _kbhit         ; Call _kbhit
+        add rsp, 40         ; Pop stack
+        test eax, eax       ; Set ZF to 1 if eax is equal to 0
+        je inputchar        ; Loop if _kbhit returned 0
+
+    ; Get character in al
+    xor rax, rax        ; Clear rax
+    sub rsp, 40         ; Push stack
+    call _getch         ; Call _getch
+    add rsp, 40         ; Pop stack
+
+    pop r12         ; Pop r12
+    pop rdx         ; Pop rdx
+    pop rcx         ; Pop rcx
+    pop rbx         ; Pop rbx
+
+    ret         ; Return to caller
+
 _TEXT ENDS
 end

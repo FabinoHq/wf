@@ -96,6 +96,9 @@
         "_TEXT SEGMENT\n"
         "main proc\n"
         "\n"
+        "; WFMain : Main entry point\n"
+        "WFMain:\n"
+        "\n"
         "    ; Program start\n"
         "    xor rax, rax    ; Clear rax\n"
         "    xor rbx, rbx    ; Clear rbx\n"
@@ -134,17 +137,7 @@
         "    call ??_V@YAXPEAX@Z         ; delete[] (address in rcx)\n"
         "\n"
         "    ; Wait for keyboard input\n"
-        "    waitkeyboard:\n"
-        "       sub rsp, 40         ; Push stack\n"
-        "       call _kbhit         ; Call _kbhit\n"
-        "       add rsp, 40         ; Pop stack\n"
-        "       test eax, eax       ; Set ZF to 1 if eax is equal to 0\n"
-        "       je waitkeyboard     ; Loop if _kbhit returned 0\n"
-        "\n"
-        "    ; Get keyboard input\n"
-        "    sub rsp, 40         ; Push stack\n"
-        "    call _getch         ; Call _getch (get character in al)\n"
-        "    add rsp, 40         ; Pop stack\n"
+        "    call WFKeyboardInput\n"
         "\n"
         "    ; End of program\n"
         "    xor rax, rax    ; Clear rax\n"
@@ -152,6 +145,36 @@
         "    ret 0           ; Return 0\n"
         "\n"
         "main endp\n"
+        "\n"
+        "; WFKeyboardInput : low level keyboard input\n"
+        "WFKeyboardInput:\n"
+        "\n"
+        "    push rbx        ; Push rbx\n"
+        "    push rcx        ; Push rcx\n"
+        "    push rdx        ; Push rdx\n"
+        "    push r12        ; Push r12\n"
+        "\n"
+        "    ; Wait for keyboard input\n"
+        "    inputchar:\n"
+        "        sub rsp, 40         ; Push stack\n"
+        "        call _kbhit         ; Call _kbhit\n"
+        "        add rsp, 40         ; Pop stack\n"
+        "        test eax, eax       ; Set ZF to 1 if eax is equal to 0\n"
+        "        je inputchar        ; Loop if _kbhit returned 0\n"
+        "\n"
+        "    ; Get character in al\n"
+        "    xor rax, rax        ; Clear rax\n"
+        "    sub rsp, 40         ; Push stack\n"
+        "    call _getch         ; Call _getch\n"
+        "    add rsp, 40         ; Pop stack\n"
+        "\n"
+        "    pop r12         ; Pop r12\n"
+        "    pop rdx         ; Pop rdx\n"
+        "    pop rcx         ; Pop rcx\n"
+        "    pop rbx         ; Pop rbx\n"
+        "\n"
+        "    ret         ; Return to caller\n"
+        "\n"
         "_TEXT ENDS\n"
         "end\n";
 
@@ -362,6 +385,12 @@
         "    mov rdx, r8    ; Move r8 into rdx\n"
         "\n";
 
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly standard input                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMStandardInput[] =
+        "    call WFKeyboardInput   ; Standard input\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //
