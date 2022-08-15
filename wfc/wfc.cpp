@@ -380,14 +380,17 @@ void Wfc::parseInstruction()
 
         case '*':
             // Multiply
+            writeMultiplyRegisters();
             break;
 
         case '/':
             // Divide
+            writeDivideRegisters();
             break;
 
         case '%':
             // Modulo
+            writeModuloRegisters();
             break;
 
         case '&':
@@ -553,7 +556,7 @@ bool Wfc::writeStoreRegisterValue()
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Write WF add registers                                                    //
-//  return : True if WF add registers is successfully written                 //
+//  return : True if WF add is successfully written                           //
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfc::writeAddRegisters()
 {
@@ -568,6 +571,36 @@ bool Wfc::writeAddRegisters()
 bool Wfc::writeSubtractRegisters()
 {
     m_output << WFASMSubtractRegisters;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF multiply registers                                               //
+//  return : True if WF multiply is successfully written                      //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeMultiplyRegisters()
+{
+    m_output << WFASMMultiplyRegisters;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF divide registers                                                 //
+//  return : True if WF divide is successfully written                        //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeDivideRegisters()
+{
+    m_output << WFASMDivideRegisters;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF modulo registers                                                 //
+//  return : True if WF modulo is successfully written                        //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeModuloRegisters()
+{
+    m_output << WFASMModuloRegisters;
     return (!m_output.bad());
 }
 

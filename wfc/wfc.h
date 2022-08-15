@@ -236,7 +236,7 @@
 
             ////////////////////////////////////////////////////////////////////
             //  Write WF add registers                                        //
-            //  return : True if WF add registers is successfully written     //
+            //  return : True if WF add is successfully written               //
             ////////////////////////////////////////////////////////////////////
             bool writeAddRegisters();
 
@@ -245,6 +245,24 @@
             //  return : True if WF subtract is successfully written          //
             ////////////////////////////////////////////////////////////////////
             bool writeSubtractRegisters();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF multiply registers                                   //
+            //  return : True if WF multiply is successfully written          //
+            ////////////////////////////////////////////////////////////////////
+            bool writeMultiplyRegisters();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF divide registers                                     //
+            //  return : True if WF divide is successfully written            //
+            ////////////////////////////////////////////////////////////////////
+            bool writeDivideRegisters();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF modulo registers                                     //
+            //  return : True if WF modulo is successfully written            //
+            ////////////////////////////////////////////////////////////////////
+            bool writeModuloRegisters();
 
 
             ////////////////////////////////////////////////////////////////////

@@ -255,6 +255,35 @@
     const char WFASMSubtractRegisters[] =
         "    sub eax, ebx   ; Subtract (r = r - b)\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly multiply registers                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMMultiplyRegisters[] =
+        "    mul ebx       ; Multiply (r = r * b)\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly divide registers                                          //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMDivideRegisters[] =
+        "\n"
+        "    ; Divide (r = r / b)\n"
+        "    push rdx       ; Push rdx\n"
+        "    div ebx        ; Quotient in rax, remainder in rdx\n"
+        "    pop rdx        ; Pop rdx\n"
+        "\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly modulo registers                                          //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMModuloRegisters[] =
+        "\n"
+        "    ; Modulo (r = r % b)\n"
+        "    push rdx       ; Push rdx\n"
+        "    div ebx        ; Quotient in rax, remainder in rdx\n"
+        "    mov eax, edx   ; Move remainder into register\n"
+        "    pop rdx        ; Pop rdx\n"
+        "\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //
