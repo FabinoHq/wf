@@ -86,23 +86,44 @@ int main(int argc, char* argv[])
         {
             // Start WFC
             Wfc wfc;
-            wfc.launch(argv[1]);
+            if (!wfc.launch(argv[1]))
+            {
+                // Wait for a keyboard input
+                #ifdef WFC_WINDOWS
+                    WFKeyboardInput();
+                #endif // WFC_WINDOWS
+            }
         }
         catch (const std::exception&)
         {
             // Standard exception occured
             std::cerr << "Unknown error occured\n";
+
+            // Wait for a keyboard input
+            #ifdef WFC_WINDOWS
+                WFKeyboardInput();
+            #endif // WFC_WINDOWS
         }
         catch (...)
         {
             // Unknown exception occured
             std::cerr << "Unknown error occured\n";
+
+            // Wait for a keyboard input
+            #ifdef WFC_WINDOWS
+                WFKeyboardInput();
+            #endif // WFC_WINDOWS
         }
     }
     else
     {
         // Not enough program arguments
         std::cerr << "Error : Please specify a .wf input file\n";
+
+        // Wait for a keyboard input
+        #ifdef WFC_WINDOWS
+            WFKeyboardInput();
+        #endif // WFC_WINDOWS
     }
 
     // Program successfully executed

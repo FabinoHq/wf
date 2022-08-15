@@ -115,8 +115,9 @@
 
             ////////////////////////////////////////////////////////////////////
             //  Run WFC                                                       //
+            //  return : True if WF is successfully compiled, false otherwise //
             ////////////////////////////////////////////////////////////////////
-            void run();
+            bool run();
 
 
         private:
@@ -157,6 +158,19 @@
             void parseInstruction();
 
 
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF header                                               //
+            //  return : True if WF header is successfully written            //
+            ////////////////////////////////////////////////////////////////////
+            bool writeHeader();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF footer                                               //
+            //  return : True if WF footer is successfully written            //
+            ////////////////////////////////////////////////////////////////////
+            bool writeFooter();
+
+
         private:
             char*               m_program;          // Program array
             int32_t             m_cursor;           // Program cursor
@@ -164,7 +178,9 @@
             std::unordered_map<std::string, bool>       m_includes; // Includes
             std::unordered_map<std::string, int32_t>    m_labels;   // Labels
 
-            WfLexer         m_wflexer;              // WF Lexer
+            WfLexer             m_wflexer;          // WF Lexer
+
+            std::ofstream       m_output;           // Assembly output
     };
 
 

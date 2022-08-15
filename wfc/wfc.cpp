@@ -50,7 +50,8 @@ m_program(0),
 m_cursor(0),
 m_includes(),
 m_labels(),
-m_wflexer(m_includes, m_labels)
+m_wflexer(m_includes, m_labels),
+m_output()
 {
 
 }
@@ -72,6 +73,33 @@ Wfc::~Wfc()
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfc::launch(const std::string& path)
 {
+    // Extract .wf program file name
+    std::string asmpath = "";
+    size_t i = 0;
+    for (i = path.length()-1; i > 0; --i)
+    {
+        if ((path[i] == '/') || (path[i] == '\\'))
+        {
+            ++i;
+            break;
+        }
+    }
+    asmpath = path.substr(i, path.length()-i);
+
+    // Remove file extension
+    for (i = 0; i < asmpath.length(); ++i)
+    {
+        if (asmpath[i] == '.')
+        {
+            ++i;
+            break;
+        }
+    }
+    asmpath = asmpath.substr(0, i-1);
+
+    // Add .asm extension
+    asmpath += ".asm";
+
     // Reset program array
     if (m_program) { delete[] m_program; }
     m_program = 0;
@@ -111,20 +139,34 @@ bool Wfc::launch(const std::string& path)
 
     // Reset WFC states
     m_cursor = 0;
+    if (m_output.is_open()) m_output.close();
+    m_output.open(asmpath, std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!m_output.is_open())
+    {
+        // Unable to open output assembly file
+        std::cerr <<
+            "Error : Unable to open output assembly file : " << asmpath << "\n";
+        return false;
+    }
 
     // Run WFC
-    run();
+    if (!run()) return false;
 
     // WFC successfully terminated
+    if (m_output.is_open()) m_output.close();
     return true;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Run WFC                                                                   //
+//  return : True if WF is successfully compiled, false otherwise             //
 ////////////////////////////////////////////////////////////////////////////////
-void Wfc::run()
+bool Wfc::run()
 {
+    // WF header
+    if (!writeHeader()) return false;
+
     // WF Parser
     for (m_cursor = 0; m_cursor < WFProgramSize; ++m_cursor)
     {
@@ -161,6 +203,12 @@ void Wfc::run()
                 break;
         }
     }
+
+    // WF footer
+    if (!writeFooter()) return false;
+
+    // WF successfully compiled
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -361,4 +409,25 @@ void Wfc::parseInstruction()
             // Invalid instruction
             break;
     }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF header                                                           //
+//  return : True if WF header is successfully written                        //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeHeader()
+{
+    m_output.write(WFASMHeader, std::strlen(WFASMHeader));
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF footer                                                           //
+//  return : True if WF footer is successfully written                        //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeFooter()
+{
+    m_output.write(WFASMFooter, std::strlen(WFASMFooter));
+    return (!m_output.bad());
 }
