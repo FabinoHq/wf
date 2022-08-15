@@ -143,6 +143,7 @@
     <ClInclude Include="system.h" />
     <ClInclude Include="wflexer.h" />
     <ClInclude Include="wfc.h" />
+    <ClInclude Include="windowsasm.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

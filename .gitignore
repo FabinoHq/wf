@@ -61,6 +61,8 @@
 !wfc/main.cpp
 !wfc/system.h
 !wfc/system.cpp
+!wfc/windowsasm.h
+!wfc/linuxasm.h
 !wfc/wflexer.h
 !wfc/wflexer.cpp
 !wfc/wfc.h

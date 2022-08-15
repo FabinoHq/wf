@@ -33,6 +33,9 @@
     <ClInclude Include="wflexer.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="windowsasm.h">
+      <Filter>Fichiers sources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
