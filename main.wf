@@ -44,7 +44,8 @@
     10.                     ; Output new line ;
 
     ; Convert number to string using std.number_to_string ;
-    4]0x7B_                  ; Write number 123 (0x7B) at address 4 ;
+    4]0x7B_                 ; Write number 123 (0x7B) at address 4 ;
+    0]                      ; Reset p to 0 ;
 
     {{ 5_ }}                    ; Set string start address as parameter -2 ;
     { 4_ }                      ; Set number address as parameter -1 ;
