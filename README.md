@@ -25,7 +25,7 @@
 	=label= : Jump to label if register value is equal to zero (r == 0)
 	!label! : Jump to label if register value is not equal to zero (r != 0)
 	>label> : Jump to label if register value is greater than zero (r > 0)
-	<label< : Jump to label if register value is lesser than zero (r < 0)
+	<label< : Jump to label if register value is less than zero (r < 0)
 
 	$label$ : Function call (Jump unconditionally to label)
 	^ : Function return (Jump unconditionally to caller)

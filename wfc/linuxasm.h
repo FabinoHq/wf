@@ -110,6 +110,58 @@
     const char WFASMLabelFoot[] =
         ":   ; Label\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly jump                                                      //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMJumpHead[] =
+        "    jmp WF";
+    const char WFASMJumpFoot[] =
+        "    ; Jump\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly call                                                      //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMCallHead[] =
+        "    call WF";
+    const char WFASMCallFoot[] =
+        "    ; Call\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly jump equal to zero                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMJumpEZHead[] =
+        "    ; Compare eax with 0\n"
+        "    jz WF";
+    const char WFASMJumpEZFoot[] =
+        "    ; Jump if zero\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly jump not equal to zero                                    //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMJumpNZHead[] =
+        "    ; Compare eax with 0\n"
+        "    jnz WF";
+    const char WFASMJumpNZFoot[] =
+        "    ; Jump if not zero\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly jump greater than zero                                    //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMJumpGZHead[] =
+        "    ; Compare eax with 0\n"
+        "    jg WF";
+    const char WFASMJumpGZFoot[] =
+        "    ; Jump if greater than zero\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly jump less than zero                                       //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMJumpLZHead[] =
+        "    ; Compare eax with 0\n"
+        "    jl WF";
+    const char WFASMJumpLZFoot[] =
+        "    ; Jump if less than zero\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly swap pointers                                             //

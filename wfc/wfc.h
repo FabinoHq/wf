@@ -190,6 +190,42 @@
             ////////////////////////////////////////////////////////////////////
             bool writeLabel(const std::string& label);
 
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF jump                                                 //
+            //  return : True if WF jump is successfully written              //
+            ////////////////////////////////////////////////////////////////////
+            bool writeJump(const std::string& label);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF call                                                 //
+            //  return : True if WF call is successfully written              //
+            ////////////////////////////////////////////////////////////////////
+            bool writeCall(const std::string& label);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF jump equal to zero                                   //
+            //  return : True if WF jump EZ is successfully written           //
+            ////////////////////////////////////////////////////////////////////
+            bool writeJumpEZ(const std::string& label);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF jump not equal to zero                               //
+            //  return : True if WF jump NZ is successfully written           //
+            ////////////////////////////////////////////////////////////////////
+            bool writeJumpNZ(const std::string& label);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF jump greater than zero                               //
+            //  return : True if WF jump GZ is successfully written           //
+            ////////////////////////////////////////////////////////////////////
+            bool writeJumpGZ(const std::string& label);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF jump less than zero                                  //
+            //  return : True if WF jump LZ is successfully written           //
+            ////////////////////////////////////////////////////////////////////
+            bool writeJumpLZ(const std::string& label);
+
 
             ////////////////////////////////////////////////////////////////////
             //  Write WF swap pointers                                        //

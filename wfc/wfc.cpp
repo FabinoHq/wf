@@ -296,21 +296,27 @@ void Wfc::parseLabel()
             break;
 
         case '@':
+            writeJump(label);
             break;
 
         case '$':
+            writeCall(label);
             break;
 
         case '=':
+            writeJumpEZ(label);
             break;
 
         case '!':
+            writeJumpNZ(label);
             break;
 
         case '>':
+            writeJumpGZ(label);
             break;
 
         case '<':
+            writeJumpLZ(label);
             break;
 
         default:
@@ -484,6 +490,72 @@ bool Wfc::writeLabel(const std::string& label)
 {
     int32_t labelNum = m_labels[label];
     m_output << WFASMLabelHead << labelNum << WFASMLabelFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF jump                                                             //
+//  return : True if WF jump is successfully written                          //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeJump(const std::string& label)
+{
+    int32_t labelNum = m_labels[label];
+    m_output << WFASMJumpHead << labelNum << WFASMJumpFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF call                                                             //
+//  return : True if WF call is successfully written                          //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeCall(const std::string& label)
+{
+    int32_t labelNum = m_labels[label];
+    m_output << WFASMCallHead << labelNum << WFASMCallFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF jump equal to zero                                               //
+//  return : True if WF jump EZ is successfully written                       //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeJumpEZ(const std::string& label)
+{
+    int32_t labelNum = m_labels[label];
+    m_output << WFASMJumpEZHead << labelNum << WFASMJumpEZFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF jump not equal to zero                                           //
+//  return : True if WF jump NZ is successfully written                       //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeJumpNZ(const std::string& label)
+{
+    int32_t labelNum = m_labels[label];
+    m_output << WFASMJumpNZHead << labelNum << WFASMJumpNZFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF jump greater than zero                                           //
+//  return : True if WF jump GZ is successfully written                       //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeJumpGZ(const std::string& label)
+{
+    int32_t labelNum = m_labels[label];
+    m_output << WFASMJumpGZHead << labelNum << WFASMJumpGZFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF jump less than zero                                              //
+//  return : True if WF jump LZ is successfully written                       //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeJumpLZ(const std::string& label)
+{
+    int32_t labelNum = m_labels[label];
+    m_output << WFASMJumpLZHead << labelNum << WFASMJumpLZFoot;
     return (!m_output.bad());
 }
 
