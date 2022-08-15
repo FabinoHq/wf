@@ -350,6 +350,7 @@ void Wfc::parseInstruction()
 
         case '~':
             // Swap register
+            writeSwapRegisters();
             break;
 
         case '#':
@@ -442,6 +443,7 @@ bool Wfc::writeFooter()
     return (!m_output.bad());
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////
 //  Write WF number                                                           //
 //  return : True if WF number is successfully written                        //
@@ -461,6 +463,7 @@ bool Wfc::writeCharacter(char ch)
     m_output << WFASMCharacterHead << ch << WFASMCharacterFoot;
     return (!m_output.bad());
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Write WF swap pointers                                                    //
@@ -511,6 +514,18 @@ bool Wfc::writeGetPointerAddress()
     m_output << WFASMGetPointerAddress;
     return (!m_output.bad());
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF swap registers                                                   //
+//  return : True if WF swap registers is successfully written                //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeSwapRegisters()
+{
+    m_output << WFASMSwapRegisters;
+    return (!m_output.bad());
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Write WF output                                                           //

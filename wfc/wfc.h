@@ -170,6 +170,7 @@
             ////////////////////////////////////////////////////////////////////
             bool writeFooter();
 
+
             ////////////////////////////////////////////////////////////////////
             //  Write WF number                                               //
             //  return : True if WF number is successfully written            //
@@ -181,6 +182,7 @@
             //  return : True if WF character is successfully written         //
             ////////////////////////////////////////////////////////////////////
             bool writeCharacter(char ch);
+
 
             ////////////////////////////////////////////////////////////////////
             //  Write WF swap pointers                                        //
@@ -211,6 +213,14 @@
             //  return : True if WF get pointer is successfully written       //
             ////////////////////////////////////////////////////////////////////
             bool writeGetPointerAddress();
+
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF swap registers                                       //
+            //  return : True if WF swap registers is successfully written    //
+            ////////////////////////////////////////////////////////////////////
+            bool writeSwapRegisters();
+
 
             ////////////////////////////////////////////////////////////////////
             //  Write WF output                                               //

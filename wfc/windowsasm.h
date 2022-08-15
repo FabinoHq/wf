@@ -141,6 +141,11 @@
         "       test eax, eax       ; Set ZF to 1 if eax is equal to 0\n"
         "       je waitkeyboard     ; Loop if _kbhit returned 0\n"
         "\n"
+        "    ; Get keyboard input\n"
+        "    sub rsp, 40         ; Push stack\n"
+        "    call _getch         ; Call _getch (get character in al)\n"
+        "    add rsp, 40         ; Pop stack\n"
+        "\n"
         "    ; End of program\n"
         "    xor rax, rax    ; Clear rax\n"
         "    add rsp, 40     ; Pop stack\n"
@@ -202,6 +207,18 @@
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMGetPointerAddress[] =
         "    mov eax, ecx    ; Get pointer address (r = p)\n";
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly swap registers                                            //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMSwapRegisters[] =
+        "\n"
+        "    ; Swap register (r <=> b)\n"
+        "    push rax          ; Push r into stack\n"
+        "    mov eax, ebx      ; Move b into r\n"
+        "    pop rbx           ; Pop r into b\n"
+        "\n";
 
 
     ////////////////////////////////////////////////////////////////////////////
