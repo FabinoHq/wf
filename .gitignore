@@ -47,6 +47,26 @@
 # WFC
 !wfc/
 
+# Projects files
+!Makefile
+!wfc/wfc.sln
+!wfc/wfc.vcxproj
+!wfc/wfc.vcxproj.filters
+!wfc/wfc.vcxproj.user
+!wfc/resource.h
+!wfc/resource.rc
+!wfc/icon.ico
+
+# Sources files
+!wfc/main.cpp
+!wfc/system.h
+!wfc/system.cpp
+!wfc/wflexer.h
+!wfc/wflexer.cpp
+!wfc/wfc.h
+!wfc/wfc.cpp
+
+
 # ASM
 !wfc/asmwindows/
 !wfc/asmwindows/compile.bat
