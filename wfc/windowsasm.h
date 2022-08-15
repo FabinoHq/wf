@@ -220,6 +220,17 @@
         "    pop rbx           ; Pop r into b\n"
         "\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly load pointed value                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMLoadPointedValue[] =
+        "\n"
+        "    ; Load pointed value (r = *p)\n"
+        "    mov r8, r12    ; Move memory array address into r8\n"
+        "    add r8, rcx    ; Add pointer value to r8\n"
+        "    mov rax, [r8]  ; Load pointed value into register\n"
+        "\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //

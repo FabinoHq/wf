@@ -355,6 +355,7 @@ void Wfc::parseInstruction()
 
         case '#':
             // Load current pointed value
+            writeLoadPointedValue();
             break;
 
         case '_':
@@ -523,6 +524,16 @@ bool Wfc::writeGetPointerAddress()
 bool Wfc::writeSwapRegisters()
 {
     m_output << WFASMSwapRegisters;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF load pointed value                                               //
+//  return : True if WF load value is successfully written                    //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeLoadPointedValue()
+{
+    m_output << WFASMLoadPointedValue;
     return (!m_output.bad());
 }
 
