@@ -375,6 +375,7 @@ void Wfc::parseInstruction()
 
         case '^':
             // Jump back to caller
+            writeReturn();
             break;
 
 
@@ -556,6 +557,16 @@ bool Wfc::writeJumpLZ(const std::string& label)
 {
     int32_t labelNum = m_labels[label];
     m_output << WFASMJumpLZHead << labelNum << WFASMJumpLZFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF return                                                           //
+//  return : True if WF return is successfully written                        //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeReturn()
+{
+    m_output << WFASMReturn;
     return (!m_output.bad());
 }
 

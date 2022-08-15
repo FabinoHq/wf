@@ -233,6 +233,12 @@
     const char WFASMJumpLZFoot[] =
         "    ; Jump if less than zero\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly return                                                    //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMReturn[] =
+        "    ret    ; Return to caller\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly swap pointers                                             //
