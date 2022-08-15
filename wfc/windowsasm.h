@@ -293,9 +293,10 @@
     const char WFASMLoadPointedValue[] =
         "\n"
         "    ; Load pointed value (r = *p)\n"
-        "    mov r8, r12    ; Move memory array address into r8\n"
-        "    add r8, rcx    ; Add pointer value to r8\n"
-        "    mov rax, [r8]  ; Load pointed value into register\n"
+        "    mov r8, r12        ; Move memory array address into r8\n"
+        "    movsxd r9, ecx     ; Convert pointer value into r9 \n"
+        "    add r8, r9         ; Add pointer value to r8\n"
+        "    mov eax, [r8]      ; Load pointed value into register\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -304,9 +305,10 @@
     const char WFASMStoreRegisterValue[] =
         "\n"
         "    ; Store register value (*p = r)\n"
-        "    mov r8, r12    ; Move memory array address into r8\n"
-        "    add r8, rcx    ; Add pointer value to r8\n"
-        "    mov [r8], rax  ; Store register at pointed address\n"
+        "    mov r8, r12        ; Move memory array address into r8\n"
+        "    movsxd r9, ecx     ; Convert pointer value into r9 \n"
+        "    add r8, r9         ; Add pointer value to r8\n"
+        "    mov [r8], eax      ; Store register at pointed address\n"
         "\n";
 
 
