@@ -273,6 +273,7 @@ void Wfc::parseString()
     {
         str.push_back(m_program[m_cursor++]);
     }
+    writeString(str);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -479,6 +480,29 @@ bool Wfc::writeNumber(int64_t num)
 bool Wfc::writeCharacter(char ch)
 {
     m_output << WFASMCharacterHead << ch << WFASMCharacterFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF string                                                           //
+//  return : True if WF string is successfully written                        //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeString(const std::string& string)
+{
+    m_output <<
+    "\n"
+    "    ; Write string\n"
+    "    push rax       ; Push rax\n"
+    "    mov r8, r12    ; Move memory array address into r8\n"
+    "    add r8, rcx    ; Add pointer value to r8\n";
+    for (size_t i = 0; i < string.length(); ++i)
+    {
+        m_output << "    mov al, '" << string[i] <<
+            "' ; Write character into al\n";
+        m_output << "    mov [r8], rax  ; Write character into memory\n";
+        m_output << "    inc r8  ; Increment pointer\n";
+    }
+    m_output << "    pop rax     ; Pop rax\n";
     return (!m_output.bad());
 }
 
