@@ -316,7 +316,6 @@ bool WfLexer::analyzeNumber(WfProgramFile& wfprogram, char digit)
     int32_t line = wfprogram.line;
     char ch = 0;
     std::string number = "";
-    int64_t num64 = 0;
     int32_t base = 10;
     size_t maxsize = 10;
 
@@ -393,7 +392,7 @@ bool WfLexer::analyzeNumber(WfProgramFile& wfprogram, char digit)
         // Skip white spaces
         if (std::isspace(ch)) continue;
 
-        if (std::isxdigit(ch))
+        if (std::isalnum(ch))
         {
             // Add current character to program
             if (!writeProgram(ch)) return false;
@@ -407,29 +406,8 @@ bool WfLexer::analyzeNumber(WfProgramFile& wfprogram, char digit)
         }
     }
 
-    // Erase leading zeros
-    number.erase(
-        0, std::min(number.find_first_not_of('0'), number.size()-1)
-    );
-
-    // Check number constant range
-    if (number.size() <= maxsize)
-    {
-        num64 = std::stoll(number, 0, base);
-        if (base == 10)
-        {
-            if (num64 <= 0x7FFFFFFF) return true;
-        }
-        else
-        {
-            if (num64 <= 0xFFFFFFFF) return true;
-        }
-    }
-
-    // Number constant out of range
-    std::cerr << "Error : Number constant out of range " <<
-        number << "\nin " << wfprogram.path << " line " << line << '\n';
-    return false;
+    // Check number constant
+    return checkNumber(wfprogram, line, number, base, maxsize);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -631,8 +609,100 @@ bool WfLexer::writeProgram(char ch)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//  Check number constant                                                     //
+//  return : True if number constant is valid                                 //
+////////////////////////////////////////////////////////////////////////////////
+bool WfLexer::checkNumber(WfProgramFile& wfprogram, int32_t line,
+    std::string& number, int32_t base, size_t maxsize)
+{
+    int64_t num64 = 0;
+
+    // Check number size
+    if (number.empty())
+    {
+        // Invalid binary number constant
+        std::cerr << "Error : Invalid number constant" <<
+            "\nin " << wfprogram.path << " line " << line << '\n';
+        return false;
+    }
+
+    // Erase leading zeros
+    number.erase(
+        0, std::min(number.find_first_not_of('0'), number.size()-1)
+    );
+
+    // Check number syntax
+    switch (base)
+    {
+        case 2:
+            // Binary
+            for (size_t i = 0; i < number.size(); ++i)
+            {
+                if ((number[i] != '0') && (number[i] != '1'))
+                {
+                    // Invalid binary number constant
+                    std::cerr << "Error : Invalid binary number constant " <<
+                        number << "\nin " << wfprogram.path <<
+                        " line " << line << '\n';
+                    return false;
+                }
+            }
+            break;
+
+        case 16:
+            // Hexadecimal
+            for (size_t i = 0; i < number.size(); ++i)
+            {
+                if (!std::isxdigit(number[i]))
+                {
+                    // Invalid hexadecimal number constant
+                    std::cerr << "Error : Invalid hexadecimal " <<
+                        "number constant " << number << "\nin " <<
+                        wfprogram.path << " line " << line << '\n';
+                    return false;
+                }
+            }
+            break;
+
+        default:
+            // Decimal
+            for (size_t i = 0; i < number.size(); ++i)
+            {
+                if (!std::isdigit(number[i]))
+                {
+                    // Invalid decimal number constant
+                    std::cerr << "Error : Invalid decimal number constant " <<
+                        number << "\nin " << wfprogram.path <<
+                        " line " << line << '\n';
+                    return false;
+                }
+            }
+            break;
+    }
+
+    // Check number constant range
+    if (number.size() <= maxsize)
+    {
+        num64 = std::stoll(number, 0, base);
+        if (base == 10)
+        {
+            if (num64 <= 0x7FFFFFFF) return true;
+        }
+        else
+        {
+            if (num64 <= 0xFFFFFFFF) return true;
+        }
+    }
+
+    // Number constant out of range
+    std::cerr << "Error : Number constant out of range " <<
+        number << "\nin " << wfprogram.path << " line " << line << '\n';
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 //  Check label jumps                                                         //
-//  return : True if label jumps are successfully checked                     //
+//  return : True if label jumps are valid                                    //
 ////////////////////////////////////////////////////////////////////////////////
 bool WfLexer::checkLabelJumps()
 {

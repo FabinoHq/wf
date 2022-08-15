@@ -168,8 +168,15 @@
             bool writeProgram(char ch);
 
             ////////////////////////////////////////////////////////////////////
+            //  Check number constant                                         //
+            //  return : True if number constant is valid                     //
+            ////////////////////////////////////////////////////////////////////
+            bool checkNumber(WfProgramFile& wfprogram, int32_t line,
+                std::string& number, int32_t base, size_t maxsize);
+
+            ////////////////////////////////////////////////////////////////////
             //  Check label jumps                                             //
-            //  return : True if label jumps are successfully checked         //
+            //  return : True if label jumps are valid                        //
             ////////////////////////////////////////////////////////////////////
             bool checkLabelJumps();
 
