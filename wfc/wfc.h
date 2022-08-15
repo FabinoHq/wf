@@ -182,6 +182,12 @@
             ////////////////////////////////////////////////////////////////////
             bool writeCharacter(char ch);
 
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF output                                               //
+            //  return : True if WF output is successfully written            //
+            ////////////////////////////////////////////////////////////////////
+            bool writeOutput();
+
 
         private:
             char*               m_program;          // Program array

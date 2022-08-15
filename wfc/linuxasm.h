@@ -102,4 +102,13 @@
         "   ; Move character constant into register\n";
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly standard output                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMStandardOutput[] =
+        "\n"
+        "    ; Standard output\n"
+        "\n";
+
+
 #endif // WFC_LINUXASM_HEADER

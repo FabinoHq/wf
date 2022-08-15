@@ -395,6 +395,7 @@ void Wfc::parseInstruction()
 
         case '.':
             // Write output byte
+            writeOutput();
             break;
 
         case ')':
@@ -453,5 +454,15 @@ bool Wfc::writeNumber(int64_t num)
 bool Wfc::writeCharacter(char ch)
 {
     m_output << WFASMCharacterHead << ch << WFASMCharacterFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF output                                                           //
+//  return : True if WF output is successfully written                        //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeOutput()
+{
+    m_output << WFASMStandardOutput;
     return (!m_output.bad());
 }

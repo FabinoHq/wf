@@ -160,4 +160,28 @@
         "'   ; Move character constant into register\n";
 
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly standard output                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMStandardOutput[] =
+        "\n"
+        "    ; Standard output\n"
+        "    push rax        ; Push rax\n"
+        "    push rbx        ; Push rbx\n"
+        "    push rcx        ; Push rcx\n"
+        "    push rdx        ; Push rdx\n"
+        "    push r12        ; Push r12\n"
+        "\n"
+        "    mov cl, al      ; Move register value into cl\n"
+        "    sub rsp, 40     ; Push stack\n"
+        "    call putchar    ; Output character from cl\n"
+        "    add rsp, 40     ; Pop stack;\n"
+        "\n"
+        "    pop r12         ; Pop r12\n"
+        "    pop rdx         ; Pop rdx\n"
+        "    pop rcx         ; Pop rcx\n"
+        "    pop rbx         ; Pop rbx\n"
+        "    pop rax         ; Pop rax\n"
+        "\n";
+
 #endif // WFC_WINDOWSASM_HEADER
