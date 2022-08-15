@@ -255,13 +255,13 @@
     //  WF Assembly increment pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMIncrementPointer[] =
-        "    add ecx, 4    ; Increment p\n";
+        "    inc ecx    ; Increment p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly decrement pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMDecrementPointer[] =
-        "    sub ecx, 4    ; Decrement p\n";
+        "    dec ecx    ; Decrement p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly set pointer address                                       //
@@ -295,6 +295,7 @@
         "    ; Load pointed value (r = *p)\n"
         "    mov r8, r12        ; Move memory array address into r8\n"
         "    movsxd r9, ecx     ; Convert pointer value into r9 \n"
+        "    shl r9, 2          ; Multiply r9 by 4\n"
         "    add r8, r9         ; Add pointer value to r8\n"
         "    mov eax, [r8]      ; Load pointed value into register\n"
         "\n";
@@ -307,6 +308,7 @@
         "    ; Store register value (*p = r)\n"
         "    mov r8, r12        ; Move memory array address into r8\n"
         "    movsxd r9, ecx     ; Convert pointer value into r9 \n"
+        "    shl r9, 2          ; Multiply r9 by 4\n"
         "    add r8, r9         ; Add pointer value to r8\n"
         "    mov [r8], eax      ; Store register at pointed address\n"
         "\n";

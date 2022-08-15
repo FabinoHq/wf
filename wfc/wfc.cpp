@@ -492,9 +492,11 @@ bool Wfc::writeString(const std::string& string)
     m_output <<
     "\n"
     "    ; Write string\n"
-    "    push rax       ; Push rax\n"
-    "    mov r8, r12    ; Move memory array address into r8\n"
-    "    add r8, rcx    ; Add pointer value to r8\n";
+    "    push rax           ; Push rax\n"
+    "    mov r8, r12        ; Move memory array address into r8\n"
+    "    movsxd r9, ecx     ; Convert pointer value into r9 \n"
+    "    shl r9, 2          ; Multiply r9 by 4\n"
+    "    add r8, r9         ; Add pointer value to r8\n";
     for (size_t i = 0; i < string.length(); ++i)
     {
         m_output << "    mov al, '" << string[i] <<
