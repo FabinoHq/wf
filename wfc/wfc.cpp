@@ -291,6 +291,10 @@ void Wfc::parseLabel()
     // Jump to label
     switch (type)
     {
+        case ':':
+            writeLabel(label);
+            break;
+
         case '@':
             break;
 
@@ -468,6 +472,18 @@ bool Wfc::writeNumber(int64_t num)
 bool Wfc::writeCharacter(char ch)
 {
     m_output << WFASMCharacterHead << ch << WFASMCharacterFoot;
+    return (!m_output.bad());
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF label                                                            //
+//  return : True if WF label is successfully written                         //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeLabel(const std::string& label)
+{
+    int32_t labelNum = m_labels[label];
+    m_output << WFASMLabelHead << labelNum << WFASMLabelFoot;
     return (!m_output.bad());
 }
 

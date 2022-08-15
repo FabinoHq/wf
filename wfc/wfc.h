@@ -185,6 +185,13 @@
 
 
             ////////////////////////////////////////////////////////////////////
+            //  Write WF label                                                //
+            //  return : True if WF label is successfully written             //
+            ////////////////////////////////////////////////////////////////////
+            bool writeLabel(const std::string& label);
+
+
+            ////////////////////////////////////////////////////////////////////
             //  Write WF swap pointers                                        //
             //  return : True if WF swap pointers is successfully written     //
             ////////////////////////////////////////////////////////////////////
