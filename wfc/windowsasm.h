@@ -169,6 +169,18 @@
 
 
     ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly swap pointers                                             //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMSwapPointers[] =
+        "\n"
+        "    ; Swap pointers (p <=> q)\n"
+        "    push rcx          ; Push p into stack\n"
+        "    mov rcx, rdx      ; Move q into p\n"
+        "    pop rdx           ; Pop p into q\n"
+        "\n";
+
+
+    ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMStandardOutput[] =

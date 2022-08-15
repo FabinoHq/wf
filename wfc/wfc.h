@@ -183,6 +183,12 @@
             bool writeCharacter(char ch);
 
             ////////////////////////////////////////////////////////////////////
+            //  Write WF swap pointers                                        //
+            //  return : True if WF swap pointers is successfully written     //
+            ////////////////////////////////////////////////////////////////////
+            bool writeSwapPointers();
+
+            ////////////////////////////////////////////////////////////////////
             //  Write WF output                                               //
             //  return : True if WF output is successfully written            //
             ////////////////////////////////////////////////////////////////////

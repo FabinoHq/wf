@@ -324,6 +324,7 @@ void Wfc::parseInstruction()
     {
         case '\\':
             // Swap pointers
+            writeSwapPointers();
             break;
 
         case '}':
@@ -454,6 +455,16 @@ bool Wfc::writeNumber(int64_t num)
 bool Wfc::writeCharacter(char ch)
 {
     m_output << WFASMCharacterHead << ch << WFASMCharacterFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF swap pointers                                                    //
+//  return : True if WF swap pointers is successfully written                 //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeSwapPointers()
+{
+    m_output << WFASMSwapPointers;
     return (!m_output.bad());
 }
 
