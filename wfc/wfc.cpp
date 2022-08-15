@@ -360,6 +360,7 @@ void Wfc::parseInstruction()
 
         case '_':
             // Store current register value
+            writeStoreRegisterValue();
             break;
 
         case '^':
@@ -534,6 +535,16 @@ bool Wfc::writeSwapRegisters()
 bool Wfc::writeLoadPointedValue()
 {
     m_output << WFASMLoadPointedValue;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF store register value                                             //
+//  return : True if WF store value is successfully written                   //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeStoreRegisterValue()
+{
+    m_output << WFASMStoreRegisterValue;
     return (!m_output.bad());
 }
 

@@ -231,6 +231,17 @@
         "    mov rax, [r8]  ; Load pointed value into register\n"
         "\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly store register value                                      //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMStoreRegisterValue[] =
+        "\n"
+        "    ; Store register value (*p = r)\n"
+        "    mov r8, r12    ; Move memory array address into r8\n"
+        "    add r8, rcx    ; Add pointer value to r8\n"
+        "    mov [r8], rax  ; Store register at pointed address\n"
+        "\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //

@@ -151,6 +151,14 @@
         "    ; Load pointed value (r = *p)\n"
         "\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly store register value                                      //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMStoreRegisterValue[] =
+        "\n"
+        "    ; Store register value (*p = r)\n"
+        "\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //
