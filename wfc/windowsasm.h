@@ -246,9 +246,9 @@
     const char WFASMSwapPointers[] =
         "\n"
         "    ; Swap pointers (p <=> q)\n"
-        "    push rcx          ; Push p into stack\n"
+        "    mov r8, rcx       ; Move p into r8\n"
         "    mov ecx, edx      ; Move q into p\n"
-        "    pop rdx           ; Pop p into q\n"
+        "    mov rdx, r8       ; Move r8 into q\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -282,9 +282,9 @@
     const char WFASMSwapRegisters[] =
         "\n"
         "    ; Swap register (r <=> b)\n"
-        "    push rax          ; Push r into stack\n"
-        "    mov eax, ebx      ; Move b into r\n"
-        "    pop rbx           ; Pop r into b\n"
+        "    mov r8, rax       ; Move register into r8\n"
+        "    mov eax, ebx      ; Move back reg into reg\n"
+        "    mov rbx, r8       ; Move r8 into back reg\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -328,7 +328,12 @@
     //  WF Assembly multiply registers                                        //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMMultiplyRegisters[] =
-        "    mul ebx       ; Multiply (r = r * b)\n";
+        "\n"
+        "    ; Multiply (r = r * b)\n"
+        "    mov r8, rdx    ; Move rdx into r8\n"
+        "    mul ebx        ; Multiply (r = r * b)\n"
+        "    mov rdx, r8    ; Move r8 into rdx\n"
+        "\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly divide registers                                          //
@@ -336,9 +341,10 @@
     const char WFASMDivideRegisters[] =
         "\n"
         "    ; Divide (r = r / b)\n"
-        "    push rdx       ; Push rdx\n"
+        "    mov r8, rdx    ; Move rdx into r8\n"
+        "    xor rdx, rdx   ; Clear rdx\n"
         "    div ebx        ; Quotient in rax, remainder in rdx\n"
-        "    pop rdx        ; Pop rdx\n"
+        "    mov rdx, r8    ; Move r8 into rdx\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -347,10 +353,11 @@
     const char WFASMModuloRegisters[] =
         "\n"
         "    ; Modulo (r = r % b)\n"
-        "    push rdx       ; Push rdx\n"
+        "    mov r8, rdx    ; Move rdx into r8\n"
+        "    xor rdx, rdx   ; Clear rdx\n"
         "    div ebx        ; Quotient in rax, remainder in rdx\n"
         "    mov eax, edx   ; Move remainder into register\n"
-        "    pop rdx        ; Pop rdx\n"
+        "    mov rdx, r8    ; Move r8 into rdx\n"
         "\n";
 
 
