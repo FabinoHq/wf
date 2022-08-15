@@ -197,6 +197,12 @@
     const char WFASMSetPointerAddress[] =
         "    mov ecx, eax    ; Set pointer address (p = r)\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly get pointer address                                       //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMGetPointerAddress[] =
+        "    mov eax, ecx    ; Get pointer address (r = p)\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //

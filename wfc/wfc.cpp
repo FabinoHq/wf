@@ -344,6 +344,7 @@ void Wfc::parseInstruction()
 
         case '[':
             // Load current pointer address
+            writeGetPointerAddress();
             break;
 
 
@@ -498,6 +499,16 @@ bool Wfc::writeDecrementPointer()
 bool Wfc::writeSetPointerAddress()
 {
     m_output << WFASMSetPointerAddress;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF get pointer address                                              //
+//  return : True if WF get pointer is successfully written                   //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeGetPointerAddress()
+{
+    m_output << WFASMGetPointerAddress;
     return (!m_output.bad());
 }
 

@@ -207,6 +207,12 @@
             bool writeSetPointerAddress();
 
             ////////////////////////////////////////////////////////////////////
+            //  Write WF get pointer address                                  //
+            //  return : True if WF get pointer is successfully written       //
+            ////////////////////////////////////////////////////////////////////
+            bool writeGetPointerAddress();
+
+            ////////////////////////////////////////////////////////////////////
             //  Write WF output                                               //
             //  return : True if WF output is successfully written            //
             ////////////////////////////////////////////////////////////////////

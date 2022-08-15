@@ -128,6 +128,12 @@
     const char WFASMSetPointerAddress[] =
         "    ; Set pointer address (p = r)\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly get pointer address                                       //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMGetPointerAddress[] =
+        "    ; Get pointer address (r = p)\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //
