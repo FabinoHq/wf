@@ -54,6 +54,7 @@
     #include <cctype>
     #include <algorithm>
     #include <unordered_map>
+    #include <stack>
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -173,15 +174,11 @@
             ////////////////////////////////////////////////////////////////////
             void checkPointerAddress();
 
-            ////////////////////////////////////////////////////////////////////
-            //  Check program cursor                                          //
-            ////////////////////////////////////////////////////////////////////
-            void checkProgramCursor();
-
 
         private:
-            char*           m_program;              // Program array
-            int32_t         m_cursor;               // Program cursor
+            char*               m_program;          // Program array
+            int32_t             m_cursor;           // Program cursor
+            std::stack<int32_t> m_stack;            // Program call stack
 
             int32_t*        m_memory;               // Memory array
             int32_t         m_pointer;              // Main pointer

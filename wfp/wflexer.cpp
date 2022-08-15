@@ -171,7 +171,8 @@ bool WfLexer::analyze(const std::string& path)
                 if (!analyzeString(wfprogram)) return false;
                 break;
 
-            case ':': case '@': case '=': case '!': case '>': case '<':
+            case ':': case '@': case '$':
+            case '=': case '!': case '>': case '<':
                 // Label and jump to label
                 if (!writeProgram(ch)) return false;
                 if (!analyzeLabel(wfprogram, ch)) return false;
@@ -653,7 +654,7 @@ bool WfLexer::checkLabelJumps()
                 }
                 break;
 
-            case '@': case '=': case '!': case '>': case '<':
+            case '@': case '$': case '=': case '!': case '>': case '<':
             {
                 // Jump to label
                 label = "";

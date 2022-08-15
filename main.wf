@@ -30,17 +30,17 @@
 
     ; Output string using std.output_string ;
     {{ 5_ }}                ; Set string address as parameter -2 ;
-    $@std.output_string@    ; Call std.output_string ;
+    $std.output_string$     ; Call std.output_string ;
     10.                     ; Output new line ;
 
     ; Compute string length using std.string_length ;
     {{{ 4_ }}}              ; Set string length address as parameter -3 ;
     {{ 5_ }}                ; Set string address as parameter -2 ;
-    $@std.string_length@    ; Call std.string_length ;
+    $std.string_length$     ; Call std.string_length ;
 
     ; Output string length using std.output_number ;
     {{ 4_ }}                ; Set number address as parameter -2 ;
-    $@std.output_number@    ; Call std.output_number ;
+    $std.output_number$     ; Call std.output_number ;
     10.                     ; Output new line ;
 
     ; Convert number to string using std.number_to_string ;
@@ -48,10 +48,9 @@
 
     {{{ 5_ }}}                  ; Set string start address as parameter -3 ;
     {{ 4_ }}                    ; Set number address as parameter -2 ;
-    $@std.number_to_string@     ; Call std.string_length ;
+    $std.number_to_string$      ; Call std.string_length ;
 
     ; Output string using std.output_string ;
     {{ 5_ }}                ; Set string address as parameter -2 ;
-    $@std.output_string@    ; Call std.output_string ;
+    $std.output_string$     ; Call std.output_string ;
     10.                     ; Output new line ;
-

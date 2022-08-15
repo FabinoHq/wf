@@ -35,7 +35,7 @@
     ~_                      ; Write string length ;
 
     \                       ; Restore p address from q ;
-    19~{#+}^                ; Jump back to caller ;
+    ^                       ; Jump back to caller ;
 
 
 ; std.output_string function : Output string in the current output buffer ;
@@ -51,7 +51,7 @@
         !std.output_string.l!   ; Loop if current character is not null ;
 
     \                       ; Restore p address from q ;
-    19~{#+}^                ; Jump back to caller ;
+    ^                       ; Jump back to caller ;
 
 
 ; std.output_number function : Output number in the current output buffer ;
@@ -84,7 +84,7 @@
         >std.output_number.o>   ; Loop while decapower > 0 ;
 
     }}}                     ; Restore p address ;
-    19~{#+}^                ; Jump back to caller ;
+    ^                       ; Jump back to caller ;
 
 
 ; std.number_to_string function : Convert number to string in memory ;
@@ -121,7 +121,7 @@
     }#\]0_\                 ; Add '\0' (nul) at the end of the string ;
 
     }}}                     ; Restore p address ;
-    22~{#+}^                ; Jump back to caller ;
+    ^                       ; Jump back to caller ;
 
 
 :stdlib.wf:

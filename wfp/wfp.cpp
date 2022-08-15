@@ -48,6 +48,7 @@
 Wfp::Wfp() :
 m_program(0),
 m_cursor(0),
+m_stack(),
 m_memory(0),
 m_pointer(0),
 m_backpointer(0),
@@ -216,7 +217,8 @@ void Wfp::run()
                 parseString();
                 break;
 
-            case ':': case '@': case '=': case '!': case '>': case '<':
+            case ':': case '@': case '$':
+            case '=': case '!': case '>': case '<':
                 // Label and jump to label
                 parseLabel();
                 break;
@@ -302,6 +304,7 @@ void Wfp::parseLabel()
     // Parse label
     std::string label = "";
     char type = m_program[m_cursor++];
+    int32_t cursor = m_cursor;
     while (m_program[m_cursor] != type)
     {
         label.push_back(m_program[m_cursor++]);
@@ -312,6 +315,12 @@ void Wfp::parseLabel()
     {
         case '@':
             m_cursor = m_labels[label]-1;
+            break;
+
+        case '$':
+            cursor = m_cursor;
+            m_cursor = m_labels[label]-1;
+            m_stack.push(cursor);
             break;
 
         case '=':
@@ -391,14 +400,17 @@ void Wfp::parseInstruction()
             break;
 
         case '^':
-            // Set current program cursor
-            m_cursor = m_register;
-            checkProgramCursor();
-            break;
-
-        case '$':
-            // Load current program cursor
-            m_register = m_cursor;
+            // Jump back to caller
+            if (!m_stack.empty())
+            {
+                m_cursor = m_stack.top();
+                m_stack.pop();
+            }
+            else
+            {
+                // Jump to program start
+                m_cursor = -1;
+            }
             break;
 
 
@@ -779,21 +791,6 @@ void Wfp::checkPointerAddress()
         // Pointer out of range
         std::cerr << "Runtime Error : Pointer out of range : " <<
             m_pointer << "\n";
-        m_cursor = WFProgramSize;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-//  Check program cursor                                                      //
-////////////////////////////////////////////////////////////////////////////////
-void Wfp::checkProgramCursor()
-{
-    // Check program cursor
-    if ((m_cursor < 0) || (m_cursor >= WFProgramSize))
-    {
-        // Program cursor out of range
-        std::cerr << "Runtime Error : Program cursor out of range : " <<
-            m_cursor << "\n";
         m_cursor = WFProgramSize;
     }
 }
