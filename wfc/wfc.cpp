@@ -370,10 +370,12 @@ void Wfc::parseInstruction()
 
         case '+':
             // Add
+            writeAddRegisters();
             break;
 
         case '-':
             // Subtract
+            writeSubtractRegisters();
             break;
 
         case '*':
@@ -545,6 +547,27 @@ bool Wfc::writeLoadPointedValue()
 bool Wfc::writeStoreRegisterValue()
 {
     m_output << WFASMStoreRegisterValue;
+    return (!m_output.bad());
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF add registers                                                    //
+//  return : True if WF add registers is successfully written                 //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeAddRegisters()
+{
+    m_output << WFASMAddRegisters;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF subtract registers                                               //
+//  return : True if WF subtract is successfully written                      //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeSubtractRegisters()
+{
+    m_output << WFASMSubtractRegisters;
     return (!m_output.bad());
 }
 

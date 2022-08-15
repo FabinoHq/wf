@@ -235,6 +235,19 @@
 
 
             ////////////////////////////////////////////////////////////////////
+            //  Write WF add registers                                        //
+            //  return : True if WF add registers is successfully written     //
+            ////////////////////////////////////////////////////////////////////
+            bool writeAddRegisters();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF subtract registers                                   //
+            //  return : True if WF subtract is successfully written          //
+            ////////////////////////////////////////////////////////////////////
+            bool writeSubtractRegisters();
+
+
+            ////////////////////////////////////////////////////////////////////
             //  Write WF output                                               //
             //  return : True if WF output is successfully written            //
             ////////////////////////////////////////////////////////////////////
