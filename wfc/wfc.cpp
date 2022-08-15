@@ -329,10 +329,12 @@ void Wfc::parseInstruction()
 
         case '}':
             // Increment pointer
+            writeIncrementPointer();
             break;
 
         case '{':
             // Decrement pointer
+            writeDecrementPointer();
             break;
 
         case ']':
@@ -465,6 +467,26 @@ bool Wfc::writeCharacter(char ch)
 bool Wfc::writeSwapPointers()
 {
     m_output << WFASMSwapPointers;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF increment pointer                                                //
+//  return : True if WF inc pointers is successfully written                  //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeIncrementPointer()
+{
+    m_output << WFASMIncrementPointers;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF decrement pointer                                                //
+//  return : True if WF dec pointers is successfully written                  //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeDecrementPointer()
+{
+    m_output << WFASMDecrementPointers;
     return (!m_output.bad());
 }
 

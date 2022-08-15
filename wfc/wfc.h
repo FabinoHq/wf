@@ -189,6 +189,18 @@
             bool writeSwapPointers();
 
             ////////////////////////////////////////////////////////////////////
+            //  Write WF increment pointer                                    //
+            //  return : True if WF inc pointers is successfully written      //
+            ////////////////////////////////////////////////////////////////////
+            bool writeIncrementPointer();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF decrement pointer                                    //
+            //  return : True if WF dec pointers is successfully written      //
+            ////////////////////////////////////////////////////////////////////
+            bool writeDecrementPointer();
+
+            ////////////////////////////////////////////////////////////////////
             //  Write WF output                                               //
             //  return : True if WF output is successfully written            //
             ////////////////////////////////////////////////////////////////////
