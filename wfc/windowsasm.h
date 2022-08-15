@@ -175,21 +175,27 @@
         "\n"
         "    ; Swap pointers (p <=> q)\n"
         "    push rcx          ; Push p into stack\n"
-        "    mov rcx, rdx      ; Move q into p\n"
+        "    mov ecx, edx      ; Move q into p\n"
         "    pop rdx           ; Pop p into q\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly increment pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
-    const char WFASMIncrementPointers[] =
-        "    inc rcx    ; Increment p\n";
+    const char WFASMIncrementPointer[] =
+        "    inc ecx    ; Increment p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly decrement pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
-    const char WFASMDecrementPointers[] =
-        "    dec rcx    ; Decrement p\n";
+    const char WFASMDecrementPointer[] =
+        "    dec ecx    ; Decrement p\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly set pointer address                                       //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMSetPointerAddress[] =
+        "    mov ecx, eax    ; Set pointer address (p = r)\n";
 
 
     ////////////////////////////////////////////////////////////////////////////

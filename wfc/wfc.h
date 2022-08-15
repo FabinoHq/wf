@@ -190,15 +190,21 @@
 
             ////////////////////////////////////////////////////////////////////
             //  Write WF increment pointer                                    //
-            //  return : True if WF inc pointers is successfully written      //
+            //  return : True if WF inc pointer is successfully written       //
             ////////////////////////////////////////////////////////////////////
             bool writeIncrementPointer();
 
             ////////////////////////////////////////////////////////////////////
             //  Write WF decrement pointer                                    //
-            //  return : True if WF dec pointers is successfully written      //
+            //  return : True if WF dec pointer is successfully written       //
             ////////////////////////////////////////////////////////////////////
             bool writeDecrementPointer();
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF set pointer address                                  //
+            //  return : True if WF set pointer is successfully written       //
+            ////////////////////////////////////////////////////////////////////
+            bool writeSetPointerAddress();
 
             ////////////////////////////////////////////////////////////////////
             //  Write WF output                                               //

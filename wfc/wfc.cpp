@@ -339,6 +339,7 @@ void Wfc::parseInstruction()
 
         case ']':
             // Set current pointer address
+            writeSetPointerAddress();
             break;
 
         case '[':
@@ -472,21 +473,31 @@ bool Wfc::writeSwapPointers()
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Write WF increment pointer                                                //
-//  return : True if WF inc pointers is successfully written                  //
+//  return : True if WF inc pointer is successfully written                   //
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfc::writeIncrementPointer()
 {
-    m_output << WFASMIncrementPointers;
+    m_output << WFASMIncrementPointer;
     return (!m_output.bad());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Write WF decrement pointer                                                //
-//  return : True if WF dec pointers is successfully written                  //
+//  return : True if WF dec pointer is successfully written                   //
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfc::writeDecrementPointer()
 {
-    m_output << WFASMDecrementPointers;
+    m_output << WFASMDecrementPointer;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF set pointer address                                              //
+//  return : True if WF set pointer is successfully written                   //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeSetPointerAddress()
+{
+    m_output << WFASMSetPointerAddress;
     return (!m_output.bad());
 }
 
