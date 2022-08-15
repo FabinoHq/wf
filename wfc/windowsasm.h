@@ -151,5 +151,13 @@
     const char WFASMNumberFoot[] =
         "h   ; Move number constant into register\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly character constant                                        //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMCharacterHead[] =
+        "    mov eax, '";
+    const char WFASMCharacterFoot[] =
+        "'   ; Move character constant into register\n";
+
 
 #endif // WFC_WINDOWSASM_HEADER

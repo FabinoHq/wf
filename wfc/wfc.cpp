@@ -258,7 +258,7 @@ void Wfc::parseNumber()
 void Wfc::parseCharacter()
 {
     // Parse character
-    char ch = m_program[(++m_cursor)++];
+    writeCharacter(m_program[(++m_cursor)++]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -440,8 +440,18 @@ bool Wfc::writeFooter()
 //  Write WF number                                                           //
 //  return : True if WF number is successfully written                        //
 ////////////////////////////////////////////////////////////////////////////////
-bool Wfc::writeNumber(int64_t number)
+bool Wfc::writeNumber(int64_t num)
 {
-    m_output << WFASMNumberHead << number << WFASMNumberFoot;
+    m_output << WFASMNumberHead << num << WFASMNumberFoot;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF character                                                        //
+//  return : True if WF character is successfully written                     //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeCharacter(char ch)
+{
+    m_output << WFASMCharacterHead << ch << WFASMCharacterFoot;
     return (!m_output.bad());
 }

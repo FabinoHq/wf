@@ -174,7 +174,13 @@
             //  Write WF number                                               //
             //  return : True if WF number is successfully written            //
             ////////////////////////////////////////////////////////////////////
-            bool writeNumber(int64_t number);
+            bool writeNumber(int64_t num);
+
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF character                                            //
+            //  return : True if WF character is successfully written         //
+            ////////////////////////////////////////////////////////////////////
+            bool writeCharacter(char ch);
 
 
         private:
