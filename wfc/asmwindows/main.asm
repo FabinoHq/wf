@@ -161,7 +161,7 @@ WFStandardOutput:
 
     ret         ; Return to caller
 
-; output_hex : output hex number (rdx : value to output)
+; WFOutputHex : output hex number (rdx : value to output)
 WFOutputHex:
     push rax        ; Push rax
     push rbx        ; Push rbx
