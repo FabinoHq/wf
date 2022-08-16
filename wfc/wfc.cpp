@@ -489,22 +489,13 @@ bool Wfc::writeCharacter(char ch)
 ////////////////////////////////////////////////////////////////////////////////
 bool Wfc::writeString(const std::string& string)
 {
-    m_output <<
-    "\n"
-    "    ; Write string\n"
-    "    push rax           ; Push rax\n"
-    "    mov r8, r12        ; Move memory array address into r8\n"
-    "    movsxd r9, ecx     ; Convert pointer value into r9 \n"
-    "    shl r9, 2          ; Multiply r9 by 4\n"
-    "    add r8, r9         ; Add pointer value to r8\n";
+    m_output << WFASMStringHead;
     for (size_t i = 0; i < string.length(); ++i)
     {
-        m_output << "    mov al, '" << string[i] <<
-            "' ; Write character into al\n";
-        m_output << "    mov [r8], rax  ; Write character into memory\n";
-        m_output << "    add r8, 4  ; Increment pointer\n";
+        m_output << WFASMStringCharacterHead <<
+            string[i] << WFASMStringCharacterFoot;
     }
-    m_output << "    pop rax     ; Pop rax\n";
+    m_output << WFASMStringFoot;
     return (!m_output.bad());
 }
 

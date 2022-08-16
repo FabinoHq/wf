@@ -101,6 +101,19 @@
     const char WFASMCharacterFoot[] =
         "   ; Move character constant into register\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly string constant                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMStringHead[] =
+        "\n"
+        "    ; String constant\n";
+    const char WFASMStringCharacterHead[] =
+        "    ";
+    const char WFASMStringCharacterFoot[] =
+        "       ; Write character into al\n";
+    const char WFASMStringFoot[] =
+        "\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly label                                                     //

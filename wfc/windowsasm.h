@@ -216,6 +216,27 @@
     const char WFASMCharacterFoot[] =
         "'   ; Move character constant into register\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly string constant                                           //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMStringHead[] =
+        "\n"
+        "    ; String constant\n"
+        "    push rax           ; Push rax\n"
+        "    mov r8, r12        ; Move memory array address into r8\n"
+        "    movsxd r9, ecx     ; Convert pointer value into r9 \n"
+        "    shl r9, 2          ; Multiply r9 by 4\n"
+        "    add r8, r9         ; Add pointer value to r8\n";
+    const char WFASMStringCharacterHead[] =
+        "    mov al, '";
+    const char WFASMStringCharacterFoot[] =
+        "'       ; Write character into al\n"
+        "    mov [r8], rax      ; Write character into memory\n"
+        "    add r8, 4          ; Increment pointer\n";
+    const char WFASMStringFoot[] =
+        "    pop rax     ; Pop rax\n"
+        "\n";
+
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly label                                                     //
