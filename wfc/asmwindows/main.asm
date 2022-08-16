@@ -20,6 +20,10 @@ EXTRN putchar:PROC      ; putchar (Output one character to terminal)
 EXTRN __imp_GetStdHandle:PROC               ; Get std handle
 EXTRN __imp_SetConsoleCursorPosition:PROC   ; Set cursor position
 
+EXTRN fopen_s:PROC      ; fopen_s (Open file)
+EXTRN fclose:PROC       ; fclose (Close file)
+EXTRN fgetc:PROC        ; fgetc (Read one character from file)
+
 EXTRN ??_U@YAPEAX_K@Z:PROC      ; new[]
 EXTRN ??_V@YAXPEAX@Z:PROC       ; delete[]
 
@@ -28,6 +32,8 @@ PUBLIC main
 ; Data segment
 .data
     message db "Hello World!", 0
+    file db "test.txt", 0
+    mode db "r", 0
 
 ; Code segment
 .code
@@ -69,28 +75,20 @@ WFMain:
     add rsp, 40     ; Pop stack
     mov r13, rax    ; Store std handle in r13
 
-    ; Output current rsp value
-    mov rcx, rsp
-    call WFOutputHex
-
-    ; Output new line
-    mov al, 10
-    call WFStandardOutput
-
     xor eax, eax    ; Clear eax  :  Register 
     xor ebx, ebx    ; Clear ebx  :  Back register
     xor ecx, ecx    ; Clear ecx  :  Pointer 
     xor edx, edx    ; Clear edx  :  Back pointer
 
     ; Read character into al
-    call WFKeyboardInput
+    ;call WFKeyboardInput
 
     ; Output character from al
-    call WFStandardOutput
+    ;call WFStandardOutput
 
     ; Output new line
-    mov al, 10
-    call WFStandardOutput
+    ;mov al, 10
+    ;call WFStandardOutput
 
     ; Output string
     mov rbx, OFFSET message     ; Move address of message into rbx
@@ -106,9 +104,41 @@ WFMain:
 
 
     ; Set cursor position
-    mov ecx, 1  ; X cursor position
-    mov edx, 2  ; Y cursor position
-    call WFSetCursorPosition
+    ;mov ecx, 1  ; X cursor position
+    ;mov edx, 2  ; Y cursor position
+    ;call WFSetCursorPosition
+
+
+    ; Read from file
+    sub rsp, 40     ; Push stack
+
+    mov QWORD PTR [rsp], 0      ; Clear file handle
+    lea rdx, offset file        ; Load file string address
+    lea r8, offset mode         ; Load mode string address
+    lea rcx, QWORD PTR [rsp]    ; Load file handle address
+    ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
+    call fopen_s    ; Open file
+
+    ; Read character from file
+    mov rcx, QWORD PTR [rsp]    ; Move file handle in rcx
+    call fgetc  ; Read character (handle addr in rcx, character in eax)
+
+    mov r15, rax    ; Save character into r15
+
+    ; Close file
+    mov rcx, QWORD PTR [rsp]    ; Move file handle in rcx
+    call fclose     ; Close file (handle in rcx)
+
+    add rsp, 40     ; Pop stack
+
+
+    ; Output new line
+    mov al, 10
+    call WFStandardOutput
+
+    ; Output character
+    mov rax, r15    ; Restore character from r15
+    call WFStandardOutput
 
 
 ; WFMainEnd : Main program end
