@@ -112,21 +112,22 @@ WFMain:
     ; Read from file
     sub rsp, 40     ; Push stack
 
-    mov QWORD PTR [rsp], 0      ; Clear file handle
+    xor rax, rax                ; Clear rax
+    mov [rsp], rax              ; Clear file handle
     lea rdx, offset file        ; Load file string address
     lea r8, offset mode         ; Load mode string address
-    lea rcx, QWORD PTR [rsp]    ; Load file handle address
+    lea rcx, [rsp]  ; Load file handle address
     ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
     call fopen_s    ; Open file
 
     ; Read character from file
-    mov rcx, QWORD PTR [rsp]    ; Move file handle in rcx
-    call fgetc  ; Read character (handle addr in rcx, character in eax)
+    mov rcx, [rsp]  ; Move file handle in rcx
+    call fgetc      ; Read character (handle addr in rcx, character in eax)
 
     mov r15, rax    ; Save character into r15
 
     ; Close file
-    mov rcx, QWORD PTR [rsp]    ; Move file handle in rcx
+    mov rcx, [rsp]  ; Move file handle in rcx
     call fclose     ; Close file (handle in rcx)
 
     add rsp, 40     ; Pop stack
