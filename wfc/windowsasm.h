@@ -400,7 +400,7 @@
         "    ; Multiply (r = r * b)\n"
         "    mov r8, rdx    ; Save rdx into r8\n"
         "    mul ebx        ; Multiply (r = r * b)\n"
-        "    mov rdx, r8    ; Restore r8 from rdx\n"
+        "    mov rdx, r8    ; Restore rdx from r8\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -412,7 +412,7 @@
         "    mov r8, rdx    ; Save rdx into r8\n"
         "    xor rdx, rdx   ; Clear rdx\n"
         "    div ebx        ; Quotient in rax, remainder in rdx\n"
-        "    mov rdx, r8    ; Restore r8 from rdx\n"
+        "    mov rdx, r8    ; Restore rdx from r8\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -425,7 +425,7 @@
         "    xor rdx, rdx   ; Clear rdx\n"
         "    div ebx        ; Quotient in rax, remainder in rdx\n"
         "    mov eax, edx   ; Move remainder into register\n"
-        "    mov rdx, r8    ; Restore r8 from rdx\n"
+        "    mov rdx, r8    ; Restore rdx from r8\n"
         "\n";
 
 
