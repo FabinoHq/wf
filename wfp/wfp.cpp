@@ -403,13 +403,14 @@ void Wfp::parseInstruction()
             // Jump back to caller
             if (!m_stack.empty())
             {
+                // Function return
                 m_cursor = m_stack.top();
                 m_stack.pop();
             }
             else
             {
-                // Jump to program start
-                m_cursor = -1;
+                // Program return
+                m_cursor = WFProgramSize;
             }
             break;
 

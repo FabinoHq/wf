@@ -330,7 +330,6 @@ void Wfc::parseLabel()
 ////////////////////////////////////////////////////////////////////////////////
 void Wfc::parseInstruction()
 {
-    int32_t tmp = 0;
     switch (m_program[m_cursor])
     {
         case '\\':
