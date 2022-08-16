@@ -109,7 +109,9 @@
         "    xor r10, r10    ; Clear r10\n"
         "    xor r11, r11    ; Clear r11\n"
         "    xor r12, r12    ; Clear r12\n"
+        "\n"
         "    sub rsp, 40     ; Push stack\n"
+        "    mov r11, rsp    ; Store rsp into r11\n"
         "\n"
         "    ; Allocate memory\n"
         "    mov rcx, 67108864       ; 16777216*4 bytes\n"
@@ -132,6 +134,8 @@
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMFooter[] =
         "\n"
+        "; WFMainEnd : Main program end\n"
+        "WFMainEnd:\n"
         "    ; Cleanup memory\n"
         "    pop rcx                     ; Restore address from stack\n"
         "    call ??_V@YAXPEAX@Z         ; delete[] (address in rcx)\n"
@@ -149,6 +153,7 @@
         "    push rbx        ; Push rbx\n"
         "    push rcx        ; Push rcx\n"
         "    push rdx        ; Push rdx\n"
+        "    push r11        ; Push r11\n"
         "    push r12        ; Push r12\n"
         "\n"
         "    ; Wait for keyboard input\n"
@@ -167,6 +172,7 @@
         "    and rax, 0FFh       ; Mask low byte\n"
         "\n"
         "    pop r12         ; Pop r12\n"
+        "    pop r11         ; Pop r11\n"
         "    pop rdx         ; Pop rdx\n"
         "    pop rcx         ; Pop rcx\n"
         "    pop rbx         ; Pop rbx\n"
@@ -179,6 +185,7 @@
         "    push rbx        ; Push rbx\n"
         "    push rcx        ; Push rcx\n"
         "    push rdx        ; Push rdx\n"
+        "    push r11        ; Push r11\n"
         "    push r12        ; Push r12\n"
         "\n"
         "    xor rcx, rcx    ; Clear rcx\n"
@@ -188,6 +195,7 @@
         "    add rsp, 40     ; Pop stack\n"
         "\n"
         "    pop r12         ; Pop r12\n"
+        "    pop r11         ; Pop r11\n"
         "    pop rdx         ; Pop rdx\n"
         "    pop rcx         ; Pop rcx\n"
         "    pop rbx         ; Pop rbx\n"
@@ -222,18 +230,18 @@
     const char WFASMStringHead[] =
         "\n"
         "    ; String constant\n"
-        "    push rax               ; Push rax\n"
-        "    xor rax, rax           ; Clear rax\n"
-        "    movsxd r9, ecx         ; Convert p into r9\n"
-        "    lea r8, [r12 + r9*4]   ; Load memory address into r8\n";
+        "    push rax              ; Push rax\n"
+        "    xor rax, rax          ; Clear rax\n"
+        "    movsxd r9, ecx        ; Convert p into r9\n"
+        "    lea r8, [r12 + r9*4]  ; Load memory address into r8\n";
     const char WFASMStringCharacterHead[] =
         "    mov al, '";
     const char WFASMStringCharacterFoot[] =
-        "'       ; Write character into al\n"
+        "'           ; Write character into al\n"
         "    mov [r8], rax         ; Write character into memory\n"
         "    add r8, 4             ; Increment pointer\n";
     const char WFASMStringFoot[] =
-        "    pop rax       ; Pop rax\n"
+        "    pop rax               ; Pop rax\n"
         "\n";
 
 
@@ -241,9 +249,11 @@
     //  WF Assembly label                                                     //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMLabelHead[] =
-        "    WF";
+        "WF";
+    const char WFASMLabelMid[] =
+        ":   ; Label :";
     const char WFASMLabelFoot[] =
-        ":   ; Label\n";
+        ":\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly jump                                                      //
@@ -301,7 +311,12 @@
     //  WF Assembly return                                                    //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMReturn[] =
-        "    ret    ; Return to caller\n";
+        "\n"
+        "    ; Return to caller\n"
+        "    cmp rsp, r11   ; Compare current rsp with main rsp\n"
+        "    je WFMainEnd   ; Jump to WFMainEnd if (rsp == r11)\n"
+        "    ret            ; Return to caller\n"
+        "\n";
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -319,25 +334,25 @@
     //  WF Assembly increment pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMIncrementPointer[] =
-        "    inc ecx    ; Increment p\n";
+        "    inc ecx        ; Increment p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly decrement pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMDecrementPointer[] =
-        "    dec ecx    ; Decrement p\n";
+        "    dec ecx        ; Decrement p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly set pointer address                                       //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMSetPointerAddress[] =
-        "    mov ecx, eax    ; Set pointer address (p = r)\n";
+        "    mov ecx, eax   ; Set pointer address (p = r)\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly get pointer address                                       //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMGetPointerAddress[] =
-        "    mov eax, ecx    ; Get pointer address (r = p)\n";
+        "    mov eax, ecx   ; Get pointer address (r = p)\n";
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -346,9 +361,9 @@
     const char WFASMSwapRegisters[] =
         "\n"
         "    ; Swap register (r <=> b)\n"
-        "    mov r8, rax       ; Move register into r8\n"
-        "    mov eax, ebx      ; Move back reg into reg\n"
-        "    mov rbx, r8       ; Move r8 into back reg\n"
+        "    mov r8, rax    ; Move register into r8\n"
+        "    mov eax, ebx   ; Move back reg into reg\n"
+        "    mov rbx, r8    ; Move r8 into back reg\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////

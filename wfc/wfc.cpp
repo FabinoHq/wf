@@ -507,7 +507,8 @@ bool Wfc::writeString(const std::string& string)
 bool Wfc::writeLabel(const std::string& label)
 {
     int32_t labelNum = m_labels[label];
-    m_output << WFASMLabelHead << labelNum << WFASMLabelFoot;
+    m_output << WFASMLabelHead << labelNum <<
+        WFASMLabelMid << label << WFASMLabelFoot;
     return (!m_output.bad());
 }
 

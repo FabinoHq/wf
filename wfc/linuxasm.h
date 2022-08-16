@@ -119,9 +119,11 @@
     //  WF Assembly label                                                     //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMLabelHead[] =
-        "    WF";
+        "WF";
+    const char WFASMLabelMid[] =
+        ":   ; Label :";
     const char WFASMLabelFoot[] =
-        ":   ; Label\n";
+        ":\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly jump                                                      //
