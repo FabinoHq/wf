@@ -231,18 +231,18 @@
     const char WFASMStringHead[] =
         "\n"
         "    ; String constant\n"
-        "    push rax              ; Push rax\n"
-        "    xor rax, rax          ; Clear rax\n"
-        "    movsxd r9, ecx        ; Convert p into r9\n"
-        "    lea r8, [r12 + r9*4]  ; Load memory address into r8\n";
+        "    push rax                ; Push rax\n"
+        "    xor rax, rax            ; Clear rax\n"
+        "    movsxd r9, ecx          ; Convert p into r9\n"
+        "    lea r8, [r12 + r9*4]    ; Load memory address into r8\n";
     const char WFASMStringCharacterHead[] =
         "    mov al, '";
     const char WFASMStringCharacterFoot[] =
         "'           ; Write character into al\n"
-        "    mov [r8], rax         ; Write character into memory\n"
-        "    add r8, 4             ; Increment pointer\n";
+        "    mov [r8], rax           ; Write character into memory\n"
+        "    add r8, 4               ; Increment pointer\n";
     const char WFASMStringFoot[] =
-        "    pop rax               ; Pop rax\n"
+        "    pop rax                 ; Pop rax\n"
         "\n";
 
 
@@ -276,7 +276,7 @@
     //  WF Assembly jump equal to zero                                        //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMJumpEZHead[] =
-        "    cmp eax, 0     ; Compare eax with 0\n"
+        "    cmp eax, 0              ; Compare reg with 0\n"
         "    jz WF";
     const char WFASMJumpEZFoot[] =
         "    ; Jump if zero\n";
@@ -285,7 +285,7 @@
     //  WF Assembly jump not equal to zero                                    //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMJumpNZHead[] =
-        "    cmp eax, 0     ; Compare eax with 0\n"
+        "    cmp eax, 0              ; Compare reg with 0\n"
         "    jnz WF";
     const char WFASMJumpNZFoot[] =
         "    ; Jump if not zero\n";
@@ -294,7 +294,7 @@
     //  WF Assembly jump greater than zero                                    //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMJumpGZHead[] =
-        "    cmp eax, 0     ; Compare eax with 0\n"
+        "    cmp eax, 0              ; Compare reg with 0\n"
         "    jg WF";
     const char WFASMJumpGZFoot[] =
         "    ; Jump if greater than zero\n";
@@ -303,7 +303,7 @@
     //  WF Assembly jump less than zero                                       //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMJumpLZHead[] =
-        "    cmp eax, 0     ; Compare eax with 0\n"
+        "    cmp eax, 0              ; Compare reg with 0\n"
         "    jl WF";
     const char WFASMJumpLZFoot[] =
         "    ; Jump if less than zero\n";
@@ -314,9 +314,9 @@
     const char WFASMReturn[] =
         "\n"
         "    ; Return to caller\n"
-        "    cmp rsp, r11   ; Compare current rsp with main rsp\n"
-        "    je WFMainEnd   ; Jump to WFMainEnd if (rsp == r11)\n"
-        "    ret            ; Return to caller\n"
+        "    cmp rsp, r11            ; Compare current rsp with main rsp\n"
+        "    je WFMainEnd            ; Jump to WFMainEnd if (rsp == r11)\n"
+        "    ret                     ; Return to caller\n"
         "\n";
 
 
@@ -324,48 +324,38 @@
     //  WF Assembly swap pointers                                             //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMSwapPointers[] =
-        "\n"
-        "    ; Swap pointers (p <=> q)\n"
-        "    mov r8, rcx       ; Move p into r8\n"
-        "    mov ecx, edx      ; Move q into p\n"
-        "    mov rdx, r8       ; Move r8 into q\n"
-        "\n";
+        "    xchg ecx, edx           ; Swap pointer (p <=> q)\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly increment pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMIncrementPointer[] =
-        "    inc ecx        ; Increment p\n";
+        "    inc ecx                 ; Increment p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly decrement pointer                                         //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMDecrementPointer[] =
-        "    dec ecx        ; Decrement p\n";
+        "    dec ecx                 ; Decrement p\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly set pointer address                                       //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMSetPointerAddress[] =
-        "    mov ecx, eax   ; Set pointer address (p = r)\n";
+        "    mov ecx, eax            ; Set pointer address (p = r)\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly get pointer address                                       //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMGetPointerAddress[] =
-        "    mov eax, ecx   ; Get pointer address (r = p)\n";
+        "    mov eax, ecx            ; Get pointer address (r = p)\n";
 
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly swap registers                                            //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMSwapRegisters[] =
-        "\n"
-        "    ; Swap register (r <=> b)\n"
-        "    mov r8, rax    ; Move register into r8\n"
-        "    mov eax, ebx   ; Move back reg into reg\n"
-        "    mov rbx, r8    ; Move r8 into back reg\n"
-        "\n";
+        "    xchg eax, ebx           ; Swap register (r <=> b)\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly load pointed value                                        //
@@ -373,9 +363,9 @@
     const char WFASMLoadPointedValue[] =
         "\n"
         "    ; Load pointed value (r = *p)\n"
-        "    movsxd r9, ecx         ; Convert p into r9\n"
-        "    lea r8, [r12 + r9*4]   ; Load memory address into r8\n"
-        "    mov eax, [r8]          ; Load pointed value into register\n"
+        "    movsxd r9, ecx          ; Convert p into r9\n"
+        "    lea r8, [r12 + r9*4]    ; Load memory address into r8\n"
+        "    mov eax, [r8]           ; Load pointed value into register\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -384,9 +374,9 @@
     const char WFASMStoreRegisterValue[] =
         "\n"
         "    ; Store register value (*p = r)\n"
-        "    movsxd r9, ecx         ; Convert p into r9\n"
-        "    lea r8, [r12 + r9*4]   ; Load memory address into r8\n"
-        "    mov [r8], eax          ; Store register at pointed address\n"
+        "    movsxd r9, ecx          ; Convert p into r9\n"
+        "    lea r8, [r12 + r9*4]    ; Load memory address into r8\n"
+        "    mov [r8], eax           ; Store register at pointed address\n"
         "\n";
 
 
@@ -408,9 +398,9 @@
     const char WFASMMultiplyRegisters[] =
         "\n"
         "    ; Multiply (r = r * b)\n"
-        "    mov r8, rdx    ; Move rdx into r8\n"
+        "    mov r8, rdx    ; Save rdx into r8\n"
         "    mul ebx        ; Multiply (r = r * b)\n"
-        "    mov rdx, r8    ; Move r8 into rdx\n"
+        "    mov rdx, r8    ; Restore r8 from rdx\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -419,10 +409,10 @@
     const char WFASMDivideRegisters[] =
         "\n"
         "    ; Divide (r = r / b)\n"
-        "    mov r8, rdx    ; Move rdx into r8\n"
+        "    mov r8, rdx    ; Save rdx into r8\n"
         "    xor rdx, rdx   ; Clear rdx\n"
         "    div ebx        ; Quotient in rax, remainder in rdx\n"
-        "    mov rdx, r8    ; Move r8 into rdx\n"
+        "    mov rdx, r8    ; Restore r8 from rdx\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -431,11 +421,11 @@
     const char WFASMModuloRegisters[] =
         "\n"
         "    ; Modulo (r = r % b)\n"
-        "    mov r8, rdx    ; Move rdx into r8\n"
+        "    mov r8, rdx    ; Save rdx into r8\n"
         "    xor rdx, rdx   ; Clear rdx\n"
         "    div ebx        ; Quotient in rax, remainder in rdx\n"
         "    mov eax, edx   ; Move remainder into register\n"
-        "    mov rdx, r8    ; Move r8 into rdx\n"
+        "    mov rdx, r8    ; Restore r8 from rdx\n"
         "\n";
 
 
@@ -443,7 +433,7 @@
     //  WF Assembly standard input                                           //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMStandardInput[] =
-        "    call WFKeyboardInput   ; Standard input\n";
+        "    call WFKeyboardInput    ; Standard input\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly standard output                                           //
