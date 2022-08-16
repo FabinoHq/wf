@@ -17,6 +17,9 @@ EXTRN _kbhit:PROC       ; _kbhit (Keyboard key press)
 EXTRN _getch:PROC       ; _getch (Get last pressed key)
 EXTRN putchar:PROC      ; putchar (Output one character to terminal)
 
+EXTRN __imp_GetStdHandle:PROC               ; Get std handle
+EXTRN __imp_SetConsoleCursorPosition:PROC   ; Set cursor position
+
 EXTRN ??_U@YAPEAX_K@Z:PROC      ; new[]
 EXTRN ??_V@YAXPEAX@Z:PROC       ; delete[]
 
@@ -44,6 +47,7 @@ WFMain:
     xor r10, r10    ; Clear r10
     xor r11, r11    ; Clear r11
     xor r12, r12    ; Clear r12
+    xor r13, r13    ; Clear r13
 
     sub rsp, 40     ; Push stack
     mov r11, rsp    ; Store rsp into r11
@@ -56,6 +60,14 @@ WFMain:
     ; Set memory pointer
     mov r12, rax        ; Move address into r12
     add r12, 33554432   ; Add memory offset ((16777216*4)/2 bytes)
+
+    ; Get std output handle
+    sub rsp, 40     ; Push stack
+    xor rax, rax    ; Clear rax
+    mov ecx, -11    ; 0FFFFFFF5H (-11) (STD_OUTPUT_HANDLE)
+    call QWORD PTR __imp_GetStdHandle   ; Get std handle in rax
+    add rsp, 40     ; Pop stack
+    mov r13, rax    ; Store std handle in r13
 
     ; Output current rsp value
     mov rcx, rsp
@@ -92,6 +104,13 @@ WFMain:
         test al, al             ; Set ZF to 1 if al is equal to 0
         jne outputstring        ; Loop if next character is not 0 (nul)
 
+
+    ; Set cursor position
+    mov ecx, 1  ; X cursor position
+    mov edx, 2  ; Y cursor position
+    call WFSetCursorPosition
+
+
 ; WFMainEnd : Main program end
 WFMainEnd:
     ; Cleanup memory
@@ -113,6 +132,7 @@ WFKeyboardInput:
     push rdx        ; Push rdx
     push r11        ; Push r11
     push r12        ; Push r12
+    push r13        ; Push r13
 
     ; Wait for keyboard input
     inputchar:
@@ -129,6 +149,7 @@ WFKeyboardInput:
     add rsp, 40         ; Pop stack
     and rax, 0FFh       ; Mask low byte
 
+    pop r13         ; Pop r13
     pop r12         ; Pop r12
     pop r11         ; Pop r11
     pop rdx         ; Pop rdx
@@ -145,6 +166,7 @@ WFStandardOutput:
     push rdx        ; Push rdx
     push r11        ; Push r11
     push r12        ; Push r12
+    push r13        ; Push r13
 
     xor rcx, rcx    ; Clear rcx
     mov cl, al      ; Move register value into cl
@@ -152,6 +174,7 @@ WFStandardOutput:
     call putchar    ; Output character from cl
     add rsp, 40     ; Pop stack
 
+    pop r13         ; Pop r13
     pop r12         ; Pop r12
     pop r11         ; Pop r11
     pop rdx         ; Pop rdx
@@ -161,6 +184,41 @@ WFStandardOutput:
 
     ret         ; Return to caller
 
+; WFSetCursorPosition : Set terminal cursor position (x in cx, y in dx)
+WFSetCursorPosition:
+    push rax        ; Push rax
+    push rbx        ; Push rbx
+    push rcx        ; Push rcx
+    push rdx        ; Push rdx
+    push r11        ; Push r11
+    push r12        ; Push r12
+    push r13        ; Push r13
+
+    sub rsp, 40     ; Push stack
+
+    mov rbx, rdx    ; Move rdx into rbx
+    xor rdx, rdx    ; Clear rdx
+    mov dx, bx      ; Y cursor position
+    shl edx, 16     ; Shift Y position to high
+    mov dx, cx      ; X cursor position
+
+    ; Set cursor position
+    mov rcx, r13    ; Move handle in rcx
+    ; Std handle in rcx, Coords in edx (X : low 4bytes, Y : high 4bytes)
+    call QWORD PTR __imp_SetConsoleCursorPosition
+
+    add rsp, 40     ; Pop stack
+
+    pop r13         ; Pop r13
+    pop r12         ; Pop r12
+    pop r11         ; Pop r11
+    pop rdx         ; Pop rdx
+    pop rcx         ; Pop rcx
+    pop rbx         ; Pop rbx
+    pop rax         ; Pop rax
+
+    ret       ; Return to caller
+
 ; WFOutputHex : output hex number (rdx : value to output)
 WFOutputHex:
     push rax        ; Push rax
@@ -169,6 +227,7 @@ WFOutputHex:
     push rdx        ; Push rdx
     push r11        ; Push r11
     push r12        ; Push r12
+    push r13        ; Push r13
 
     xor rcx, rcx    ; Clear rcx
     mov cx, 16  ; Loop for 16 digits
@@ -191,6 +250,7 @@ WFOutputHex:
         shl rdx, 4   ; Shift edx right by 4bits
     loop WFOutputHexLoop
 
+    pop r13         ; Pop r13
     pop r12         ; Pop r12
     pop r11         ; Pop r11
     pop rdx         ; Pop rdx
