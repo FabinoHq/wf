@@ -58,9 +58,10 @@ WFMain:
     xor r11, r11    ; Clear r11
     xor r12, r12    ; Clear r12
     xor r13, r13    ; Clear r13
+    xor r14, r14    ; Clear r14
+    xor r15, r15    ; Clear r15
 
     sub rsp, 40     ; Push stack
-    mov r11, rsp    ; Store rsp into r11
 
     ; Allocate memory
     mov rcx, 67108864       ; 16777216*4 bytes
@@ -68,8 +69,8 @@ WFMain:
     push rax                ; Push address into stack
 
     ; Set memory pointer
-    mov r12, rax        ; Move address into r12
-    add r12, 33554432   ; Add memory offset ((16777216*4)/2 bytes)
+    mov r10, rax        ; Move address into r10
+    add r10, 33554432   ; Add memory offset ((16777216*4)/2 bytes)
 
     ; Get std output handle
     sub rsp, 40     ; Push stack
@@ -77,7 +78,9 @@ WFMain:
     mov ecx, -11    ; 0FFFFFFF5H (-11) (STD_OUTPUT_HANDLE)
     call qword ptr __imp_GetStdHandle   ; Get std handle in rax
     add rsp, 40     ; Pop stack
-    mov r13, rax    ; Store std handle in r13
+    mov r12, rax    ; Store std handle in r12
+
+    mov r11, rsp    ; Store rsp into r11
 
     xor eax, eax    ; Clear eax  :  Register 
     xor ebx, ebx    ; Clear ebx  :  Back register
@@ -192,12 +195,12 @@ WFMainEnd:
 
 ; WFKeyboardInput : low level keyboard input
 WFKeyboardInput:
-    push rbx        ; Push rbx
-    push rcx        ; Push rcx
-    push rdx        ; Push rdx
-    push r11        ; Push r11
-    push r12        ; Push r12
-    push r13        ; Push r13
+    push rbx        ; Push back register
+    push rcx        ; Push pointer
+    push rdx        ; Push back pointer
+    push r10        ; Push memory address
+    push r11        ; Push main esp
+    push r12        ; Push std handle
 
     ; Wait for keyboard input
     inputchar:
@@ -214,24 +217,24 @@ WFKeyboardInput:
     add rsp, 40         ; Pop stack
     and rax, 0FFh       ; Mask low byte
 
-    pop r13         ; Pop r13
-    pop r12         ; Pop r12
-    pop r11         ; Pop r11
-    pop rdx         ; Pop rdx
-    pop rcx         ; Pop rcx
-    pop rbx         ; Pop rbx
+    pop r12         ; Pop std handle
+    pop r11         ; Pop main esp
+    pop r10         ; Pop memory address
+    pop rdx         ; Pop back pointer
+    pop rcx         ; Pop pointer
+    pop rbx         ; Pop back register
 
     ret         ; Return to caller
 
 ; WFStandardOutput : low level standard output
 WFStandardOutput:
-    push rax        ; Push rax
-    push rbx        ; Push rbx
-    push rcx        ; Push rcx
-    push rdx        ; Push rdx
-    push r11        ; Push r11
-    push r12        ; Push r12
-    push r13        ; Push r13
+    push rax        ; Push register
+    push rbx        ; Push back register
+    push rcx        ; Push pointer
+    push rdx        ; Push back pointer
+    push r10        ; Push memory address
+    push r11        ; Push main esp
+    push r12        ; Push std handle
 
     xor rcx, rcx    ; Clear rcx
     mov cl, al      ; Move register value into cl
@@ -239,25 +242,25 @@ WFStandardOutput:
     call putchar    ; Output character from cl
     add rsp, 40     ; Pop stack
 
-    pop r13         ; Pop r13
-    pop r12         ; Pop r12
-    pop r11         ; Pop r11
-    pop rdx         ; Pop rdx
-    pop rcx         ; Pop rcx
-    pop rbx         ; Pop rbx
-    pop rax         ; Pop rax
+    pop r12         ; Pop std handle
+    pop r11         ; Pop main esp
+    pop r10         ; Pop memory address
+    pop rdx         ; Pop back pointer
+    pop rcx         ; Pop pointer
+    pop rbx         ; Pop back register
+    pop rax         ; Pop register
 
     ret         ; Return to caller
 
 ; WFSetCursorPosition : Set terminal cursor position (x in cx, y in dx)
 WFSetCursorPosition:
-    push rax        ; Push rax
-    push rbx        ; Push rbx
-    push rcx        ; Push rcx
-    push rdx        ; Push rdx
-    push r11        ; Push r11
-    push r12        ; Push r12
-    push r13        ; Push r13
+    push rax        ; Push register
+    push rbx        ; Push back register
+    push rcx        ; Push pointer
+    push rdx        ; Push back pointer
+    push r10        ; Push memory address
+    push r11        ; Push main esp
+    push r12        ; Push std handle
 
     sub rsp, 40     ; Push stack
 
@@ -268,31 +271,31 @@ WFSetCursorPosition:
     mov dx, cx      ; X cursor position
 
     ; Set cursor position
-    mov rcx, r13    ; Move handle in rcx
+    mov rcx, r12    ; Move handle in rcx
     ; Std handle in rcx, Coords in edx (X : low 4bytes, Y : high 4bytes)
     call qword ptr __imp_SetConsoleCursorPosition
 
     add rsp, 40     ; Pop stack
 
-    pop r13         ; Pop r13
-    pop r12         ; Pop r12
-    pop r11         ; Pop r11
-    pop rdx         ; Pop rdx
-    pop rcx         ; Pop rcx
-    pop rbx         ; Pop rbx
-    pop rax         ; Pop rax
+    pop r12         ; Pop std handle
+    pop r11         ; Pop main esp
+    pop r10         ; Pop memory address
+    pop rdx         ; Pop back pointer
+    pop rcx         ; Pop pointer
+    pop rbx         ; Pop back register
+    pop rax         ; Pop register
 
     ret       ; Return to caller
 
 ; WFOutputHex : output hex number (rdx : value to output)
 WFOutputHex:
-    push rax        ; Push rax
-    push rbx        ; Push rbx
-    push rcx        ; Push rcx
-    push rdx        ; Push rdx
-    push r11        ; Push r11
-    push r12        ; Push r12
-    push r13        ; Push r13
+    push rax        ; Push register
+    push rbx        ; Push back register
+    push rcx        ; Push pointer
+    push rdx        ; Push back pointer
+    push r10        ; Push memory address
+    push r11        ; Push main esp
+    push r12        ; Push std handle
 
     xor rcx, rcx    ; Clear rcx
     mov cx, 16  ; Loop for 16 digits
@@ -315,13 +318,13 @@ WFOutputHex:
         shl rdx, 4   ; Shift edx right by 4bits
     loop WFOutputHexLoop
 
-    pop r13         ; Pop r13
-    pop r12         ; Pop r12
-    pop r11         ; Pop r11
-    pop rdx         ; Pop rdx
-    pop rcx         ; Pop rcx
-    pop rbx         ; Pop rbx
-    pop rax         ; Pop rax
+    pop r12         ; Pop std handle
+    pop r11         ; Pop main esp
+    pop r10         ; Pop memory address
+    pop rdx         ; Pop back pointer
+    pop rcx         ; Pop pointer
+    pop rbx         ; Pop back register
+    pop rax         ; Pop register
 
     ret       ; Return to caller
 
