@@ -406,10 +406,12 @@ void Wfc::parseInstruction()
 
         case '&':
             // Bitwise AND
+            writeAndRegisters();
             break;
 
         case '|':
             // Bitwise OR
+            writeOrRegisters();
             break;
 
 
@@ -718,6 +720,26 @@ bool Wfc::writeDivideRegisters()
 bool Wfc::writeModuloRegisters()
 {
     m_output << WFASMModuloRegisters;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF bitwise and registers                                            //
+//  return : True if WF bitwise and is successfully written                   //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeAndRegisters()
+{
+    m_output << WFASMAndRegisters;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF bitwise or registers                                             //
+//  return : True if WF bitwise or is successfully written                    //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeOrRegisters()
+{
+    m_output << WFASMOrRegisters;
     return (!m_output.bad());
 }
 

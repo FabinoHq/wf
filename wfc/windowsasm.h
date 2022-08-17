@@ -109,6 +109,9 @@
         "    xor r10, r10    ; Clear r10\n"
         "    xor r11, r11    ; Clear r11\n"
         "    xor r12, r12    ; Clear r12\n"
+        "    xor r13, r13    ; Clear r13\n"
+        "    xor r14, r14    ; Clear r14\n"
+        "    xor r15, r15    ; Clear r15\n"
         "\n"
         "    sub rsp, 40     ; Push stack\n"
         "\n"
@@ -119,10 +122,10 @@
         "    push rax                ; Push address into stack\n"
         "\n"
         "    ; Set memory pointer\n"
-        "    mov r12, rax        ; Move address into r12\n"
-        "    add r12, 33554432   ; Add memory offset ((16777216*4)/2 bytes)\n"
+        "    mov r10, rax        ; Move memory address into r10\n"
+        "    add r10, 33554432   ; Add memory offset ((16777216*4)/2 bytes)\n"
         "\n"
-        "    mov r11, rsp    ; Store rsp into r11\n"
+        "    mov r11, rsp    ; Store main rsp into r11\n"
         "\n"
         "    xor eax, eax    ; Clear eax  :  Register \n"
         "    xor ebx, ebx    ; Clear ebx  :  Back register\n"
@@ -151,19 +154,19 @@
         "\n"
         "; WFKeyboardInput : low level keyboard input\n"
         "WFKeyboardInput:\n"
-        "    push rbx        ; Push rbx\n"
-        "    push rcx        ; Push rcx\n"
-        "    push rdx        ; Push rdx\n"
-        "    push r11        ; Push r11\n"
-        "    push r12        ; Push r12\n"
+        "    push rbx        ; Push back register\n"
+        "    push rcx        ; Push pointer\n"
+        "    push rdx        ; Push back pointer\n"
+        "    push r10        ; Push memory address\n"
+        "    push r11        ; Push main esp\n"
         "\n"
         "    ; Wait for keyboard input\n"
         "    inputchar:\n"
-        "        sub rsp, 40         ; Push stack\n"
-        "        call _kbhit         ; Call _kbhit\n"
-        "        add rsp, 40         ; Pop stack\n"
-        "        test eax, eax       ; Set ZF to 1 if eax is equal to 0\n"
-        "        je inputchar        ; Loop if _kbhit returned 0\n"
+        "        sub rsp, 40     ; Push stack\n"
+        "        call _kbhit     ; Call _kbhit\n"
+        "        add rsp, 40     ; Pop stack\n"
+        "        test eax, eax   ; Set ZF to 1 if eax is equal to 0\n"
+        "        je inputchar    ; Loop if _kbhit returned 0\n"
         "\n"
         "    ; Get character in al\n"
         "    xor rax, rax        ; Clear rax\n"
@@ -172,22 +175,22 @@
         "    add rsp, 40         ; Pop stack\n"
         "    and rax, 0FFh       ; Mask low byte\n"
         "\n"
-        "    pop r12         ; Pop r12\n"
-        "    pop r11         ; Pop r11\n"
-        "    pop rdx         ; Pop rdx\n"
-        "    pop rcx         ; Pop rcx\n"
-        "    pop rbx         ; Pop rbx\n"
+        "    pop r11         ; Pop main esp\n"
+        "    pop r10         ; Pop memory address\n"
+        "    pop rdx         ; Pop back pointer\n"
+        "    pop rcx         ; Pop pointer\n"
+        "    pop rbx         ; Pop back register\n"
         "\n"
         "    ret         ; Return to caller\n"
         "\n"
         "; WFStandardOutput : low level standard output\n"
         "WFStandardOutput:\n"
-        "    push rax        ; Push rax\n"
-        "    push rbx        ; Push rbx\n"
-        "    push rcx        ; Push rcx\n"
-        "    push rdx        ; Push rdx\n"
-        "    push r11        ; Push r11\n"
-        "    push r12        ; Push r12\n"
+        "    push rax        ; Push register\n"
+        "    push rbx        ; Push back register\n"
+        "    push rcx        ; Push pointer\n"
+        "    push rdx        ; Push back pointer\n"
+        "    push r10        ; Push memory address\n"
+        "    push r11        ; Push main esp\n"
         "\n"
         "    xor rcx, rcx    ; Clear rcx\n"
         "    mov cl, al      ; Move register value into cl\n"
@@ -195,12 +198,12 @@
         "    call putchar    ; Output character from cl\n"
         "    add rsp, 40     ; Pop stack\n"
         "\n"
-        "    pop r12         ; Pop r12\n"
-        "    pop r11         ; Pop r11\n"
-        "    pop rdx         ; Pop rdx\n"
-        "    pop rcx         ; Pop rcx\n"
-        "    pop rbx         ; Pop rbx\n"
-        "    pop rax         ; Pop rax\n"
+        "    pop r11         ; Pop main esp\n"
+        "    pop r10         ; Pop memory address\n"
+        "    pop rdx         ; Pop back pointer\n"
+        "    pop rcx         ; Pop pointer\n"
+        "    pop rbx         ; Pop back register\n"
+        "    pop rax         ; Pop register\n"
         "\n"
         "    ret         ; Return to caller\n"
         "\n"
@@ -234,7 +237,7 @@
         "    push rax                ; Push rax\n"
         "    xor rax, rax            ; Clear rax\n"
         "    movsxd r9, ecx          ; Convert p into r9\n"
-        "    lea r8, [r12 + r9*4]    ; Load memory address into r8\n";
+        "    lea r8, [r10 + r9*4]    ; Load memory address into r8\n";
     const char WFASMStringCharacterHead[] =
         "    mov al, '";
     const char WFASMStringCharacterFoot[] =
@@ -364,7 +367,7 @@
         "\n"
         "    ; Load pointed value (r = *p)\n"
         "    movsxd r9, ecx          ; Convert p into r9\n"
-        "    lea r8, [r12 + r9*4]    ; Load memory address into r8\n"
+        "    lea r8, [r10 + r9*4]    ; Load memory address into r8\n"
         "    mov eax, [r8]           ; Load pointed value into register\n"
         "\n";
 
@@ -375,7 +378,7 @@
         "\n"
         "    ; Store register value (*p = r)\n"
         "    movsxd r9, ecx          ; Convert p into r9\n"
-        "    lea r8, [r12 + r9*4]    ; Load memory address into r8\n"
+        "    lea r8, [r10 + r9*4]    ; Load memory address into r8\n"
         "    mov [r8], eax           ; Store register at pointed address\n"
         "\n";
 
@@ -384,13 +387,13 @@
     //  WF Assembly add registers                                             //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMAddRegisters[] =
-        "    add eax, ebx   ; Add (r = r + b)\n";
+        "    add eax, ebx            ; Add (r = r + b)\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly subtract registers                                        //
     ////////////////////////////////////////////////////////////////////////////
     const char WFASMSubtractRegisters[] =
-        "    sub eax, ebx   ; Subtract (r = r - b)\n";
+        "    sub eax, ebx            ; Subtract (r = r - b)\n";
 
     ////////////////////////////////////////////////////////////////////////////
     //  WF Assembly multiply registers                                        //
@@ -398,9 +401,9 @@
     const char WFASMMultiplyRegisters[] =
         "\n"
         "    ; Multiply (r = r * b)\n"
-        "    mov r8, rdx    ; Save rdx into r8\n"
-        "    mul ebx        ; Multiply (r = r * b)\n"
-        "    mov rdx, r8    ; Restore rdx from r8\n"
+        "    mov r8, rdx             ; Save rdx into r8\n"
+        "    mul ebx                 ; Multiply (r = r * b)\n"
+        "    mov rdx, r8             ; Restore rdx from r8\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -409,10 +412,10 @@
     const char WFASMDivideRegisters[] =
         "\n"
         "    ; Divide (r = r / b)\n"
-        "    mov r8, rdx    ; Save rdx into r8\n"
-        "    xor rdx, rdx   ; Clear rdx\n"
-        "    div ebx        ; Quotient in rax, remainder in rdx\n"
-        "    mov rdx, r8    ; Restore rdx from r8\n"
+        "    mov r8, rdx             ; Save rdx into r8\n"
+        "    xor rdx, rdx            ; Clear rdx\n"
+        "    div ebx                 ; Quotient in rax, remainder in rdx\n"
+        "    mov rdx, r8             ; Restore rdx from r8\n"
         "\n";
 
     ////////////////////////////////////////////////////////////////////////////
@@ -421,12 +424,24 @@
     const char WFASMModuloRegisters[] =
         "\n"
         "    ; Modulo (r = r % b)\n"
-        "    mov r8, rdx    ; Save rdx into r8\n"
-        "    xor rdx, rdx   ; Clear rdx\n"
-        "    div ebx        ; Quotient in rax, remainder in rdx\n"
-        "    mov eax, edx   ; Move remainder into register\n"
-        "    mov rdx, r8    ; Restore rdx from r8\n"
+        "    mov r8, rdx             ; Save rdx into r8\n"
+        "    xor rdx, rdx            ; Clear rdx\n"
+        "    div ebx                 ; Quotient in rax, remainder in rdx\n"
+        "    mov eax, edx            ; Move remainder into register\n"
+        "    mov rdx, r8             ; Restore rdx from r8\n"
         "\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly bitwise and registers                                     //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMAndRegisters[] =
+        "    and eax, ebx            ; Bitwise AND (r = r & b)\n";
+
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly bitwise or registers                                      //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMOrRegisters[] =
+        "    or eax, ebx             ; Bitwise OR (r = r | b)\n";
 
 
     ////////////////////////////////////////////////////////////////////////////
