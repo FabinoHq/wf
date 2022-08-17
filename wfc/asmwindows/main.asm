@@ -34,10 +34,15 @@ PUBLIC main
 
 ; Data segment
 .data
-    message db "Hello World!", 0
-    file db "test.txt", 0
-    mode_r db "r", 0
-    mode_w db "w", 0
+    message db "Hello World!", 00h
+    file db "test.txt", 00h
+    mode_r db "r", 00h
+    mode_w db "w", 00h
+
+    std_handle dq 00h
+    input_file dq 00h
+    output_file dq 00h
+    rw_file dq 00h
 
 ; Code segment
 .code
@@ -78,9 +83,11 @@ WFMain:
     mov ecx, -11    ; 0FFFFFFF5H (-11) (STD_OUTPUT_HANDLE)
     call qword ptr __imp_GetStdHandle   ; Get std handle in rax
     add rsp, 40     ; Pop stack
-    mov r12, rax    ; Store std handle in r12
+    mov [std_handle], rax    ; Store std handle
 
-    mov r11, rsp    ; Store rsp into r11
+    mov r11, rsp    ; Store main rsp into r11
+
+    xor r12, r12    ; Set iomode to standard mode
 
     xor eax, eax    ; Clear eax  :  Register 
     xor ebx, ebx    ; Clear ebx  :  Back register
@@ -98,7 +105,7 @@ WFMain:
     ;call WFStandardOutput
 
     ; Output string
-    mov rbx, OFFSET message     ; Move address of message into rbx
+    lea rbx, message    ; Move address of message into rbx
     outputstring:
         mov al, [rbx]           ; Move character into al
 
@@ -120,31 +127,31 @@ WFMain:
     sub rsp, 40     ; Push stack
 
     xor rax, rax                ; Clear rax
-    mov [rsp], rax              ; Clear file handle
+    mov input_file, rax         ; Clear file handle
     lea rdx, offset file        ; Load file string address
     lea r8, offset mode_r       ; Load mode string address
     ;lea r8, offset mode_w      ; Load mode string address
-    lea rcx, [rsp]  ; Load file handle address
+    lea rcx, input_file  ; Load file handle address
     ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
     call fopen_s    ; Open file
 
-    mov rcx, [rsp]  ; Move file handle in rcx
+    mov rcx, input_file     ; Move file handle in rcx
     test rcx, rcx   ; Check file handle
     je filenotfound ; Jump if file is not open
 
     ; Set file cursor position
-    mov rcx, [rsp]  ; Move file handle in rcx
+    mov rcx, input_file     ; Move file handle in rcx
     xor r8, r8      ; Clear r8 (SEEK_SET)
     mov edx, 1      ; Move file cursor position into edx
     call fseek      ; Set file cursor position (handle in rcx, position in edx)
 
     ; Read character from file
-    mov rcx, [rsp]  ; Move file handle in rcx
+    mov rcx, input_file     ; Move file handle in rcx
     call fgetc      ; Read character (handle addr in rcx, character in eax)
     mov r15, rax    ; Save character into r15
 
     ; Get file cursor position
-    mov rcx, [rsp]  ; Move file handle in rcx
+    mov rcx, input_file     ; Move file handle in rcx
     call ftell      ; Get file cursor position (handle in rcx, position in eax)
     mov r14, rax    ; Save cursor position into r14
 
@@ -154,7 +161,7 @@ WFMain:
     ;call fputc      ; Write character (handle addr in rdx, character in ecx)
 
     ; Close file
-    mov rcx, [rsp]  ; Move file handle in rcx
+    mov rcx, input_file     ; Move file handle in rcx
     call fclose     ; Close file (handle in rcx)
 
     filenotfound:   ; File not found
@@ -200,7 +207,7 @@ WFKeyboardInput:
     push rdx        ; Push back pointer
     push r10        ; Push memory address
     push r11        ; Push main esp
-    push r12        ; Push std handle
+    push r12        ; Push iomode
 
     ; Wait for keyboard input
     inputchar:
@@ -217,7 +224,7 @@ WFKeyboardInput:
     add rsp, 40         ; Pop stack
     and rax, 0FFh       ; Mask low byte
 
-    pop r12         ; Pop std handle
+    pop r12         ; Pop iomode
     pop r11         ; Pop main esp
     pop r10         ; Pop memory address
     pop rdx         ; Pop back pointer
@@ -234,7 +241,7 @@ WFStandardOutput:
     push rdx        ; Push back pointer
     push r10        ; Push memory address
     push r11        ; Push main esp
-    push r12        ; Push std handle
+    push r12        ; Push iomode
 
     xor rcx, rcx    ; Clear rcx
     mov cl, al      ; Move register value into cl
@@ -242,7 +249,7 @@ WFStandardOutput:
     call putchar    ; Output character from cl
     add rsp, 40     ; Pop stack
 
-    pop r12         ; Pop std handle
+    pop r12         ; Pop iomode
     pop r11         ; Pop main esp
     pop r10         ; Pop memory address
     pop rdx         ; Pop back pointer
@@ -260,7 +267,7 @@ WFSetCursorPosition:
     push rdx        ; Push back pointer
     push r10        ; Push memory address
     push r11        ; Push main esp
-    push r12        ; Push std handle
+    push r12        ; Push iomode
 
     sub rsp, 40     ; Push stack
 
@@ -271,13 +278,13 @@ WFSetCursorPosition:
     mov dx, cx      ; X cursor position
 
     ; Set cursor position
-    mov rcx, r12    ; Move handle in rcx
+    mov rcx, std_handle     ; Move handle in rcx
     ; Std handle in rcx, Coords in edx (X : low 4bytes, Y : high 4bytes)
     call qword ptr __imp_SetConsoleCursorPosition
 
     add rsp, 40     ; Pop stack
 
-    pop r12         ; Pop std handle
+    pop r12         ; Pop iomode
     pop r11         ; Pop main esp
     pop r10         ; Pop memory address
     pop rdx         ; Pop back pointer
@@ -295,7 +302,7 @@ WFOutputHex:
     push rdx        ; Push back pointer
     push r10        ; Push memory address
     push r11        ; Push main esp
-    push r12        ; Push std handle
+    push r12        ; Push iomode
 
     xor rcx, rcx    ; Clear rcx
     mov cx, 16  ; Loop for 16 digits
@@ -318,7 +325,7 @@ WFOutputHex:
         shl rdx, 4   ; Shift edx right by 4bits
     loop WFOutputHexLoop
 
-    pop r12         ; Pop std handle
+    pop r12         ; Pop iomode
     pop r11         ; Pop main esp
     pop r10         ; Pop memory address
     pop rdx         ; Pop back pointer
