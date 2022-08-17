@@ -23,6 +23,7 @@ EXTRN __imp_SetConsoleCursorPosition:PROC   ; Set cursor position
 EXTRN fopen_s:PROC      ; fopen_s (Open file)
 EXTRN fclose:PROC       ; fclose (Close file)
 EXTRN fgetc:PROC        ; fgetc (Read one character from file)
+EXTRN fputc:PROC        ; fputc (Write one character into file)
 
 EXTRN ??_U@YAPEAX_K@Z:PROC      ; new[]
 EXTRN ??_V@YAXPEAX@Z:PROC       ; delete[]
@@ -33,7 +34,8 @@ PUBLIC main
 .data
     message db "Hello World!", 0
     file db "test.txt", 0
-    mode db "r", 0
+    mode_r db "r", 0
+    mode_w db "w", 0
 
 ; Code segment
 .code
@@ -109,26 +111,37 @@ WFMain:
     ;call WFSetCursorPosition
 
 
-    ; Read from file
+    ; File I/O
     sub rsp, 40     ; Push stack
 
     xor rax, rax                ; Clear rax
     mov [rsp], rax              ; Clear file handle
     lea rdx, offset file        ; Load file string address
-    lea r8, offset mode         ; Load mode string address
+    ;lea r8, offset mode_r      ; Load mode string address
+    lea r8, offset mode_w       ; Load mode string address
     lea rcx, [rsp]  ; Load file handle address
     ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
     call fopen_s    ; Open file
 
-    ; Read character from file
     mov rcx, [rsp]  ; Move file handle in rcx
-    call fgetc      ; Read character (handle addr in rcx, character in eax)
+    test rcx, rcx   ; Check file handle
+    jz filenotfound ; Jump if file is not open
 
-    mov r15, rax    ; Save character into r15
+    ; Read character from file
+    ;mov rcx, [rsp]  ; Move file handle in rcx
+    ;call fgetc      ; Read character (handle addr in rcx, character in eax)
+    ;mov r15, rax    ; Save character into r15
+
+    ; Write character to file
+    mov rdx, [rsp]  ; Move file handle in rdx
+    mov rcx, 'a'    ; Move character into rcx
+    call fputc      ; Write character (handle addr in rdx, character in ecx)
 
     ; Close file
     mov rcx, [rsp]  ; Move file handle in rcx
     call fclose     ; Close file (handle in rcx)
+
+    filenotfound:   ; File not found
 
     add rsp, 40     ; Pop stack
 
