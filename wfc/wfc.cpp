@@ -427,6 +427,7 @@ void Wfc::parseInstruction()
 
         case ')':
             // Set I/O cursor position
+            writeSetCursorPosition();
             break;
 
         case '(':
@@ -761,5 +762,15 @@ bool Wfc::writeInput()
 bool Wfc::writeOutput()
 {
     m_output << WFASMStandardOutput;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF set cursor position                                              //
+//  return : True if WF set cursor is successfully written                    //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeSetCursorPosition()
+{
+    m_output << WFASMSetCursorPosition;
     return (!m_output.bad());
 }

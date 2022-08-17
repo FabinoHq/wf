@@ -301,5 +301,11 @@
     const char WFASMStandardOutput[] =
         "    ; Standard output\n";
 
+    ////////////////////////////////////////////////////////////////////////////
+    //  WF Assembly set cursor position                                       //
+    ////////////////////////////////////////////////////////////////////////////
+    const char WFASMSetCursorPosition[] =
+        "    ; Set cursor position\n";
+
 
 #endif // WFC_LINUXASM_HEADER

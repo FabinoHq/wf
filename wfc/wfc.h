@@ -344,6 +344,12 @@
             ////////////////////////////////////////////////////////////////////
             bool writeOutput();
 
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF set cursor position                                  //
+            //  return : True if WF set cursor is successfully written        //
+            ////////////////////////////////////////////////////////////////////
+            bool writeSetCursorPosition();
+
 
         private:
             char*               m_program;          // Program array

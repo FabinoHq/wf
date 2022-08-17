@@ -118,8 +118,8 @@ WFMain:
 
 
     ; Set cursor position
-    ;mov ecx, 1  ; X cursor position
-    ;mov edx, 2  ; Y cursor position
+    ;mov eax, 1  ; X cursor position
+    ;mov ebx, 2  ; Y cursor position
     ;call WFSetCursorPosition
 
 
@@ -259,7 +259,7 @@ WFStandardOutput:
 
     ret         ; Return to caller
 
-; WFSetCursorPosition : Set terminal cursor position (x in cx, y in dx)
+; WFSetCursorPosition : Set terminal cursor position (x in ax, y in bx)
 WFSetCursorPosition:
     push rax        ; Push register
     push rbx        ; Push back register
@@ -271,11 +271,10 @@ WFSetCursorPosition:
 
     sub rsp, 40     ; Push stack
 
-    mov rbx, rdx    ; Move rdx into rbx
     xor rdx, rdx    ; Clear rdx
     mov dx, bx      ; Y cursor position
     shl edx, 16     ; Shift Y position to high
-    mov dx, cx      ; X cursor position
+    mov dx, ax      ; X cursor position
 
     ; Set cursor position
     mov rcx, std_handle     ; Move handle in rcx
