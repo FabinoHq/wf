@@ -127,7 +127,7 @@ WFMain:
 
     mov rcx, [rsp]  ; Move file handle in rcx
     test rcx, rcx   ; Check file handle
-    jz filenotfound ; Jump if file is not open
+    je filenotfound ; Jump if file is not open
 
     ; Set file cursor position
     mov rcx, [rsp]  ; Move file handle in rcx
