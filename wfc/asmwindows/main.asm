@@ -24,6 +24,8 @@ EXTRN fopen_s:PROC      ; fopen_s (Open file)
 EXTRN fclose:PROC       ; fclose (Close file)
 EXTRN fgetc:PROC        ; fgetc (Read one character from file)
 EXTRN fputc:PROC        ; fputc (Write one character into file)
+EXTRN fseek:PROC        ; fseek (Set file cursor position)
+EXTRN ftell:PROC        ; ftell (Get file cursor position)
 
 EXTRN ??_U@YAPEAX_K@Z:PROC      ; new[]
 EXTRN ??_V@YAXPEAX@Z:PROC       ; delete[]
@@ -73,7 +75,7 @@ WFMain:
     sub rsp, 40     ; Push stack
     xor rax, rax    ; Clear rax
     mov ecx, -11    ; 0FFFFFFF5H (-11) (STD_OUTPUT_HANDLE)
-    call QWORD PTR __imp_GetStdHandle   ; Get std handle in rax
+    call qword ptr __imp_GetStdHandle   ; Get std handle in rax
     add rsp, 40     ; Pop stack
     mov r13, rax    ; Store std handle in r13
 
@@ -117,8 +119,8 @@ WFMain:
     xor rax, rax                ; Clear rax
     mov [rsp], rax              ; Clear file handle
     lea rdx, offset file        ; Load file string address
-    ;lea r8, offset mode_r      ; Load mode string address
-    lea r8, offset mode_w       ; Load mode string address
+    lea r8, offset mode_r       ; Load mode string address
+    ;lea r8, offset mode_w      ; Load mode string address
     lea rcx, [rsp]  ; Load file handle address
     ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
     call fopen_s    ; Open file
@@ -127,15 +129,26 @@ WFMain:
     test rcx, rcx   ; Check file handle
     jz filenotfound ; Jump if file is not open
 
+    ; Set file cursor position
+    mov rcx, [rsp]  ; Move file handle in rcx
+    xor r8, r8      ; Clear r8 (SEEK_SET)
+    mov edx, 1      ; Move file cursor position into edx
+    call fseek      ; Set file cursor position (handle in rcx, position in edx)
+
     ; Read character from file
-    ;mov rcx, [rsp]  ; Move file handle in rcx
-    ;call fgetc      ; Read character (handle addr in rcx, character in eax)
-    ;mov r15, rax    ; Save character into r15
+    mov rcx, [rsp]  ; Move file handle in rcx
+    call fgetc      ; Read character (handle addr in rcx, character in eax)
+    mov r15, rax    ; Save character into r15
+
+    ; Get file cursor position
+    mov rcx, [rsp]  ; Move file handle in rcx
+    call ftell      ; Get file cursor position (handle in rcx, position in eax)
+    mov r14, rax    ; Save cursor position into r14
 
     ; Write character to file
-    mov rdx, [rsp]  ; Move file handle in rdx
-    mov rcx, 'a'    ; Move character into rcx
-    call fputc      ; Write character (handle addr in rdx, character in ecx)
+    ;mov rdx, [rsp]  ; Move file handle in rdx
+    ;mov rcx, 'a'    ; Move character into rcx
+    ;call fputc      ; Write character (handle addr in rdx, character in ecx)
 
     ; Close file
     mov rcx, [rsp]  ; Move file handle in rcx
@@ -153,6 +166,14 @@ WFMain:
     ; Output character
     mov rax, r15    ; Restore character from r15
     call WFStandardOutput
+
+    ; Output new line
+    mov al, 10
+    call WFStandardOutput
+
+    ; Output file cursor position
+    mov rdx, r14
+    call WFOutputHex
 
 
 ; WFMainEnd : Main program end
@@ -249,7 +270,7 @@ WFSetCursorPosition:
     ; Set cursor position
     mov rcx, r13    ; Move handle in rcx
     ; Std handle in rcx, Coords in edx (X : low 4bytes, Y : high 4bytes)
-    call QWORD PTR __imp_SetConsoleCursorPosition
+    call qword ptr __imp_SetConsoleCursorPosition
 
     add rsp, 40     ; Pop stack
 
