@@ -176,19 +176,25 @@ WFMain:
     mov rax, 'b'  ; Open input file I/O mode
     call WFSetIOMode
 
+    mov rax, 'a'
+    call WFStandardOutput
+
+    mov rax, 0
+    call WFSetIOMode
+
     mov rbx, rax
 
     mov rax, 0
     call WFSetIOMode
 
     ; Output character
-    mov rax, rbx
-    add rax, '0'
-    call WFStandardOutput
+    ;mov rax, rbx
+    ;add rax, '0'
+    ;call WFStandardOutput
 
     ; Output new line
-    mov al, 10
-    call WFStandardOutput
+    ;mov al, 10
+    ;call WFStandardOutput
 
 
 ; WFMainEnd : Main program end
@@ -308,11 +314,25 @@ WFStandardOutput:
         jmp WFStandardOutputEnd
 
     WFStandardOutputFile:   ; File output mode
-        jmp WFStandardOutputEnd
+        mov rdx, output_file    ; Load output file handle
+        mov rbx, file_io        ; Load file_io mode
+        test rbx, rbx           ; Check file_io mode
+        je WFStandardOutputFileO
+            mov rdx, rw_file    ; Load R/W file handle
+
+        WFStandardOutputFileO:
+        test rdx, rdx           ; Check file handle
+        je WFStandardOutputEnd  ; No output file
+
+            ; Write character to file
+            movsx rcx, al   ; Move register value into rcx
+            ; Write character (handle addr in rdx, character in ecx)
+            call fputc      ; Call fputc
+            jmp WFStandardOutputEnd
 
     WFStandardOutputEnd:
-
     add rsp, 40     ; Pop stack
+
     pop r12         ; Pop iomode
     pop r11         ; Pop main esp
     pop r10         ; Pop memory address
