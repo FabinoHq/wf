@@ -600,6 +600,8 @@
         "    mov [r8], rax           ; Write character into memory\n"
         "    add r8, 4               ; Increment pointer\n";
     const char WFASMStringFoot[] =
+        "    xor rax, rax            ; Clear rax\n"
+        "    mov [r8], rax           ; Write nul character into memory\n"
         "    pop rax                 ; Pop rax\n"
         "\n";
 
