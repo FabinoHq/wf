@@ -90,7 +90,8 @@ WFMain:
 
     mov r11, rsp    ; Store main rsp into r11
 
-    xor r12, r12    ; Set I/O mode to standard mode
+    xor r12, r12        ; Set I/O mode to standard mode
+    mov [file_io], 0    ; Set I/O file mode to I/O
 
     xor eax, eax    ; Clear eax  :  Register 
     xor ebx, ebx    ; Clear ebx  :  Back register
@@ -127,66 +128,67 @@ WFMain:
 
 
     ; File I/O
-    sub rsp, 40     ; Push stack
+    ; sub rsp, 40     ; Push stack
 
-    xor rax, rax                ; Clear rax
-    mov input_file, rax         ; Clear file handle
-    lea rdx, offset file        ; Load file string address
-    lea r8, offset file_mode_r  ; Load mode string address
-    ;lea r8, offset mode_w      ; Load mode string address
-    lea rcx, input_file  ; Load file handle address
-    ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
-    call fopen_s    ; Open file
+    ; xor rax, rax                ; Clear rax
+    ; mov input_file, rax         ; Clear file handle
+    ; lea rdx, file        ; Load file string address
+    ; lea r8, file_mode_r  ; Load mode string address
+    ; ;lea r8, mode_w      ; Load mode string address
+    ; lea rcx, input_file  ; Load file handle address
+    ; ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
+    ; call fopen_s    ; Open file
 
-    mov rcx, input_file     ; Move file handle in rcx
-    test rcx, rcx   ; Check file handle
-    je filenotfound ; Jump if file is not open
+    ; mov rcx, input_file     ; Move file handle in rcx
+    ; test rcx, rcx   ; Check file handle
+    ; je filenotfound ; Jump if file is not open
 
-    ; Set file cursor position
-    mov rcx, input_file     ; Move file handle in rcx
-    xor r8, r8      ; Clear r8 (SEEK_SET)
-    mov edx, 1      ; Move file cursor position into edx
-    call fseek      ; Set file cursor position (handle in rcx, position in edx)
+    ; ; Set file cursor position
+    ; mov rcx, input_file     ; Move file handle in rcx
+    ; xor r8, r8      ; Clear r8 (SEEK_SET)
+    ; mov edx, 1      ; Move file cursor position into edx
+    ; call fseek      ; Set file cursor position (handle in rcx, position in edx)
 
-    ; Read character from file
-    mov rcx, input_file     ; Move file handle in rcx
-    call fgetc      ; Read character (handle addr in rcx, character in eax)
-    mov r15, rax    ; Save character into r15
+    ; ; Read character from file
+    ; mov rcx, input_file     ; Move file handle in rcx
+    ; call fgetc      ; Read character (handle addr in rcx, character in eax)
+    ; mov r15, rax    ; Save character into r15
 
-    ; Get file cursor position
-    mov rcx, input_file     ; Move file handle in rcx
-    call ftell      ; Get file cursor position (handle in rcx, position in eax)
-    mov r14, rax    ; Save cursor position into r14
+    ; ; Get file cursor position
+    ; mov rcx, input_file     ; Move file handle in rcx
+    ; call ftell      ; Get file cursor position (handle in rcx, position in eax)
+    ; mov r14, rax    ; Save cursor position into r14
 
-    ; Write character to file
-    ;mov rdx, [rsp]  ; Move file handle in rdx
-    ;mov rcx, 'a'    ; Move character into rcx
-    ;call fputc      ; Write character (handle addr in rdx, character in ecx)
+    ; ; Write character to file
+    ; ;mov rdx, [rsp]  ; Move file handle in rdx
+    ; ;mov rcx, 'a'    ; Move character into rcx
+    ; ;call fputc      ; Write character (handle addr in rdx, character in ecx)
 
-    ; Close file
-    mov rcx, input_file     ; Move file handle in rcx
-    call fclose     ; Close file (handle in rcx)
+    ; ; Close file
+    ; mov rcx, input_file     ; Move file handle in rcx
+    ; call fclose     ; Close file (handle in rcx)
 
-    filenotfound:   ; File not found
+    ; filenotfound:   ; File not found
 
-    add rsp, 40     ; Pop stack
+    ; add rsp, 40     ; Pop stack
 
+    lea rcx, file
+    mov rax, 'r'  ; Open input file I/O mode
+    call WFSetIOMode
 
-    ; Output new line
-    mov al, 10
-    call WFStandardOutput
+    mov rbx, rax
+
+    mov rax, 0
+    call WFSetIOMode
 
     ; Output character
-    mov rax, r15    ; Restore character from r15
+    mov rax, rbx
+    add rax, '0'
     call WFStandardOutput
 
     ; Output new line
     mov al, 10
     call WFStandardOutput
-
-    ; Output file cursor position
-    mov rdx, r14
-    call WFOutputHex
 
 
 ; WFMainEnd : Main program end
@@ -294,7 +296,8 @@ WFStandardOutput:
 
     ret         ; Return to caller
 
-; WFSetCursorPosition : Set terminal cursor position (x in ax, y in bx)
+; WFSetCursorPosition : Set I/O cursor position
+; Standard terminal I/O : (x in ax, y in bx), Filo I/O : (pos in eax)
 WFSetCursorPosition:
     push rax        ; Push register
     push rbx        ; Push back register
@@ -343,6 +346,151 @@ WFSetCursorPosition:
     pop rcx         ; Pop pointer
     pop rbx         ; Pop back register
     pop rax         ; Pop register
+
+    ret       ; Return to caller
+
+; WFSetIOMode : Set I/O mode (al : I/O mode, rcx : file path str addr)
+WFSetIOMode:
+    mov r14, rcx    ; Store pointer into r14
+    mov r13, rax    ; Store register into r13
+    push rbx        ; Push back register
+    push rcx        ; Push pointer
+    push rdx        ; Push back pointer
+    push r10        ; Push memory address
+    push r11        ; Push main esp
+
+    sub rsp, 40     ; Push stack
+
+    cmp al, 0       ; Standard I/O mode
+    je WFSetIOModeStd           ; Jump to standard I/O mode
+    cmp al, 'r'     ; Open input file mode
+    je WFSetIOModeOpenInputFile     ; Jump to open input file mode
+    cmp al, 'w'     ; Open output file mode
+    je WFSetIOModeOpenOutputFile    ; Jump to open output file mode
+    cmp al, 'b'     ; Open R/W file mode
+    je WFSetIOModeOpenRWFile        ; Jump to open R/W file mode
+    cmp al, 'i'     ; Input file I/O mode
+    je WFSetIOModeInputFile     ; Jump to file input I/O mode
+    cmp al, 'o'     ; Output file I/O mode
+    je WFSetIOModeOutputFile    ; Jump to file output I/O mode
+
+    WFSetIOModeStd:             ; Standard I/O mode
+        xor r12, r12            ; Set standard I/O mode
+        jmp WFSetIOModeEnd
+
+    WFSetIOModeOpenInputFile:   ; Open input file mode
+        mov r12, 4              ; Set file input I/O mode
+        mov [file_io], 0        ; Set I/O file mode to I/O
+
+        mov rax, input_file     ; Load input file handle
+        test rax, rax           ; Check input file handle
+        je WFSetIOModeOpenInputFileOk
+
+            ; Close input file
+            mov rcx, input_file     ; Move file handle in rcx
+            call fclose             ; Close file (handle in rcx)
+
+        WFSetIOModeOpenInputFileOk:
+
+        mov rax, rw_file        ; Load R/W file handle
+        test rax, rax           ; Check R/W file handle
+        je WFSetIOModeOpenInputFileRWOk
+
+            ; Close R/W file
+            mov rcx, rw_file        ; Move file handle in rcx
+            call fclose             ; Close file (handle in rcx)
+
+        WFSetIOModeOpenInputFileRWOk:
+
+        xor rax, rax                ; Clear rax
+        mov input_file, rax         ; Clear input file handle
+        mov rw_file, rax            ; Clear R/W file handle
+
+        lea rdx, [r14]              ; Load file string address
+        lea r8, file_mode_r         ; Load mode string address
+        lea rcx, input_file         ; Load file handle address
+        ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
+        call fopen_s                ; Open file
+
+        mov rcx, input_file         ; Move file handle in rcx
+        test rcx, rcx               ; Check file handle
+        je WFSetIOModeOpenInputFileErr
+            mov r13, 1              ; Set register to 1 (open success)
+            jmp WFSetIOModeEnd
+
+        WFSetIOModeOpenInputFileErr:
+        xor r13, r13                ; Clear register (open error)
+        jmp WFSetIOModeEnd
+
+    WFSetIOModeOpenOutputFile:  ; Open output file mode
+        mov r12, 5              ; Set file output I/O mode
+        mov [file_io], 0        ; Set I/O file mode to I/O
+
+        mov rax, output_file    ; Load output file handle
+        test rax, rax           ; Check output file handle
+        je WFSetIOModeOpenOutputFileOk
+
+            ; Close output file
+            mov rcx, output_file    ; Move file handle in rcx
+            call fclose             ; Close file (handle in rcx)
+
+        WFSetIOModeOpenOutputFileOk:
+
+        mov rax, rw_file        ; Load R/W file handle
+        test rax, rax           ; Check R/W file handle
+        je WFSetIOModeOpenOutputFileRWOk
+
+            ; Close R/W file
+            mov rcx, rw_file        ; Move file handle in rcx
+            call fclose             ; Close file (handle in rcx)
+
+        WFSetIOModeOpenOutputFileRWOk:
+
+        xor rax, rax                ; Clear rax
+        mov output_file, rax        ; Clear output file handle
+        mov rw_file, rax            ; Clear R/W file handle
+
+        lea rdx, [r14]              ; Load file string address
+        lea r8, file_mode_w         ; Load mode string address
+        lea rcx, output_file        ; Load file handle address
+        ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
+        call fopen_s                ; Open file
+
+        mov rcx, output_file        ; Move file handle in rcx
+        test rcx, rcx               ; Check file handle
+        je WFSetIOModeOpenOutputFileErr
+            mov r13, 1              ; Set register to 1 (open success)
+            jmp WFSetIOModeEnd
+
+        WFSetIOModeOpenOutputFileErr:
+        xor r13, r13                ; Clear register (open error)
+        jmp WFSetIOModeEnd
+
+    WFSetIOModeOpenRWFile:      ; Open R/W file mode
+        mov r12, 5              ; Set file output I/O mode
+        mov [file_io], 1        ; Set I/O file mode to R/W
+
+
+        jmp WFSetIOModeEnd
+
+    WFSetIOModeInputFile:       ; File input mode
+        mov r12, 4              ; Set file input I/O mode
+        jmp WFSetIOModeEnd
+
+    WFSetIOModeOutputFile:      ; File output mode
+        mov r12, 5              ; Set file output I/O mode
+        jmp WFSetIOModeEnd
+
+    WFSetIOModeEnd:
+
+    add rsp, 40     ; Pop stack
+
+    pop r11         ; Pop main esp
+    pop r10         ; Pop memory address
+    pop rdx         ; Pop back pointer
+    pop rcx         ; Pop pointer
+    pop rbx         ; Pop back register
+    mov rax, r13    ; Restore register from r13
 
     ret       ; Return to caller
 
