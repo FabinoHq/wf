@@ -173,7 +173,7 @@ WFMain:
     ; add rsp, 40     ; Pop stack
 
     lea rcx, file
-    mov rax, 'r'  ; Open input file I/O mode
+    mov rax, 'b'  ; Open input file I/O mode
     call WFSetIOMode
 
     mov rbx, rax
@@ -193,6 +193,33 @@ WFMain:
 
 ; WFMainEnd : Main program end
 WFMainEnd:
+    ; Close opened files
+    sub rsp, 40             ; Push stack
+    mov rax, input_file     ; Load input file handle
+    test rax, rax           ; Check input file handle
+    je WFMainEndInputFileOk
+        ; Close input file
+        mov rcx, input_file     ; Move file handle in rcx
+        call fclose             ; Close file (handle in rcx)
+    WFMainEndInputFileOk:
+
+    mov rax, output_file    ; Load output file handle
+    test rax, rax           ; Check output file handle
+    je WFMainEndOutputFileOk
+        ; Close output file
+        mov rcx, output_file    ; Move file handle in rcx
+        call fclose             ; Close file (handle in rcx)
+    WFMainEndOutputFileOk:
+
+    mov rax, rw_file        ; Load R/W file handle
+    test rax, rax           ; Check R/W  file handle
+    je WFMainEndFileOk
+        ; Close R/W file
+        mov rcx, rw_file        ; Move file handle in rcx
+        call fclose             ; Close file (handle in rcx)
+    WFMainEndFileOk:
+    add rsp, 40     ; Pop stack
+
     ; Cleanup memory
     pop rcx                     ; Restore address from stack
     call ??_V@YAXPEAX@Z         ; delete[] (address in rcx)
@@ -296,8 +323,7 @@ WFStandardOutput:
 
     ret         ; Return to caller
 
-; WFSetCursorPosition : Set I/O cursor position
-; Standard terminal I/O : (x in ax, y in bx), Filo I/O : (pos in eax)
+; WFSetCursorPosition : Set terminal cursor position (x in ax, y in bx)
 WFSetCursorPosition:
     push rax        ; Push register
     push rbx        ; Push back register
@@ -385,21 +411,17 @@ WFSetIOMode:
         mov rax, input_file     ; Load input file handle
         test rax, rax           ; Check input file handle
         je WFSetIOModeOpenInputFileOk
-
             ; Close input file
             mov rcx, input_file     ; Move file handle in rcx
             call fclose             ; Close file (handle in rcx)
-
         WFSetIOModeOpenInputFileOk:
 
         mov rax, rw_file        ; Load R/W file handle
         test rax, rax           ; Check R/W file handle
         je WFSetIOModeOpenInputFileRWOk
-
             ; Close R/W file
             mov rcx, rw_file        ; Move file handle in rcx
             call fclose             ; Close file (handle in rcx)
-
         WFSetIOModeOpenInputFileRWOk:
 
         xor rax, rax                ; Clear rax
@@ -429,21 +451,17 @@ WFSetIOMode:
         mov rax, output_file    ; Load output file handle
         test rax, rax           ; Check output file handle
         je WFSetIOModeOpenOutputFileOk
-
             ; Close output file
             mov rcx, output_file    ; Move file handle in rcx
             call fclose             ; Close file (handle in rcx)
-
         WFSetIOModeOpenOutputFileOk:
 
         mov rax, rw_file        ; Load R/W file handle
         test rax, rax           ; Check R/W file handle
         je WFSetIOModeOpenOutputFileRWOk
-
             ; Close R/W file
             mov rcx, rw_file        ; Move file handle in rcx
             call fclose             ; Close file (handle in rcx)
-
         WFSetIOModeOpenOutputFileRWOk:
 
         xor rax, rax                ; Clear rax
@@ -470,7 +488,49 @@ WFSetIOMode:
         mov r12, 5              ; Set file output I/O mode
         mov [file_io], 1        ; Set I/O file mode to R/W
 
+        mov rax, input_file     ; Load input file handle
+        test rax, rax           ; Check input file handle
+        je WFSetIOModeRWOpenInputFileOk
+            ; Close input file
+            mov rcx, input_file     ; Move file handle in rcx
+            call fclose             ; Close file (handle in rcx)
+        WFSetIOModeRWOpenInputFileOk:
 
+        mov rax, output_file    ; Load output file handle
+        test rax, rax           ; Check output file handle
+        je WFSetIOModeRWOpenOutputFileOk
+            ; Close output file
+            mov rcx, output_file    ; Move file handle in rcx
+            call fclose             ; Close file (handle in rcx)
+        WFSetIOModeRWOpenOutputFileOk:
+
+        mov rax, rw_file        ; Load R/W file handle
+        test rax, rax           ; Check R/W  file handle
+        je WFSetIOModeRWOpenRWFileOk
+            ; Close R/W file
+            mov rcx, rw_file        ; Move file handle in rcx
+            call fclose             ; Close file (handle in rcx)
+        WFSetIOModeRWOpenRWFileOk:
+
+        xor rax, rax                ; Clear rax
+        mov input_file, rax         ; Clear input file handle
+        mov output_file, rax        ; Clear output file handle
+        mov rw_file, rax            ; Clear R/W file handle
+
+        lea rdx, [r14]              ; Load file string address
+        lea r8, file_mode_rw        ; Load mode string address
+        lea rcx, rw_file            ; Load file handle address
+        ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
+        call fopen_s                ; Open file
+
+        mov rcx, rw_file            ; Move file handle in rcx
+        test rcx, rcx               ; Check file handle
+        je WFSetIOModeRWOpenRWFileErr
+            mov r13, 1              ; Set register to 1 (open success)
+            jmp WFSetIOModeEnd
+
+        WFSetIOModeRWOpenRWFileErr:
+        xor r13, r13                ; Clear register (open error)
         jmp WFSetIOModeEnd
 
     WFSetIOModeInputFile:       ; File input mode

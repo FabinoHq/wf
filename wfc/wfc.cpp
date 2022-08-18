@@ -436,6 +436,7 @@ void Wfc::parseInstruction()
 
         case '?':
             // Set I/O mode
+            writeSetIOMode();
             break;
 
         default:
@@ -772,5 +773,15 @@ bool Wfc::writeOutput()
 bool Wfc::writeSetCursorPosition()
 {
     m_output << WFASMSetCursorPosition;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF set I/O mode                                                     //
+//  return : True if WF set I/O mode is successfully written                  //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeSetIOMode()
+{
+    m_output << WFASMSetIOMode;
     return (!m_output.bad());
 }

@@ -350,6 +350,12 @@
             ////////////////////////////////////////////////////////////////////
             bool writeSetCursorPosition();
 
+            ////////////////////////////////////////////////////////////////////
+            //  Write WF set I/O mode                                         //
+            //  return : True if WF set I/O mode is successfully written      //
+            ////////////////////////////////////////////////////////////////////
+            bool writeSetIOMode();
+
 
         private:
             char*               m_program;          // Program array
