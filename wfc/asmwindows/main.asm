@@ -173,7 +173,7 @@ WFMain:
     ; add rsp, 40     ; Pop stack
 
     lea rcx, file
-    mov rax, 'b'  ; Open input file I/O mode
+    mov rax, 'r'  ; Open input file I/O mode
     call WFSetIOMode
 
     mov rax, 'a'
@@ -188,13 +188,13 @@ WFMain:
     call WFSetIOMode
 
     ; Output character
-    ;mov rax, rbx
-    ;add rax, '0'
-    ;call WFStandardOutput
+    mov rax, rbx
+    add rax, '0'
+    call WFStandardOutput
 
     ; Output new line
-    ;mov al, 10
-    ;call WFStandardOutput
+    mov al, 10
+    call WFStandardOutput
 
 
 ; WFMainEnd : Main program end
@@ -273,7 +273,19 @@ WFStandardInput:
         jmp WFStandardInputEnd
 
     WFStandardInputFile:    ; File input mode
-        jmp WFStandardInputEnd
+    mov rcx, input_file     ; Load input file handle
+    mov rbx, file_io        ; Load file_io mode
+    test rbx, rbx           ; Check file_io mode
+    je WFStandardInputFileI
+        mov rcx, rw_file    ; Load R/W file handle
+
+    WFStandardInputFileI:
+    test rcx, rcx           ; Check file handle
+    je WFStandardInputEnd   ; No input file
+
+        ; Read character (handle addr in rcx, character in eax)
+        call fgetc      ; Call fgetc
+        and rax, 0FFh   ; Mask low byte
 
     WFStandardInputEnd:
 
@@ -328,7 +340,6 @@ WFStandardOutput:
             movsx rcx, al   ; Move register value into rcx
             ; Write character (handle addr in rdx, character in ecx)
             call fputc      ; Call fputc
-            jmp WFStandardOutputEnd
 
     WFStandardOutputEnd:
     add rsp, 40     ; Pop stack
@@ -382,7 +393,6 @@ WFSetCursorPosition:
         jmp WFSetCursorEnd
 
     WFSetCursorEnd:
-
     add rsp, 40     ; Pop stack
 
     pop r12         ; Pop iomode
@@ -562,7 +572,6 @@ WFSetIOMode:
         jmp WFSetIOModeEnd
 
     WFSetIOModeEnd:
-
     add rsp, 40     ; Pop stack
 
     pop r11         ; Pop main esp
@@ -571,47 +580,6 @@ WFSetIOMode:
     pop rcx         ; Pop pointer
     pop rbx         ; Pop back register
     mov rax, r13    ; Restore register from r13
-
-    ret       ; Return to caller
-
-; WFOutputHex : output hex number (rdx : value to output)
-WFOutputHex:
-    push rax        ; Push register
-    push rbx        ; Push back register
-    push rcx        ; Push pointer
-    push rdx        ; Push back pointer
-    push r10        ; Push memory address
-    push r11        ; Push main esp
-    push r12        ; Push iomode
-
-    xor rcx, rcx    ; Clear rcx
-    mov cx, 16  ; Loop for 16 digits
-    WFOutputHexLoop:
-
-        ; Extract current digit
-        mov rax, rdx    ; Move hex value into eax
-        shr rax, 60     ; Extract current digit value
-        add al, '0'     ; Convert to ASCII value
-
-        cmp al, '9'     ; Compare al with '9'
-        jle WFOutputHexDigit ; Jump if less or equal
-            add al, ('A'-'9'-1) ; Add ASCII offset for hex digits
-        WFOutputHexDigit:
-
-        ; Print current character
-        call WFStandardOutput
-
-        ; Next hex digit
-        shl rdx, 4   ; Shift edx right by 4bits
-    loop WFOutputHexLoop
-
-    pop r12         ; Pop iomode
-    pop r11         ; Pop main esp
-    pop r10         ; Pop memory address
-    pop rdx         ; Pop back pointer
-    pop rcx         ; Pop pointer
-    pop rbx         ; Pop back register
-    pop rax         ; Pop register
 
     ret       ; Return to caller
 
