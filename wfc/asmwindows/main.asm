@@ -34,9 +34,6 @@ PUBLIC main
 
 ; Data segment
 .data
-    message db "Hello World!", 00h
-    file db "test.txt", 00h
-
     std_handle dq 00h       ; Std output handle
     input_file dq 00h       ; Input file handle
     output_file dq 00h      ; Output file handle
@@ -98,28 +95,6 @@ WFMain:
     xor ecx, ecx    ; Clear ecx  :  Pointer 
     xor edx, edx    ; Clear edx  :  Back pointer
 
-    ; Read character into al
-    ;call WFStandardInput
-
-    ; Output character from al
-    ;call WFStandardOutput
-
-    ; Output new line
-    ;mov al, 10
-    ;call WFStandardOutput
-
-    ; Output string
-    lea rbx, message    ; Move address of message into rbx
-    outputstring:
-        mov al, [rbx]           ; Move character into al
-
-        call WFStandardOutput
-
-        inc rbx                 ; Increment rbx
-        mov al, [rbx]           ; Move next character into al
-        test al, al             ; Set ZF to 1 if al is equal to 0
-        jne outputstring        ; Loop if next character is not 0 (nul)
-
 
     ; Set cursor position
     ;mov eax, 1  ; X cursor position
@@ -171,30 +146,6 @@ WFMain:
     ; filenotfound:   ; File not found
 
     ; add rsp, 40     ; Pop stack
-
-    lea rcx, file
-    mov rax, 'r'  ; Open input file I/O mode
-    call WFSetIOMode
-
-    mov rax, 'a'
-    call WFStandardOutput
-
-    mov rax, 0
-    call WFSetIOMode
-
-    mov rbx, rax
-
-    mov rax, 0
-    call WFSetIOMode
-
-    ; Output character
-    mov rax, rbx
-    add rax, '0'
-    call WFStandardOutput
-
-    ; Output new line
-    mov al, 10
-    call WFStandardOutput
 
 
 ; WFMainEnd : Main program end
@@ -288,7 +239,6 @@ WFStandardInput:
         and rax, 0FFh   ; Mask low byte
 
     WFStandardInputEnd:
-
     add rsp, 40     ; Pop stack
 
     pop r12         ; Pop iomode
@@ -407,7 +357,8 @@ WFSetCursorPosition:
 
 ; WFSetIOMode : Set I/O mode (al : I/O mode, rcx : file path str addr)
 WFSetIOMode:
-    mov r14, rcx    ; Store pointer into r14
+    mov r15, r10    ; Store memory address into r15
+    movsxd r14, ecx ; Convert pointer into r14
     mov r13, rax    ; Store register into r13
     push rbx        ; Push back register
     push rcx        ; Push pointer
@@ -458,7 +409,24 @@ WFSetIOMode:
         mov input_file, rax         ; Clear input file handle
         mov rw_file, rax            ; Clear R/W file handle
 
-        lea rdx, [r14]              ; Load file string address
+        lea r8, [r15 + r14*4]       ; Load file path memory address into r8
+        mov rax, [r8]               ; Move file path into rax
+        test rax, rax               ; Check file path
+        je WFSetIOModeOpenInputFileErr
+
+        ; Copy 4bytes characters string into 1byte characters string
+        mov rdi, rsp                ; Move stack pointer into rdi
+        add rdi, 40                 ; Add offset to stack
+        mov r9, [r8]                ; Move character into r9
+        WFSetIOModeOpenInputFileCpy:
+            mov [rdi], r9           ; Copy character into stack
+            add r8, 4               ; Increment paht string pointer
+            inc rdi                 ; Increment destination pointer
+            mov r9, [r8]            ; Move character into r9
+            test r9, r9             ; Check if character is nul
+            jne WFSetIOModeOpenInputFileCpy
+
+        lea rdx, [rsp+40]           ; Load file string address
         lea r8, file_mode_r         ; Load mode string address
         lea rcx, input_file         ; Load file handle address
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
@@ -498,7 +466,24 @@ WFSetIOMode:
         mov output_file, rax        ; Clear output file handle
         mov rw_file, rax            ; Clear R/W file handle
 
-        lea rdx, [r14]              ; Load file string address
+        lea r8, [r15 + r14*4]       ; Load file path memory address into r8
+        mov rax, [r8]               ; Move file path into rax
+        test rax, rax               ; Check file path
+        je WFSetIOModeOpenOutputFileErr
+
+        ; Copy 4bytes characters string into 1byte characters string
+        mov rdi, rsp                ; Move stack pointer into rdi
+        add rdi, 40                 ; Add offset to stack
+        mov r9, [r8]                ; Move character into r9
+        WFSetIOModeOpenOutputFileCpy:
+            mov [rdi], r9           ; Copy character into stack
+            add r8, 4               ; Increment paht string pointer
+            inc rdi                 ; Increment destination pointer
+            mov r9, [r8]            ; Move character into r9
+            test r9, r9             ; Check if character is nul
+            jne WFSetIOModeOpenOutputFileCpy
+
+        lea rdx, [rsp+40]           ; Load file string address
         lea r8, file_mode_w         ; Load mode string address
         lea rcx, output_file        ; Load file handle address
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
@@ -547,7 +532,24 @@ WFSetIOMode:
         mov output_file, rax        ; Clear output file handle
         mov rw_file, rax            ; Clear R/W file handle
 
-        lea rdx, [r14]              ; Load file string address
+        lea r8, [r15 + r14*4]       ; Load file path memory address into r8
+        mov rax, [r8]               ; Move file path into rax
+        test rax, rax               ; Check file path
+        je WFSetIOModeRWOpenRWFileErr
+
+        ; Copy 4bytes characters string into 1byte characters string
+        mov rdi, rsp                ; Move stack pointer into rdi
+        add rdi, 40                 ; Add offset to stack
+        mov r9, [r8]                ; Move character into r9
+        WFSetIOModeOpenRWFileCpy:
+            mov [rdi], r9           ; Copy character into stack
+            add r8, 4               ; Increment paht string pointer
+            inc rdi                 ; Increment destination pointer
+            mov r9, [r8]            ; Move character into r9
+            test r9, r9             ; Check if character is nul
+            jne WFSetIOModeOpenRWFileCpy
+
+        lea rdx, [rsp+40]           ; Load file string address
         lea r8, file_mode_rw        ; Load mode string address
         lea rcx, rw_file            ; Load file handle address
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
