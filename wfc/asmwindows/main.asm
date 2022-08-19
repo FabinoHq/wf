@@ -57,8 +57,6 @@ WFMain:
     xor rbx, rbx    ; Clear rbx
     xor rcx, rcx    ; Clear rcx
     xor rdx, rdx    ; Clear rdx
-    xor rsi, rsi    ; Clear rsi
-    xor rdi, rdi    ; Clear rdi
     xor r8, r8      ; Clear r8
     xor r9, r9      ; Clear r9
     xor r10, r10    ; Clear r10
@@ -358,17 +356,16 @@ WFSetCursorPosition:
 
 ; WFSetIOMode : Set I/O mode (al : I/O mode, rcx : file path str addr)
 WFSetIOMode:
-    mov r15, r10    ; Store memory address into r15
-    movsxd r14, ecx ; Convert pointer into r14
-    mov r13, rax    ; Store register into r13
     push rbx        ; Push back register
     push rcx        ; Push pointer
     push rdx        ; Push back pointer
-    push rdi        ; Push rdi
     push r10        ; Push memory address
     push r11        ; Push main esp
 
     sub rsp, 4000   ; Push stack
+    mov r15, r10    ; Store memory address into r15
+    movsxd r14, ecx ; Convert pointer into r14
+    mov r13, rax    ; Store register into r13
 
     cmp al, 0       ; Standard I/O mode
     je WFSetIOModeStd           ; Jump to standard I/O mode
@@ -417,21 +414,23 @@ WFSetIOMode:
         je WFSetIOModeOpenInputFileErr
 
         ; Copy 4bytes characters string into 1byte characters string
-        mov rdi, rsp                ; Move stack pointer into rdi
-        add rdi, 40                 ; Add offset to stack
+        sub rsp, 4000               ; Push stack
+        mov rbx, rsp                ; Move stack pointer into rbx
         WFSetIOModeOpenInputFileCpy:
             mov r9, [r8]            ; Move character into r9
-            mov [rdi], r9           ; Copy character into stack
+            mov [rbx], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
-            inc rdi                 ; Increment destination pointer
+            inc rbx                 ; Increment destination pointer
             test r9, r9             ; Check if character is nul
             jne WFSetIOModeOpenInputFileCpy     ; Copy string loop
 
-        lea rdx, [rsp+40]           ; Load file string address
+        lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_r         ; Load mode string address
         lea rcx, input_file         ; Load file handle address
+        sub rsp, 40                 ; Push stack
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
         call fopen_s                ; Open file
+        add rsp, 4040               ; Pop stack
 
         mov rcx, input_file         ; Move file handle in rcx
         test rcx, rcx               ; Check file handle
@@ -473,21 +472,23 @@ WFSetIOMode:
         je WFSetIOModeOpenOutputFileErr
 
         ; Copy 4bytes characters string into 1byte characters string
-        mov rdi, rsp                ; Move stack pointer into rdi
-        add rdi, 40                 ; Add offset to stack
+        sub rsp, 4000               ; Push stack
+        mov rbx, rsp                ; Move stack pointer into rbx
         WFSetIOModeOpenOutputFileCpy:
             mov r9, [r8]            ; Move character into r9
-            mov [rdi], r9           ; Copy character into stack
+            mov [rbx], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
-            inc rdi                 ; Increment destination pointer
+            inc rbx                 ; Increment destination pointer
             test r9, r9             ; Check if character is nul
             jne WFSetIOModeOpenOutputFileCpy
 
-        lea rdx, [rsp+40]           ; Load file string address
+        lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_w         ; Load mode string address
         lea rcx, output_file        ; Load file handle address
+        sub rsp, 40                 ; Push stack
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
         call fopen_s                ; Open file
+        add rsp, 4040               ; Pop stack
 
         mov rcx, output_file        ; Move file handle in rcx
         test rcx, rcx               ; Check file handle
@@ -538,21 +539,23 @@ WFSetIOMode:
         je WFSetIOModeRWOpenRWFileErr
 
         ; Copy 4bytes characters string into 1byte characters string
-        mov rdi, rsp                ; Move stack pointer into rdi
-        add rdi, 40                 ; Add offset to stack
+        sub rsp, 4000               ; Push stack
+        mov rbx, rsp                ; Move stack pointer into rbx
         WFSetIOModeOpenRWFileCpy:
             mov r9, [r8]            ; Move character into r9
-            mov [rdi], r9           ; Copy character into stack
+            mov [rbx], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
-            inc rdi                 ; Increment destination pointer
+            inc rbx                 ; Increment destination pointer
             test r9, r9             ; Check if character is nul
             jne WFSetIOModeOpenRWFileCpy
 
-        lea rdx, [rsp+40]           ; Load file string address
+        lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_rw        ; Load mode string address
         lea rcx, rw_file            ; Load file handle address
+        sub rsp, 40                 ; Push stack
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
         call fopen_s                ; Open file
+        add rsp, 4040               ; Pop stack
 
         mov rcx, rw_file            ; Move file handle in rcx
         test rcx, rcx               ; Check file handle
@@ -573,15 +576,14 @@ WFSetIOMode:
         jmp WFSetIOModeEnd
 
     WFSetIOModeEnd:
+    mov rax, r13    ; Restore register from r13
     add rsp, 4000   ; Pop stack
 
     pop r11         ; Pop main esp
     pop r10         ; Pop memory address
-    pop rdi         ; Pop rdi
     pop rdx         ; Pop back pointer
     pop rcx         ; Pop pointer
     pop rbx         ; Pop back register
-    mov rax, r13    ; Restore register from r13
 
     ret       ; Return to caller
 
