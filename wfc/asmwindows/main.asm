@@ -284,9 +284,31 @@ WFSetCursorPosition:
         jmp WFSetCursorEnd
 
     WFSetCursorInputFile:   ; File input mode
+        mov rcx, input_file     ; Move file handle in rcx
+        mov rbx, file_io        ; Load file_io mode
+        test rbx, rbx           ; Check file_io mode
+        je WFSetCursorInputFileI
+            mov rcx, rw_file    ; Load R/W file handle
+
+        WFSetCursorInputFileI:
+        xor r8, r8              ; Clear r8 (SEEK_SET)
+        mov edx, eax            ; Move file cursor position into edx
+        ; Set file cursor position (handle in rcx, position in edx)
+        call fseek              ; Call fseek
         jmp WFSetCursorEnd
 
     WFSetCursorOutputFile:  ; File output mode
+        mov rcx, output_file    ; Load output file handle
+        mov rbx, file_io        ; Load file_io mode
+        test rbx, rbx           ; Check file_io mode
+        je WFSetCursorOutputFileO
+            mov rcx, rw_file    ; Load R/W file handle
+
+        WFSetCursorOutputFileO:
+        xor r8, r8              ; Clear r8 (SEEK_SET)
+        mov edx, eax            ; Move file cursor position into edx
+        ; Set file cursor position (handle in rcx, position in edx)
+        call fseek              ; Call fseek
         jmp WFSetCursorEnd
 
     WFSetCursorEnd:
