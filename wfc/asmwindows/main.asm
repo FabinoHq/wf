@@ -96,58 +96,6 @@ WFMain:
     xor edx, edx    ; Clear edx  :  Back pointer
 
 
-    ; Set cursor position
-    ;mov eax, 1  ; X cursor position
-    ;mov ebx, 2  ; Y cursor position
-    ;call WFSetCursorPosition
-
-
-    ; File I/O
-    ; sub rsp, 40     ; Push stack
-
-    ; xor rax, rax                ; Clear rax
-    ; mov input_file, rax         ; Clear file handle
-    ; lea rdx, file        ; Load file string address
-    ; lea r8, file_mode_r  ; Load mode string address
-    ; ;lea r8, mode_w      ; Load mode string address
-    ; lea rcx, input_file  ; Load file handle address
-    ; ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
-    ; call fopen_s    ; Open file
-
-    ; mov rcx, input_file     ; Move file handle in rcx
-    ; test rcx, rcx   ; Check file handle
-    ; je filenotfound ; Jump if file is not open
-
-    ; ; Set file cursor position
-    ; mov rcx, input_file     ; Move file handle in rcx
-    ; xor r8, r8      ; Clear r8 (SEEK_SET)
-    ; mov edx, 1      ; Move file cursor position into edx
-    ; call fseek      ; Set file cursor position (handle in rcx, position in edx)
-
-    ; ; Read character from file
-    ; mov rcx, input_file     ; Move file handle in rcx
-    ; call fgetc      ; Read character (handle addr in rcx, character in eax)
-    ; mov r15, rax    ; Save character into r15
-
-    ; ; Get file cursor position
-    ; mov rcx, input_file     ; Move file handle in rcx
-    ; call ftell      ; Get file cursor position (handle in rcx, position in eax)
-    ; mov r14, rax    ; Save cursor position into r14
-
-    ; ; Write character to file
-    ; ;mov rdx, [rsp]  ; Move file handle in rdx
-    ; ;mov rcx, 'a'    ; Move character into rcx
-    ; ;call fputc      ; Write character (handle addr in rdx, character in ecx)
-
-    ; ; Close file
-    ; mov rcx, input_file     ; Move file handle in rcx
-    ; call fclose     ; Close file (handle in rcx)
-
-    ; filenotfound:   ; File not found
-
-    ; add rsp, 40     ; Pop stack
-
-
 ; WFMainEnd : Main program end
 WFMainEnd:
     ; Close opened files
@@ -426,6 +374,8 @@ WFSetIOMode:
             je WFSetIOModeOpenInputFileDone     ; Copy string done
             loop WFSetIOModeOpenInputFileCpy    ; Copy string loop
         WFSetIOModeOpenInputFileDone:
+        xor r9, r9                  ; Clear r9
+        mov [rbx], r9               ; Add nul character
 
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_r         ; Load mode string address
@@ -487,6 +437,8 @@ WFSetIOMode:
             je WFSetIOModeOpenOutputFileDone    ; Copy string done
             loop WFSetIOModeOpenOutputFileCpy   ; Copy string loop
         WFSetIOModeOpenOutputFileDone:
+        xor r9, r9                  ; Clear r9
+        mov [rbx], r9               ; Add nul character
 
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_w         ; Load mode string address
@@ -557,6 +509,8 @@ WFSetIOMode:
             je WFSetIOModeOpenRWFileDone        ; Copy string done
             loop WFSetIOModeOpenRWFileCpy       ; Copy string loop
         WFSetIOModeOpenRWFileDone:
+        xor r9, r9                  ; Clear r9
+        mov [rbx], r9               ; Add nul character
 
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_rw        ; Load mode string address
