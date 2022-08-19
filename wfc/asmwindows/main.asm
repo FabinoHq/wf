@@ -416,13 +416,16 @@ WFSetIOMode:
         ; Copy 4bytes characters string into 1byte characters string
         sub rsp, 4000               ; Push stack
         mov rbx, rsp                ; Move stack pointer into rbx
+        mov rcx, 3980               ; Loop for 3980 characters max
         WFSetIOModeOpenInputFileCpy:
             mov r9, [r8]            ; Move character into r9
             mov [rbx], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
             inc rbx                 ; Increment destination pointer
             test r9, r9             ; Check if character is nul
-            jne WFSetIOModeOpenInputFileCpy     ; Copy string loop
+            je WFSetIOModeOpenInputFileDone     ; Copy string done
+            loop WFSetIOModeOpenInputFileCpy    ; Copy string loop
+        WFSetIOModeOpenInputFileDone:
 
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_r         ; Load mode string address
@@ -474,13 +477,16 @@ WFSetIOMode:
         ; Copy 4bytes characters string into 1byte characters string
         sub rsp, 4000               ; Push stack
         mov rbx, rsp                ; Move stack pointer into rbx
+        mov rcx, 3980               ; Loop for 3980 characters max
         WFSetIOModeOpenOutputFileCpy:
             mov r9, [r8]            ; Move character into r9
             mov [rbx], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
             inc rbx                 ; Increment destination pointer
             test r9, r9             ; Check if character is nul
-            jne WFSetIOModeOpenOutputFileCpy
+            je WFSetIOModeOpenOutputFileDone    ; Copy string done
+            loop WFSetIOModeOpenOutputFileCpy   ; Copy string loop
+        WFSetIOModeOpenOutputFileDone:
 
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_w         ; Load mode string address
@@ -541,13 +547,16 @@ WFSetIOMode:
         ; Copy 4bytes characters string into 1byte characters string
         sub rsp, 4000               ; Push stack
         mov rbx, rsp                ; Move stack pointer into rbx
+        mov rcx, 3980               ; Loop for 3980 characters max
         WFSetIOModeOpenRWFileCpy:
             mov r9, [r8]            ; Move character into r9
             mov [rbx], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
             inc rbx                 ; Increment destination pointer
             test r9, r9             ; Check if character is nul
-            jne WFSetIOModeOpenRWFileCpy
+            je WFSetIOModeOpenRWFileDone        ; Copy string done
+            loop WFSetIOModeOpenRWFileCpy       ; Copy string loop
+        WFSetIOModeOpenRWFileDone:
 
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_rw        ; Load mode string address
