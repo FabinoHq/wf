@@ -57,6 +57,8 @@ WFMain:
     xor rbx, rbx    ; Clear rbx
     xor rcx, rcx    ; Clear rcx
     xor rdx, rdx    ; Clear rdx
+    xor rsi, rsi    ; Clear rsi
+    xor rdi, rdi    ; Clear rdi
     xor r8, r8      ; Clear r8
     xor r9, r9      ; Clear r9
     xor r10, r10    ; Clear r10
@@ -236,7 +238,6 @@ WFStandardInput:
 
         ; Read character (handle addr in rcx, character in eax)
         call fgetc      ; Call fgetc
-        and rax, 0FFh   ; Mask low byte
 
     WFStandardInputEnd:
     add rsp, 40     ; Pop stack
@@ -363,10 +364,11 @@ WFSetIOMode:
     push rbx        ; Push back register
     push rcx        ; Push pointer
     push rdx        ; Push back pointer
+    push rdi        ; Push rdi
     push r10        ; Push memory address
     push r11        ; Push main esp
 
-    sub rsp, 40     ; Push stack
+    sub rsp, 4000   ; Push stack
 
     cmp al, 0       ; Standard I/O mode
     je WFSetIOModeStd           ; Jump to standard I/O mode
@@ -417,14 +419,13 @@ WFSetIOMode:
         ; Copy 4bytes characters string into 1byte characters string
         mov rdi, rsp                ; Move stack pointer into rdi
         add rdi, 40                 ; Add offset to stack
-        mov r9, [r8]                ; Move character into r9
         WFSetIOModeOpenInputFileCpy:
+            mov r9, [r8]            ; Move character into r9
             mov [rdi], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
             inc rdi                 ; Increment destination pointer
-            mov r9, [r8]            ; Move character into r9
             test r9, r9             ; Check if character is nul
-            jne WFSetIOModeOpenInputFileCpy
+            jne WFSetIOModeOpenInputFileCpy     ; Copy string loop
 
         lea rdx, [rsp+40]           ; Load file string address
         lea r8, file_mode_r         ; Load mode string address
@@ -474,12 +475,11 @@ WFSetIOMode:
         ; Copy 4bytes characters string into 1byte characters string
         mov rdi, rsp                ; Move stack pointer into rdi
         add rdi, 40                 ; Add offset to stack
-        mov r9, [r8]                ; Move character into r9
         WFSetIOModeOpenOutputFileCpy:
+            mov r9, [r8]            ; Move character into r9
             mov [rdi], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
             inc rdi                 ; Increment destination pointer
-            mov r9, [r8]            ; Move character into r9
             test r9, r9             ; Check if character is nul
             jne WFSetIOModeOpenOutputFileCpy
 
@@ -540,12 +540,11 @@ WFSetIOMode:
         ; Copy 4bytes characters string into 1byte characters string
         mov rdi, rsp                ; Move stack pointer into rdi
         add rdi, 40                 ; Add offset to stack
-        mov r9, [r8]                ; Move character into r9
         WFSetIOModeOpenRWFileCpy:
+            mov r9, [r8]            ; Move character into r9
             mov [rdi], r9           ; Copy character into stack
             add r8, 4               ; Increment paht string pointer
             inc rdi                 ; Increment destination pointer
-            mov r9, [r8]            ; Move character into r9
             test r9, r9             ; Check if character is nul
             jne WFSetIOModeOpenRWFileCpy
 
@@ -574,10 +573,11 @@ WFSetIOMode:
         jmp WFSetIOModeEnd
 
     WFSetIOModeEnd:
-    add rsp, 40     ; Pop stack
+    add rsp, 4000   ; Pop stack
 
     pop r11         ; Pop main esp
     pop r10         ; Pop memory address
+    pop rdi         ; Pop rdi
     pop rdx         ; Pop back pointer
     pop rcx         ; Pop pointer
     pop rbx         ; Pop back register
