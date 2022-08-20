@@ -84,6 +84,10 @@
             x = static_cast<int32_t>(consoleInfo.dwCursorPosition.X);
             y = static_cast<int32_t>(consoleInfo.dwCursorPosition.Y);
         }
+
+        // Clamp x and y
+        if (x <= 0) x = 0;
+        if (y <= 0) y = 0;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -154,6 +158,62 @@
         // Reset coords
         x = 0;
         y = 0;
+
+        // Flush standard output
+        std::cout.flush();
+
+        // Get current termios
+        struct termios cur_termios = {0, 0, 0, 0, 0, {0}, 0, 0};
+        if (tcgetattr(0, &cur_termios) < 0) return;
+
+        // Turn off canonical and echo mode
+        cur_termios.c_lflag &= ~ICANON;
+        cur_termios.c_lflag &= ~ECHO;
+        cur_termios.c_cc[VMIN] = 1;
+        cur_termios.c_cc[VTIME] = 0;
+
+        // Set termios
+        if (tcsetattr(0, TCSANOW, &cur_termios) < 0) return;
+
+        // Get cursor position
+        write(1, "\033[6n", 4);
+
+        // Read cursor position
+        std::string position = "";
+        char ch = 0;
+        while (ch != ';')
+        {
+            if (!read(0, &ch, 1)) break;
+            if (std::isdigit(ch))
+            {
+                position.push_back(ch);
+            }
+        }
+        try { y = std::stoi(position, 0, 10); }
+        catch (...) { y = 0; }
+        position = "";
+        ch = 0;
+        while (ch != 'R')
+        {
+            if (!read(0, &ch, 1)) break;
+            if (std::isdigit(ch))
+            {
+                position.push_back(ch);
+            }
+        }
+        try { x = std::stoi(position, 0, 10); }
+        catch (...) { x = 0; }
+
+        // Clamp x and y
+        --x;
+        --y;
+        if (x <= 0) x = 0;
+        if (y <= 0) y = 0;
+
+        // Restore termios
+        cur_termios.c_lflag |= ICANON;
+        cur_termios.c_lflag |= ECHO;
+        tcsetattr(0, TCSADRAIN, &cur_termios);
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -162,6 +222,7 @@
     void WFSetTerminalCursor(int32_t x, int32_t y)
     {
         // Clamp x and y
+        ++x;
         ++y;
         if (x <= 0) x = 0;
         if (y <= 0) y = 0;

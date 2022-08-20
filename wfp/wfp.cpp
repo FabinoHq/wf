@@ -164,6 +164,11 @@ bool Wfp::launch(const std::string& path)
     // Run WFP
     run();
 
+    // Close opened files
+    if (m_inputFile.is_open()) m_inputFile.close();
+    if (m_outputFile.is_open()) m_outputFile.close();
+    if (m_rwFile.is_open()) m_rwFile.close();
+
     // End of program
     if (WFMemoryDump)
     {
@@ -674,7 +679,7 @@ void Wfp::getIOCursorPosition()
 
         default:
             // Standard I/O
-            //WFGetTerminalCursor(m_register, m_backregister);
+            WFGetTerminalCursor(m_register, m_backregister);
             break;
     }
 }
@@ -758,9 +763,14 @@ void Wfp::setIOMode()
 
             // Open R/W file
             m_rwFile.open(
-                path, std::ios::in | std::ios::out | std::ios::binary
+                path, std::ios::in | std::ios::out |
+                std::ios::binary | std::ios::app
             );
-            if (m_rwFile.is_open()) m_register = 1;
+            if (m_rwFile.is_open())
+            {
+                m_rwFile.seekp(0, std::ios::end);
+                m_register = 1;
+            }
             break;
 
         case 'i':

@@ -51,5 +51,5 @@
 	, : read one input byte into the register
 	. : output one byte from the register
 	) : Set current I/O cursor position from the register and back register
-	( : Load current I/O cursor position into the register
+	( : Load current I/O cursor position into the register and back register
 	? : Set I/O mode based on the value in the register (terminal or file)

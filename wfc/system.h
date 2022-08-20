@@ -43,7 +43,9 @@
 #define WFC_SYSTEM_HEADER
 
     #include <cstdint>
+    #include <string>
     #include <iostream>
+    #include <exception>
 
 
     ////////////////////////////////////////////////////////////////////////////
