@@ -545,6 +545,10 @@ WFSetIOMode:
         mov rcx, rw_file            ; Move file handle in rcx
         test rcx, rcx               ; Check file handle
         je WFSetIOModeRWOpenRWFileErr
+            mov r8, 2               ; Move 2 to r8 (SEEK_END)
+            xor edx, edx            ; Clear edx (cursor position)
+            ; Set file cursor position (handle in rcx, position in edx)
+            call fseek              ; Call fseek
             mov r13, 1              ; Set register to 1 (open success)
             jmp WFSetIOModeEnd
 
