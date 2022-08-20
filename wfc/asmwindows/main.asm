@@ -66,7 +66,7 @@ WFMain:
     xor r14, r14    ; Clear r14
     xor r15, r15    ; Clear r15
 
-    sub rsp, 40     ; Push stack
+    sub rsp, 64     ; Push stack
 
     ; Allocate memory
     mov rcx, 67108864       ; 16777216*4 bytes
@@ -78,11 +78,11 @@ WFMain:
     add r10, 33554432   ; Add memory offset ((16777216*4)/2 bytes)
 
     ; Get std output handle
-    sub rsp, 40     ; Push stack
+    sub rsp, 64     ; Push stack
     xor rax, rax    ; Clear rax
     mov ecx, -11    ; 0FFFFFFF5H (-11) (STD_OUTPUT_HANDLE)
     call qword ptr __imp_GetStdHandle   ; Get std handle in rax
-    add rsp, 40     ; Pop stack
+    add rsp, 64     ; Pop stack
     mov [std_handle], rax   ; Store std handle
 
     mov r11, rsp    ; Store main rsp into r11
@@ -99,7 +99,7 @@ WFMain:
 ; WFMainEnd : Main program end
 WFMainEnd:
     ; Close opened files
-    sub rsp, 40             ; Push stack
+    sub rsp, 64             ; Push stack
     mov rax, input_file     ; Load input file handle
     test rax, rax           ; Check input file handle
     je WFMainEndInputFileOk
@@ -123,7 +123,7 @@ WFMainEnd:
         mov rcx, rw_file        ; Move file handle in rcx
         call fclose             ; Close file (handle in rcx)
     WFMainEndFileOk:
-    add rsp, 40     ; Pop stack
+    add rsp, 64     ; Pop stack
 
     ; Cleanup memory
     pop rcx                     ; Restore address from stack
@@ -135,7 +135,7 @@ WFMainEnd:
 
     ; End of program
     xor rax, rax    ; Clear rax
-    add rsp, 40     ; Pop stack
+    add rsp, 64     ; Pop stack
     ret 0           ; Return 0
 
 ; WFStandardInput : low level standard input
@@ -147,7 +147,7 @@ WFStandardInput:
     push r11        ; Push main esp
     push r12        ; Push iomode
 
-    sub rsp, 40     ; Push stack
+    sub rsp, 64     ; Push stack
 
     cmp r12, 0      ; Standard I/O mode
     je WFStandardInputStd      ; Jump to standard input mode
@@ -186,7 +186,7 @@ WFStandardInput:
         call fgetc      ; Call fgetc
 
     WFStandardInputEnd:
-    add rsp, 40     ; Pop stack
+    add rsp, 64     ; Pop stack
 
     pop r12         ; Pop iomode
     pop r11         ; Pop main esp
@@ -207,7 +207,7 @@ WFStandardOutput:
     push r11        ; Push main esp
     push r12        ; Push iomode
 
-    sub rsp, 40     ; Push stack
+    sub rsp, 64     ; Push stack
 
     cmp r12, 0      ; Standard I/O mode
     je WFStandardOutputStd      ; Jump to standard output mode
@@ -239,7 +239,7 @@ WFStandardOutput:
             call fputc      ; Call fputc
 
     WFStandardOutputEnd:
-    add rsp, 40     ; Pop stack
+    add rsp, 64     ; Pop stack
 
     pop r12         ; Pop iomode
     pop r11         ; Pop main esp
@@ -261,7 +261,7 @@ WFSetCursorPosition:
     push r11        ; Push main esp
     push r12        ; Push iomode
 
-    sub rsp, 40     ; Push stack
+    sub rsp, 64     ; Push stack
 
     cmp r12, 0      ; Standard I/O mode
     je WFSetCursorStd           ; Jump to standard output mode
@@ -312,7 +312,7 @@ WFSetCursorPosition:
         jmp WFSetCursorEnd
 
     WFSetCursorEnd:
-    add rsp, 40     ; Pop stack
+    add rsp, 64     ; Pop stack
 
     pop r12         ; Pop iomode
     pop r11         ; Pop main esp
@@ -332,7 +332,7 @@ WFSetIOMode:
     push r10        ; Push memory address
     push r11        ; Push main esp
 
-    sub rsp, 4000   ; Push stack
+    sub rsp, 4096   ; Push stack
     mov r15, r10    ; Store memory address into r15
     movsxd r14, ecx ; Convert pointer into r14
     mov r13, rax    ; Store register into r13
@@ -384,9 +384,9 @@ WFSetIOMode:
         je WFSetIOModeOpenInputFileErr
 
         ; Copy 4bytes characters string into 1byte characters string
-        sub rsp, 4000               ; Push stack
+        sub rsp, 4096               ; Push stack
         mov rbx, rsp                ; Move stack pointer into rbx
-        mov rcx, 3980               ; Loop for 3980 characters max
+        mov rcx, 4000               ; Loop for 4000 characters max
         WFSetIOModeOpenInputFileCpy:
             mov r9, [r8]            ; Move character into r9
             mov [rbx], r9           ; Copy character into stack
@@ -402,10 +402,10 @@ WFSetIOMode:
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_r         ; Load mode string address
         lea rcx, input_file         ; Load file handle address
-        sub rsp, 40                 ; Push stack
+        sub rsp, 64                 ; Push stack
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
         call fopen_s                ; Open file
-        add rsp, 4040               ; Pop stack
+        add rsp, 4160               ; Pop stack
 
         mov rcx, input_file         ; Move file handle in rcx
         test rcx, rcx               ; Check file handle
@@ -447,9 +447,9 @@ WFSetIOMode:
         je WFSetIOModeOpenOutputFileErr
 
         ; Copy 4bytes characters string into 1byte characters string
-        sub rsp, 4000               ; Push stack
+        sub rsp, 4096               ; Push stack
         mov rbx, rsp                ; Move stack pointer into rbx
-        mov rcx, 3980               ; Loop for 3980 characters max
+        mov rcx, 4000               ; Loop for 4000 characters max
         WFSetIOModeOpenOutputFileCpy:
             mov r9, [r8]            ; Move character into r9
             mov [rbx], r9           ; Copy character into stack
@@ -465,10 +465,10 @@ WFSetIOMode:
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_w         ; Load mode string address
         lea rcx, output_file        ; Load file handle address
-        sub rsp, 40                 ; Push stack
+        sub rsp, 64                 ; Push stack
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
         call fopen_s                ; Open file
-        add rsp, 4040               ; Pop stack
+        add rsp, 4160               ; Pop stack
 
         mov rcx, output_file        ; Move file handle in rcx
         test rcx, rcx               ; Check file handle
@@ -519,9 +519,9 @@ WFSetIOMode:
         je WFSetIOModeRWOpenRWFileErr
 
         ; Copy 4bytes characters string into 1byte characters string
-        sub rsp, 4000               ; Push stack
+        sub rsp, 4096               ; Push stack
         mov rbx, rsp                ; Move stack pointer into rbx
-        mov rcx, 3980               ; Loop for 3980 characters max
+        mov rcx, 4000               ; Loop for 4000 characters max
         WFSetIOModeOpenRWFileCpy:
             mov r9, [r8]            ; Move character into r9
             mov [rbx], r9           ; Copy character into stack
@@ -537,10 +537,10 @@ WFSetIOMode:
         lea rdx, [rsp]              ; Load file string address
         lea r8, file_mode_rw        ; Load mode string address
         lea rcx, rw_file            ; Load file handle address
-        sub rsp, 40                 ; Push stack
+        sub rsp, 64                 ; Push stack
         ; Open file (handle in rcx, path str addr in rdx, mode str addr in r8)
         call fopen_s                ; Open file
-        add rsp, 4040               ; Pop stack
+        add rsp, 4160               ; Pop stack
 
         mov rcx, rw_file            ; Move file handle in rcx
         test rcx, rcx               ; Check file handle
@@ -562,7 +562,7 @@ WFSetIOMode:
 
     WFSetIOModeEnd:
     mov rax, r13    ; Restore register from r13
-    add rsp, 4000   ; Pop stack
+    add rsp, 4096   ; Pop stack
 
     pop r11         ; Pop main esp
     pop r10         ; Pop memory address
