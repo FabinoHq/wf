@@ -270,7 +270,8 @@ void Wfp::parseNumber()
         number.push_back(m_program[m_cursor++]);
     }
     --m_cursor;
-    num64 = std::stoll(number, 0, base);
+    try { num64 = std::stoll(number, 0, base); }
+    catch (...) { num64 = 0; }
     m_register = static_cast<int32_t>(num64);
 }
 
@@ -745,7 +746,7 @@ void Wfp::setIOMode()
         case 'b':
             // Open R/W file mode
             m_register = 0;
-            m_iomode = WF_IOMODE_FILE_INPUT;
+            m_iomode = WF_IOMODE_FILE_OUTPUT;
             m_iofile = WF_IOFILE_RW;
 
             // Close previous files
