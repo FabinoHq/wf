@@ -233,6 +233,11 @@
                 }
             }
         }
+        else if ((ch & 0xFF) == 127)
+        {
+            // Backspace
+            ch = 8;
+        }
 
         // Restore termios
         cur_termios.c_lflag |= ICANON;
