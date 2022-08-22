@@ -345,6 +345,12 @@
             bool writeOutput();
 
             ////////////////////////////////////////////////////////////////////
+            //  Write WF get cursor position                                  //
+            //  return : True if WF get cursor is successfully written        //
+            ////////////////////////////////////////////////////////////////////
+            bool writeGetCursorPosition();
+
+            ////////////////////////////////////////////////////////////////////
             //  Write WF set cursor position                                  //
             //  return : True if WF set cursor is successfully written        //
             ////////////////////////////////////////////////////////////////////

@@ -432,6 +432,7 @@ void Wfc::parseInstruction()
 
         case '(':
             // Load I/O cursor position
+            writeGetCursorPosition();
             break;
 
         case '?':
@@ -763,6 +764,16 @@ bool Wfc::writeInput()
 bool Wfc::writeOutput()
 {
     m_output << WFASMStandardOutput;
+    return (!m_output.bad());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//  Write WF get cursor position                                              //
+//  return : True if WF get cursor is successfully written                    //
+////////////////////////////////////////////////////////////////////////////////
+bool Wfc::writeGetCursorPosition()
+{
+    m_output << WFASMGetCursorPosition;
     return (!m_output.bad());
 }
 

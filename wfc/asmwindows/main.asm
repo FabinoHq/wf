@@ -19,6 +19,7 @@ EXTRN putchar:PROC      ; putchar (Output one character to terminal)
 
 EXTRN __imp_GetStdHandle:PROC               ; Get std handle
 EXTRN __imp_SetConsoleCursorPosition:PROC   ; Set cursor position
+EXTRN __imp_GetConsoleScreenBufferInfo:PROC ; Get cursor position
 
 EXTRN fopen_s:PROC      ; fopen_s (Open file)
 EXTRN fclose:PROC       ; fclose (Close file)
@@ -172,15 +173,15 @@ WFStandardInput:
         jmp WFStandardInputEnd
 
     WFStandardInputFile:    ; File input mode
-    mov rcx, input_file     ; Load input file handle
-    mov rbx, file_io        ; Load file_io mode
-    test rbx, rbx           ; Check file_io mode
-    je WFStandardInputFileI
-        mov rcx, rw_file    ; Load R/W file handle
+        mov rcx, input_file     ; Load input file handle
+        mov rbx, file_io        ; Load file_io mode
+        test rbx, rbx           ; Check file_io mode
+        je WFStandardInputFileI
+            mov rcx, rw_file    ; Load R/W file handle
 
-    WFStandardInputFileI:
-    test rcx, rcx           ; Check file handle
-    je WFStandardInputEnd   ; No input file
+        WFStandardInputFileI:
+        test rcx, rcx           ; Check file handle
+        je WFStandardInputEnd   ; No input file
 
         ; Read character (handle addr in rcx, character in eax)
         call fgetc      ; Call fgetc
@@ -251,7 +252,73 @@ WFStandardOutput:
 
     ret         ; Return to caller
 
-; WFSetCursorPosition : Set terminal cursor position (x in ax, y in bx)
+; WFGetCursorPosition : Get cursor position (x in ax, y in bx, or cur in eax)
+WFGetCursorPosition:
+    push rcx        ; Push pointer
+    push rdx        ; Push back pointer
+    push r10        ; Push memory address
+    push r11        ; Push main esp
+    push r12        ; Push iomode
+
+    sub rsp, 48     ; Push stack (16 bytes boundary)
+
+    cmp r12, 0      ; Standard I/O mode
+    je WFGetCursorStd           ; Jump to standard output mode
+    cmp r12, 4      ; Input file I/O mode
+    je WFGetCursorInputFile     ; Jump to file input mode
+    cmp r12, 5      ; Output file I/O mode
+    je WFGetCursorOutputFile    ; Jump to file output mode
+
+    WFGetCursorStd:     ; Standard I/O mode
+        sub rsp, 256            ; Push stack
+        lea rdx, [rsp+128]      ; Load console info array address
+        mov rcx, [std_handle]   ; Move handle in rcx
+        ; Std handle in rcx, console info array address in rdx
+        call qword ptr __imp_GetConsoleScreenBufferInfo
+        movsx eax, word ptr [rsp+132]   ; X cursor position
+        movsx ebx, word ptr [rsp+134]   ; Y cursor position
+        add rsp, 256            ; Pop stack
+        jmp WFGetCursorEnd
+
+    WFGetCursorInputFile:   ; File input mode
+        mov r15, rbx            ; Store rbx in r15
+        mov rcx, input_file     ; Move file handle in rcx
+        mov rbx, file_io        ; Load file_io mode
+        test rbx, rbx           ; Check file_io mode
+        je WFGetCursorInputFileI
+            mov rcx, rw_file    ; Load R/W file handle
+
+        WFGetCursorInputFileI:
+        ; Get file cursor position (handle in rcx, position in eax)
+        call ftell              ; Call ftell
+        mov rbx, r15            ; Restore rbx from r15
+        jmp WFGetCursorEnd
+
+    WFGetCursorOutputFile:  ; File output mode
+        mov r15, rbx            ; Store rbx in r15
+        mov rcx, output_file    ; Load output file handle
+        mov rbx, file_io        ; Load file_io mode
+        test rbx, rbx           ; Check file_io mode
+        je WFGetCursorOutputFileO
+            mov rcx, rw_file    ; Load R/W file handle
+
+        WFGetCursorOutputFileO:
+        ; Get file cursor position (handle in rcx, position in eax)
+        call ftell              ; Call ftell
+        mov rbx, r15            ; Restore rbx from r15
+
+    WFGetCursorEnd:
+    add rsp, 48     ; Pop stack (16 bytes boundary)
+
+    pop r12         ; Pop iomode
+    pop r11         ; Pop main esp
+    pop r10         ; Pop memory address
+    pop rdx         ; Pop back pointer
+    pop rcx         ; Pop pointer
+
+    ret       ; Return to caller
+
+; WFSetCursorPosition : Set cursor position (x in ax, y in bx, or cur in eax)
 WFSetCursorPosition:
     push rax        ; Push register
     push rbx        ; Push back register
@@ -261,7 +328,7 @@ WFSetCursorPosition:
     push r11        ; Push main esp
     push r12        ; Push iomode
 
-    sub rsp, 32     ; Push stack  (16 bytes boundary)
+    sub rsp, 32     ; Push stack (16 bytes boundary)
 
     cmp r12, 0      ; Standard I/O mode
     je WFSetCursorStd           ; Jump to standard output mode
@@ -309,10 +376,9 @@ WFSetCursorPosition:
         mov edx, eax            ; Move file cursor position into edx
         ; Set file cursor position (handle in rcx, position in edx)
         call fseek              ; Call fseek
-        jmp WFSetCursorEnd
 
     WFSetCursorEnd:
-    add rsp, 32     ; Pop stack  (16 bytes boundary)
+    add rsp, 32     ; Pop stack (16 bytes boundary)
 
     pop r12         ; Pop iomode
     pop r11         ; Pop main esp
@@ -562,7 +628,6 @@ WFSetIOMode:
 
     WFSetIOModeOutputFile:      ; File output mode
         mov r12, 5              ; Set file output I/O mode
-        jmp WFSetIOModeEnd
 
     WFSetIOModeEnd:
     mov rax, r13    ; Restore register from r13
