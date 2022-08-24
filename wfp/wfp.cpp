@@ -54,6 +54,8 @@ m_pointer(0),
 m_backpointer(0),
 m_register(0),
 m_backregister(0),
+m_curInputFile(""),
+m_curOutputFile(""),
 m_inputFile(),
 m_outputFile(),
 m_rwFile(),
@@ -157,6 +159,8 @@ bool Wfp::launch(const std::string& path)
     m_backpointer = 0;
     m_register = 0;
     m_backregister = 0;
+    m_curInputFile = "";
+    m_curOutputFile = "";
     if (m_inputFile.is_open()) m_inputFile.close();
     if (m_outputFile.is_open()) m_outputFile.close();
     if (m_rwFile.is_open()) m_rwFile.close();
@@ -165,6 +169,8 @@ bool Wfp::launch(const std::string& path)
     run();
 
     // Close opened files
+    m_curInputFile = "";
+    m_curOutputFile = "";
     if (m_inputFile.is_open()) m_inputFile.close();
     if (m_outputFile.is_open()) m_outputFile.close();
     if (m_rwFile.is_open()) m_rwFile.close();
@@ -597,14 +603,14 @@ void Wfp::setIOCursorPosition()
             {
                 if (m_inputFile.is_open())
                 {
-                    m_inputFile.seekg(m_register);
+                    m_inputFile.seekg(m_register, std::ios::beg);
                 }
             }
             else
             {
                 if (m_rwFile.is_open())
                 {
-                    m_rwFile.seekp(m_register);
+                    m_rwFile.seekp(m_register, std::ios::beg);
                 }
             }
             break;
@@ -615,14 +621,14 @@ void Wfp::setIOCursorPosition()
             {
                 if (m_outputFile.is_open())
                 {
-                    m_outputFile.seekp(m_register);
+                    m_outputFile.seekp(m_register, std::ios::beg);
                 }
             }
             else
             {
                 if (m_rwFile.is_open())
                 {
-                    m_rwFile.seekp(m_register);
+                    m_rwFile.seekp(m_register, std::ios::beg);
                 }
             }
             break;
@@ -697,55 +703,87 @@ void Wfp::setIOMode()
     {
         case 'r':
             // Open input file mode
-            m_register = 0;
+            m_register = -1;
             m_iomode = WF_IOMODE_FILE_INPUT;
             m_iofile = WF_IOFILE_IO;
 
             // Close previous input files
+            m_curInputFile = "";
             if (m_inputFile.is_open()) m_inputFile.close();
             if (m_rwFile.is_open()) m_rwFile.close();
 
             // Read file path
             checkPointerAddress();
+            if (m_memory[m_pointer+WFMemoryOffset] == 0)
+            {
+                break;
+            }
             while ((m_memory[m_pointer+WFMemoryOffset]))
             {
                 path.push_back(m_memory[(m_pointer++)+WFMemoryOffset]);
                 checkPointerAddress();
             }
 
+            // Check if file is already opened in output mode
+            if (path == m_curOutputFile)
+            {
+                break;
+            }
+
             // Open input file
             m_inputFile.open(path, std::ios::in | std::ios::binary);
-            if (m_inputFile.is_open()) m_register = 1;
+            if (m_inputFile.is_open())
+            {
+                m_curInputFile = path;
+                m_inputFile.seekg(0, std::ios::beg);
+                m_register = 0;
+            }
             break;
 
         case 'w':
             // Open output file mode
-            m_register = 0;
+            m_register = -1;
             m_iomode = WF_IOMODE_FILE_OUTPUT;
             m_iofile = WF_IOFILE_IO;
 
             // Close previous output files
+            m_curOutputFile = "";
             if (m_outputFile.is_open()) m_outputFile.close();
             if (m_rwFile.is_open()) m_rwFile.close();
 
             // Read file path
             checkPointerAddress();
+            if (m_memory[m_pointer+WFMemoryOffset] == 0)
+            {
+                break;
+            }
             while ((m_memory[m_pointer+WFMemoryOffset]))
             {
                 path.push_back(m_memory[(m_pointer++)+WFMemoryOffset]);
                 checkPointerAddress();
+            }
+
+            // Check if file is already opened in input mode
+            if (path == m_curInputFile)
+            {
+                break;
             }
 
             // Open output file
             m_outputFile.open(
                 path, std::ios::in | std::ios::trunc | std::ios::binary
             );
-            if (m_outputFile.is_open()) m_register = 1;
+            if (m_outputFile.is_open())
+            {
+                m_curOutputFile = path;
+                m_outputFile.seekp(0, std::ios::beg);
+                m_register = 0;
+            }
             break;
 
         case 'b':
             // Open R/W file mode
-            m_register = 0;
+            m_register = -1;
             m_iomode = WF_IOMODE_FILE_OUTPUT;
             m_iofile = WF_IOFILE_RW;
 
@@ -756,6 +794,44 @@ void Wfp::setIOMode()
 
             // Read file path
             checkPointerAddress();
+            if (m_memory[m_pointer+WFMemoryOffset] == 0)
+            {
+                break;
+            }
+            while ((m_memory[m_pointer+WFMemoryOffset]))
+            {
+                path.push_back(m_memory[(m_pointer++)+WFMemoryOffset]);
+                checkPointerAddress();
+            }
+
+            // Open R/W file
+            m_rwFile.open(
+                path, std::ios::in | std::ios::out | std::ios::binary
+            );
+            if (m_rwFile.is_open())
+            {
+                m_rwFile.seekp(0, std::ios::beg);
+                m_register = 0;
+            }
+            break;
+
+        case 'a':
+            // Open R/W file append mode
+            m_register = -1;
+            m_iomode = WF_IOMODE_FILE_OUTPUT;
+            m_iofile = WF_IOFILE_RW;
+
+            // Close previous files
+            if (m_inputFile.is_open()) m_inputFile.close();
+            if (m_outputFile.is_open()) m_outputFile.close();
+            if (m_rwFile.is_open()) m_rwFile.close();
+
+            // Read file path
+            checkPointerAddress();
+            if (m_memory[m_pointer+WFMemoryOffset] == 0)
+            {
+                break;
+            }
             while ((m_memory[m_pointer+WFMemoryOffset]))
             {
                 path.push_back(m_memory[(m_pointer++)+WFMemoryOffset]);
@@ -770,7 +846,7 @@ void Wfp::setIOMode()
             if (m_rwFile.is_open())
             {
                 m_rwFile.seekp(0, std::ios::end);
-                m_register = 1;
+                m_register = 0;
             }
             break;
 

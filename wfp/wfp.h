@@ -186,6 +186,8 @@
             int32_t         m_register;             // Main register
             int32_t         m_backregister;         // Back register
 
+            std::string     m_curInputFile;         // Opened input file
+            std::string     m_curOutputFile;        // Opened output file
             std::ifstream   m_inputFile;            // Input file
             std::ofstream   m_outputFile;           // Output file
             std::fstream    m_rwFile;               // R/W file
