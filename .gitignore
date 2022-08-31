@@ -3,6 +3,7 @@
 
 # Global files
 !.gitignore
+!.gitattributes
 !README.md
 !LICENSE
 
